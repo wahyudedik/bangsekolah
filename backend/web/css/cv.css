@@ -1,0 +1,45 @@
+/*
+ * Custom CSS
+ * Author: M. Arief Fakhrudin
+ */
+html {
+    font-size: 10px;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+body {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    line-height: 1.42857143;
+    /*color: #333;*/
+    background-color: #fff;
+}
+
+.table-invoice {
+	width: 100%;
+}
+
+.table-invoice tr td {
+	padding: 5px;
+	border-bottom: 1px solid black;
+}
+
+.table-invoice tr th {
+	color: white;
+	background: #444;
+	padding: 7px;
+	text-align: left;
+}
+
+.separator-bold {
+	width: 100%;
+	height: 3px;
+	background: black;
+	margin-top: 2px;
+}
+
+.separator-thin {
+	width: 100%;
+	height: 1px;
+	background: black;
+}

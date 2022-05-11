@@ -1,0 +1,35 @@
+body {
+	background: white;
+}
+
+#page-wrapper {
+	background: white;
+}
+
+.navbar {
+	border-radius: 0px;
+	background-color: #34495e;
+	text-align: center;
+	padding-top: 15px;
+}
+
+.navbar-brand {
+	color: white;
+	float: none;
+	top: 10px;
+}
+
+.footer {
+	text-align: center;
+	position: absolute;
+	bottom: 0;
+	background: #34495e;
+	width: 100%;
+	height: 30px;
+	padding-top: 5px;
+}
+
+.text-muted {
+	color: white;
+	text-align: center;
+}

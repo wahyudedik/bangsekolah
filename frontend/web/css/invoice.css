@@ -1,0 +1,9 @@
+.right {
+	text-align: right;
+}
+.no-border {
+	border: none !important;
+}
+.table-bordered {
+	border: none !important;
+}

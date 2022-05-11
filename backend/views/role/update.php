@@ -1,0 +1,12 @@
+<?php
+use yii\helpers\Html;
+
+$this->title = 'Update Role: ' . $model->name;
+$this->params['breadcrumbs'][] = ['label' => 'Role', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => $model->name, 'url' => ['view', 'id' => $model->id]];
+$this->params['breadcrumbs'][] = 'Update';
+?>
+
+<?= $this->render('_form', [
+    'model' => $model,
+]) ?>
