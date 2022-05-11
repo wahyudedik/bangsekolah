@@ -5,28 +5,28 @@ namespace common\models;
 use Yii;
 
 /**
- * This is the model class for table "outlet".
+ * This is the model class for table "school".
  *
  * @property int $id
  * @property string $name
- * @property string $email
- * @property string $address
- * @property string $city
  * @property string $status ACTIVE, NONACTIVE
  * @property string $created_at
  * @property string $updated_at
  *
- * @property Order[] $orders
- * @property UserOutlet[] $userOutlets
+ * @property SchoolClass[] $schoolClasses
+ * @property SchoolMonth[] $schoolMonths
+ * @property SchoolPayment[] $schoolPayments
+ * @property Student[] $students
+ * @property UserSchool[] $userSchools
  */
-class Outlet extends \yii\db\ActiveRecord
+class School extends \yii\db\ActiveRecord
 {
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return 'outlet';
+        return 'school';
     }
 
     public function behaviors()
@@ -49,9 +49,8 @@ class Outlet extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['address'], 'string'],
             [['created_at', 'updated_at'], 'safe'],
-            [['name', 'email', 'city', 'status'], 'string', 'max' => 255],
+            [['name', 'status'], 'string', 'max' => 255],
         ];
     }
 
@@ -63,9 +62,6 @@ class Outlet extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'name' => 'Name',
-            'email' => 'Email',
-            'address' => 'Address',
-            'city' => 'City',
             'status' => 'Status',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
@@ -75,25 +71,40 @@ class Outlet extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getOrders()
+    public function getSchoolClasses()
     {
-        return $this->hasMany(Order::className(), ['outlet_id' => 'id']);
+        return $this->hasMany(SchoolClass::className(), ['school_id' => 'id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getUserOutlets()
+    public function getSchoolMonths()
     {
-        return $this->hasMany(UserOutlet::className(), ['outlet_id' => 'id']);
+        return $this->hasMany(SchoolMonth::className(), ['school_id' => 'id']);
     }
 
-    public function getUserAdmin()
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSchoolPayments()
     {
-        $admin = 'NOT ASSIGNED';
-        foreach ($this->userOutlets as $userOutlet) {
-            $admin = $userOutlet->user->name;
-        }
-        return $admin;
+        return $this->hasMany(SchoolPayment::className(), ['school_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getStudents()
+    {
+        return $this->hasMany(Student::className(), ['school_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUserSchools()
+    {
+        return $this->hasMany(UserSchool::className(), ['school_id' => 'id']);
     }
 }
