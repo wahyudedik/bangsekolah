@@ -30,7 +30,7 @@ $baseUrl = Yii::$app->request->baseUrl;
         if (Yii::$app->user->identity->id == $model->id) {
             echo '<div class="profile-message-btn center-block text-center">';
             echo Html::a('<i class="fas fa-lock"></i> Change Password', ['user/change-password'], ['class' => 'btn btn-primary']).'<br><br>';
-            echo Html::a('<i class="fas fa-pen"></i> Edit Profile', ['user/update'], ['class' => 'btn btn-primary']);
+            echo Html::a('<i class="fas fa-pen"></i> Edit Profile', ['user/update', 'id' => $model->id], ['class' => 'btn btn-primary']);
             echo '</div>';
         } else if (Yii::$app->request->get('id')) {
             echo '<div class="profile-message-btn center-block text-center">';

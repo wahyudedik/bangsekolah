@@ -4,6 +4,7 @@ namespace backend\controllers;
 
 use Yii;
 use common\models\School;
+use common\models\UserSchool;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -64,8 +65,10 @@ class SchoolController extends Controller
      */
     public function actionView($id)
     {
+        $user_school = UserSchool::find()->where(['school_id' => $id])->one();
         return $this->render('view', [
             'model' => $this->findModel($id),
+            'user_school' => $user_school,
         ]);
     }
 

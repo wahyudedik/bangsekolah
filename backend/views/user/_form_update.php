@@ -22,7 +22,7 @@ $baseUrl = Yii::$app->request->baseUrl;
                 <?= $form->field($model, 'username')->textInput(['maxlength' => true]) ?>
 
                 <?php 
-                    if(!$outlet_id) {
+                    if(!$school_id) {
                         echo $form->field($model, 'role_id')->dropDownList(Role::getList());
                     }
                 ?>
@@ -30,8 +30,8 @@ $baseUrl = Yii::$app->request->baseUrl;
                 <?= $form->field($model, 'email')->textInput(['maxlength' => true]) ?>
                 <div class="form-group">
                     <?php
-                    if ($outlet_id) {
-                        echo Html::a('<i class="fas fa-chevron-left"></i> Back', ['outlet/view', 'id' => $outlet_id], ['class' => 'btn btn-warning']);
+                    if ($school_id) {
+                        echo Html::a('<i class="fas fa-chevron-left"></i> Back', ['school/view', 'id' => $school_id], ['class' => 'btn btn-warning']);
                     } else {
                         echo Html::a('<i class="fas fa-chevron-left"></i> Back', ['user/index'], ['class' => 'btn btn-warning']);
                     }

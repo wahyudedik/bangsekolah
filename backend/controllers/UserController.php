@@ -4,8 +4,8 @@ namespace backend\controllers;
 
 use Yii;
 use common\models\User;
-use common\models\UserOutlet;
-use common\models\Outlet;
+use common\models\UserSchool;
+use common\models\School;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -117,7 +117,7 @@ class UserController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate($outlet_id = null)
+    public function actionCreate($school_id = null)
     {
         $model = new User();
         $model->mode_create = true;
@@ -166,16 +166,16 @@ class UserController extends Controller
              */
             $model->image = $image;
             $model->password_hash = Yii::$app->security->generatePasswordHash($model->password);
-            if($outlet_id) {
-                $model->role_id = 4;
+            if($school_id) {
+                $model->role_id = 2;
             }
 
             if ($model->save()) {
-                if($outlet_id) {
-                    $user_outlet = new UserOutlet;
-                    $user_outlet->user_id = $model->id;
-                    $user_outlet->outlet_id = $outlet_id;
-                    $user_outlet->save();
+                if($school_id) {
+                    $user_school = new UserSchool;
+                    $user_school->user_id = $model->id;
+                    $user_school->school_id = $school_id;
+                    $user_school->save();
                 }
                 Yii::$app->session->setFlash('success', 'User saved successfully');
             } else {
@@ -184,11 +184,11 @@ class UserController extends Controller
             }
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
-            $outlet = Outlet::findOne($outlet_id);
+            $school = School::findOne($school_id);
             return $this->render('create', [
                 'model' => $model,
-                'outlet_id' => $outlet_id,
-                'outlet' => $outlet,
+                'school_id' => $school_id,
+                'school' => $school,
             ]);
         }
     }
@@ -199,7 +199,7 @@ class UserController extends Controller
      * @param integer $id
      * @return mixed
      */
-    public function actionUpdate($outlet_id = null, $id = null)
+    public function actionUpdate($school_id = null, $id = null)
     {
         //$id = Yii::$app->user->identity->id;
         $model = $this->findModel($id);
@@ -245,7 +245,7 @@ class UserController extends Controller
         } else {
             return $this->render('update', [
                 'model' => $model,
-                'outlet_id' => $outlet_id,
+                'school_id' => $school_id,
             ]);
         }
     }

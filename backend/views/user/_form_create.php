@@ -21,7 +21,7 @@ $baseUrl = Yii::$app->request->baseUrl;
                 <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
                 <?php 
-                    if(!$outlet_id) {
+                    if(!$school_id) {
                         echo $form->field($model, 'role_id')->dropDownList(Role::getList());
                     }
                 ?>
