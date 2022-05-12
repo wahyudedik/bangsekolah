@@ -8,6 +8,7 @@ use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\web\UploadedFile;
 
 /**
  * SiswaController implements the CRUD actions for Student model.
@@ -82,15 +83,55 @@ class SiswaController extends Controller
         if ($model->load(Yii::$app->request->post())) {
             $model->school_id = Yii::$app->session->get('school_id');
             $model->status = 'ACTIVE';
-            if ($model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
-            } else {
-                foreach ($model->getErrors() as $error) {
-                    $message = $error[0];
+
+            $import = UploadedFile::getInstance($model, 'file');
+            if(isset($import)){
+                $exploded_name = explode('.', $import->name);
+                $extension = end($exploded_name);
+                $model->file = Yii::$app->security->generateRandomString() . ".{$extension}";
+                $path = Yii::getAlias('@uploads/import/') . $model->file;
+                $import->saveAs($path);
+
+                $totalItem = 0;
+                $transaction = Yii::$app->db->beginTransaction();
+
+                $result = $this->populateDataExcel($path, 0);
+                if ($result['status'] == 'ERROR') {
+                    Yii::$app->session->setFlash('danger', $result['data']);
+                } else {
+                    $data = $result['data'];
+
+                    foreach ($data as $item) {
+                        $model->nis = $item['NIS'];
+                        $model->nisn = $item['NISN'];
+                        $model->name = $item['NAMA LENGKAP'];
+                        $model->class = $item['KELAS'];
+                        $model->year = $item['TAHUN AJARAN'];
+
+                        if (!$model->save()) {
+                            foreach ($model->errors as $error) {
+                                Yii::$app->session->setFlash('danger', $error[0]);
+                            }
+                            return $this->render('create', [
+                                'id' => $model->id
+                            ]);
+                        }
+                    }
                 }
-                Yii::$app->session->setFlash('danger', $message);
-                return $this->redirect(['create', 'id' => $model->id]);
+                $transaction->commit();
+                return $this->redirect(['index']);
+            } else {
+                if ($model->save()) {
+                    return $this->redirect(['view', 'id' => $model->id]);
+                } else {
+                    foreach ($model->getErrors() as $error) {
+                        $message = $error[0];
+                    }
+                    Yii::$app->session->setFlash('danger', $message);
+                    return $this->redirect(['create', 'id' => $model->id]);
+                }
             }
+            
             
         }
 

@@ -24,6 +24,7 @@ use Yii;
  */
 class Student extends \yii\db\ActiveRecord
 {
+    public $file;
     /**
      * {@inheritdoc}
      */
@@ -53,7 +54,7 @@ class Student extends \yii\db\ActiveRecord
     {
         return [
             [['school_id'], 'integer'],
-            [['created_at', 'updated_at'], 'safe'],
+            [['created_at', 'updated_at', 'file'], 'safe'],
             [['nis', 'nisn', 'name', 'class', 'year', 'status'], 'string', 'max' => 255],
             [['school_id'], 'exist', 'skipOnError' => true, 'targetClass' => School::className(), 'targetAttribute' => ['school_id' => 'id']],
         ];
