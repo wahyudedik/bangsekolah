@@ -1,7 +1,7 @@
 <?php
 use common\models\Order;
 
-$this->title = 'Last 30 Days Summary';
+$this->title = 'Laporan Hari Ini';
 
 $user = Yii::$app->user->identity;
 $baseUrl = Yii::$app->request->baseUrl;
@@ -11,49 +11,49 @@ $baseUrl = Yii::$app->request->baseUrl;
     <div class="col-lg-3 col-6">
         <div class="small-box bg-info">
             <div class="inner">
-                <h3>1</h3>
-                <p>New Orders</p>
+                <h3>13</h3>
+                <p>Pembayaran</p>
             </div>
             <div class="icon">
                 <i class="ion ion-bag"></i>
             </div>
-            <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+            <a href="#" class="small-box-footer">Lihat detail <i class="fas fa-arrow-circle-right"></i></a>
         </div>
     </div>
     <div class="col-lg-3 col-6">
         <div class="small-box bg-success">
             <div class="inner">
-                <h3>2<sup style="font-size: 20px;"></sup></h3>
-                <p>Success Orders</p>
+                <h3>2.550.000<sup style="font-size: 20px;"></sup></h3>
+                <p>Total Pembayaran</p>
             </div>
             <div class="icon">
                 <i class="ion ion-stats-bars"></i>
             </div>
-            <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+            <a href="#" class="small-box-footer">Lihat detail <i class="fas fa-arrow-circle-right"></i></a>
         </div>
     </div>
     <div class="col-lg-3 col-6">
         <div class="small-box bg-warning">
             <div class="inner">
-                <h3>2</h3>
-                <p>Finish Production</p>
+                <h3>5</h3>
+                <p>Akan Jatuh Tempo</p>
             </div>
             <div class="icon">
                 <i class="ion ion-person-add"></i>
             </div>
-            <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+            <a href="#" class="small-box-footer">Lihat detail <i class="fas fa-arrow-circle-right"></i></a>
         </div>
     </div>
     <div class="col-lg-3 col-6">
-        <div class="small-box bg-primary">
+        <div class="small-box bg-danger">
             <div class="inner">
-                <h3>4</h3>
-                <p>Total Order</p>
+                <h3>12</h3>
+                <p>Tunggakan</p>
             </div>
             <div class="icon">
                 <i class="ion ion-pie-graph"></i>
             </div>
-            <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+            <a href="#" class="small-box-footer">Lihat detail <i class="fas fa-arrow-circle-right"></i></a>
         </div>
     </div>
 </div>
