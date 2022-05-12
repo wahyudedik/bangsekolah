@@ -7,7 +7,7 @@ use yii\widgets\DetailView;
 /* @var $model common\models\SchoolMonth */
 
 $this->title = $model->name;
-$this->params['breadcrumbs'][] = ['label' => 'School Months', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Bulan Sekolah', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
