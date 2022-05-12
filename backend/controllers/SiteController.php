@@ -8,22 +8,10 @@ use yii\filters\AccessControl;
 use common\helpers\Strings;
 
 use common\models\User;
+use common\models\UserSchool;
 use common\models\LoginForm;
-use common\models\Production;
-use common\models\Product;
 use common\models\Setting;
 
-use common\models\OrderDetailItem;
-use common\models\OrderDetail;
-use common\models\Order;
-use common\models\PurchaseOrderDetailItem;
-use common\models\PurchaseOrderDetail;
-use common\models\PurchaseOrder;
-use common\models\StockOpnameDetailItem;
-use common\models\StockOpnameDeletedItem;
-use common\models\StockOpnameDetail;
-use common\models\StockOpname;
-use common\models\Item;
 
 /**
  * Site controller
@@ -100,31 +88,7 @@ class SiteController extends Controller
         // $end = new DateTime($enddate);
         // $begin = new DateTime($startdate);
 
-        $recordNewOrder = Order::find()
-            ->where(['status' => 'ORDER'])
-            ->andWhere(['BETWEEN', 'DATE(ordered_at)', $startdate, $enddate])
-            ->all();
-        $recordSuccessOrder = Order::find()
-            ->where(['in', 'status', ['FINALIZE', 'PAID']])
-            ->andWhere(['BETWEEN', 'DATE(finalized_at)', $startdate, $enddate])
-            ->all();
-        $recordProduction = Production::find()
-            ->where(['status' => 'FINISHED'])
-            ->andWhere(['BETWEEN', 'DATE(created_at)', $startdate, $enddate])
-            ->all();
-        $recordTotalOrder = Order::find()
-            ->andWhere(['BETWEEN', 'DATE(ordered_at)', $startdate, $enddate])
-            ->all();
-        $total = 0;
-        foreach ($recordTotalOrder as $totalOrder) {
-            $total += $totalOrder->total;
-        }
-
         return $this->render('index', [
-            'new_order' => count($recordNewOrder).'',
-            'success_order' => count($recordSuccessOrder).'',
-            'production' => count($recordProduction).'',
-            'total_order' => Strings::getRupiah($total),
             'startdate' => date('d M Y', strtotime($startdate)),
             'enddate' => date('d M Y', strtotime($enddate)),
         ]);
@@ -140,6 +104,11 @@ class SiteController extends Controller
         // return Yii::$app->security->generatePasswordHash('admin');
         $model = new LoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
+            $user_school = UserSchool::find()->where(['user_id' => Yii::$app->user->identity->id])->one();
+            if ($user_school) {
+                Yii::$app->session->set('school_id', $user_school->school_id);
+                Yii::$app->session->set('school_name', $user_school->school->name);
+            }
             return $this->goBack();
         } else {
             // $model->login();

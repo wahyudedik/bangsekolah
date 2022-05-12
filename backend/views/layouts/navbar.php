@@ -3,10 +3,11 @@ use yii\helpers\Url;
 use yii\helpers\Html;
 use common\helpers\Strings;
 use common\helpers\Visitor;
-use common\models\UserCareer;
+use common\models\UserSchool;
 
 $user = Yii::$app->user->identity;
 $baseUrl = Yii::$app->request->baseUrl;
+$user_school = UserSchool::find()->where(['user_id' => $user->id])->one();
 
 ?>
 <nav class="main-header navbar navbar-expand navbar-white navbar-light">
@@ -21,7 +22,11 @@ $baseUrl = Yii::$app->request->baseUrl;
 	<ul class="navbar-nav ml-auto">
 		<li class="nav-item">
 			<a class="nav-link" href="#">
-				<strong>Browser</strong>: <?= Visitor::getBrowser() ?>, <strong>Time</strong>: <span id="clock"><?= date('d/m/Y H:i:s') ?></span>
+				<?php if ($user_school) { ?>
+					<strong><?= Yii::$app->session->get('school_name') ?></strong> ( <?= $user->username ?> )
+				<?php } else { ?>
+					<strong><?= $user->username ?></strong>
+				<?php } ?>
 			</a>
 		</li>
 		<li class="nav-item">
