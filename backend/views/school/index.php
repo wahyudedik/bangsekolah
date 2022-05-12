@@ -9,7 +9,7 @@ use yii\widgets\ActiveForm;
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Schools';
+$this->title = 'Sekolah';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="card">
@@ -27,7 +27,7 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
             <div class="col-lg-6">
                 <div class="card-tools float-right">
-                    <?= Html::a('<i class="fas fa-plus fa-lg"></i> Create School', ['create'], ['class' => 'btn btn-success']) ?>
+                    <?= Html::a('<i class="fas fa-plus fa-lg"></i> Buat Sekolah Baru', ['create'], ['class' => 'btn btn-success']) ?>
                     <?= Html::a('<i class="fas fa-sync-alt fa-lg"></i>', ['index'], ['class' => 'btn btn-primary']) ?> 
                     <?= Html::a('<i class="fas fa-download fa-lg"></i> Download', ['export', 'q' => $q], ['class' => 'btn btn-primary']) ?>
                 </div>
@@ -47,7 +47,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                     //'id',
                     'name',
-                    'status',
+                    // 'status',
                     // 'created_at',
                     // 'updated_at',
 

@@ -7,7 +7,7 @@ use yii\widgets\DetailView;
 /* @var $model common\models\School */
 
 $this->title = $model->name;
-$this->params['breadcrumbs'][] = ['label' => 'Schools', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Sekolah', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 
@@ -44,7 +44,7 @@ $baseUrl = Yii::$app->request->baseUrl;
                         <div class="profile-since">
                             <br>User admin: <?= $user_school->user->name ?>
                             <br>Username: <?= $user_school->user->username ?>
-                            <br>Registered at: <?= date('M', strtotime($user_school->created_at)) . ' ' . date('Y', strtotime($user_school->created_at)) ?>
+                            <br>Terdaftar pada: <?= date('M', strtotime($user_school->created_at)) . ' ' . date('Y', strtotime($user_school->created_at)) ?>
                             <br>Email: <?= $user_school->user->email ?>
                         </div>
                         <br>
@@ -72,7 +72,7 @@ $baseUrl = Yii::$app->request->baseUrl;
                 'attributes' => [
                     'id',
                     'name',
-                    'status',
+                    // 'status',
                     'created_at',
                     'updated_at',
                 ],

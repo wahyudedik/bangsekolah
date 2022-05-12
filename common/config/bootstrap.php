@@ -9,16 +9,13 @@ Yii::setAlias('@backurl', 'http://localhost/food-factory/backend/web');
 
 // Yii::setAlias('@fronturl', 'http://156.67.218.246/');
 
-if ($_SERVER['SERVER_NAME'] == 'pt-pus.test') {
-	Yii::setAlias('@fronturl', 'http://pt-pus.test');
-	Yii::setAlias('@backurl', 'http://pt-pus.test/backend/web');
-} else if ($_SERVER['SERVER_NAME'] == '192.168.0.13') {
-	Yii::setAlias('@fronturl', 'http://192.168.0.13/pt-pus');
-	Yii::setAlias('@backurl', 'http://192.168.0.13/pt-pus/backend/web');
-}  else if ($_SERVER['SERVER_NAME'] == '192.168.254.147') {
-	Yii::setAlias('@fronturl', 'http://192.168.254.147/pt-pus');
-	Yii::setAlias('@backurl', 'http://192.168.254.147/pt-pus/backend/web');
+if ($_SERVER['SERVER_NAME'] == 'banksekolah.test') {
+	Yii::setAlias('@fronturl', 'http://banksekolah.test');
+	Yii::setAlias('@backurl', 'http://banksekolah.test/backend/web');
+} else if ($_SERVER['SERVER_NAME'] == '192.168.0.4') {
+	Yii::setAlias('@fronturl', 'http://192.168.0.4/banksekolah');
+	Yii::setAlias('@backurl', 'http://192.168.0.4/banksekolah/backend/web');
 } else {
-	Yii::setAlias('@fronturl', 'https://pt-pus.com');
-	Yii::setAlias('@backurl', 'https://pt-pus.com/backend/web');
+	Yii::setAlias('@fronturl', 'https://banksekolah.com');
+	Yii::setAlias('@backurl', 'https://banksekolah.com/backend/web');
 }

@@ -10,7 +10,7 @@ $baseUrl = Yii::$app->request->baseUrl;
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
     <a href="" class="brand-link">
-        <img src="<?= $baseUrl ?>/images/logo.png" alt="PT. PUS" class="brand-image img-circle elevation-3" style="opacity: 0.8;" />
+        <img src="<?= $baseUrl ?>/images/banksekolah-logo.png" alt="BANKSEKOLAH" class="brand-image img-circle elevation-3" style="opacity: 0.8;" />
         <span class="brand-text font-weight-light">BANK SEKOLAH</span>
     </a>
 

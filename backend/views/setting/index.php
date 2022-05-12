@@ -5,7 +5,7 @@ use yii\grid\GridView;
 use yii\widgets\LinkPager;
 use yii\widgets\ActiveForm;
 
-$this->title = 'Setting';
+$this->title = 'Pengaturan';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 

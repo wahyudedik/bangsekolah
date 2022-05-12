@@ -1,7 +1,7 @@
 <?php
 $baseUrl = Yii::$app->request->baseUrl;
 ?>
-<link rel="shortcut icon" href="<?= $baseUrl ?>/images/new-favicon.ico" />
+<link rel="shortcut icon" href="<?= $baseUrl ?>/images/banksekolah-favicon.ico" />
 <style type="text/css">
 	@font-face {
 		font-family:'SF Pro Text';

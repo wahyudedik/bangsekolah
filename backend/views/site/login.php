@@ -5,7 +5,7 @@ use common\models\Setting;
 
 $baseUrl = Yii::$app->request->baseUrl;
 $settingPerusahaan = Setting::find()->where(['key' => 'nama-perusahaan'])->one();
-$perusahaan = 'PT. PUS';
+$perusahaan = 'BANKSEKOLAH';
 if ($settingPerusahaan) $perusahaan = $settingPerusahaan->nilai;
 ?>
 
@@ -20,7 +20,7 @@ if ($settingPerusahaan) $perusahaan = $settingPerusahaan->nilai;
     <link rel="icon" href="../../../../favicon.ico">
     <?= Html::csrfMetaTags() ?>
 
-    <title>PT. PUS</title>
+    <title>BANKSEKOLAH</title>
 
     <!-- Bootstrap core CSS -->
     <?= $this->render('@app/views/layouts/css') ?>
@@ -30,11 +30,11 @@ if ($settingPerusahaan) $perusahaan = $settingPerusahaan->nilai;
     <div class="login-box">
     <div class="card card-outline card-primary">
         <div class="card-header text-center">
-            <!-- <a href="#" class="h1">PT. PUS</a> -->
-            <img src="<?= $baseUrl ?>/images/ptpus-background.jpg" class="img img-responsive">
+            <!-- <a href="#" class="h1">BANKSEKOLAH</a> -->
+            <img src="<?= $baseUrl ?>/images/banksekolah-background.jpg" class="img img-responsive">
         </div>
         <div class="card-body">
-            <h5 class="login-box-msg" style="padding-bottom: 0px;">PT. PUS</h5>
+            <h5 class="login-box-msg" style="padding-bottom: 0px;">BANKSEKOLAH</h5>
             <p class="login-box-msg">Sign in to start your session</p>
             <?php $form = ActiveForm::begin(['id' => 'login-form', 'options' => ['class' => 'form-signin'], 
                 'fieldConfig' => [
