@@ -59,7 +59,7 @@ class Year extends \yii\db\ActiveRecord
     public static function getList()
     {
         return \yii\helpers\ArrayHelper::map(
-            Year::find()->where(['status' => 'ACTIVE'])->asArray()->all(),
+            Year::find()->asArray()->all(),
             'id', 'name'
         );
     }

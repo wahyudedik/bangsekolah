@@ -30,6 +30,7 @@ use Yii;
  */
 class Invoice extends \yii\db\ActiveRecord
 {
+    public $jenis;
     /**
      * {@inheritdoc}
      */
@@ -60,7 +61,7 @@ class Invoice extends \yii\db\ActiveRecord
         return [
             [['school_id', 'student_id', 'school_payment_id', 'amount', 'paid_amount', 'user_id'], 'integer'],
             [['description'], 'string'],
-            [['due_date', 'created_at', 'updated_at'], 'safe'],
+            [['due_date', 'created_at', 'updated_at', 'jenis'], 'safe'],
             [['number', 'year', 'month', 'status'], 'string', 'max' => 255],
             [['student_id'], 'exist', 'skipOnError' => true, 'targetClass' => Student::className(), 'targetAttribute' => ['student_id' => 'id']],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
