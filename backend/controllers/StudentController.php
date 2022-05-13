@@ -11,9 +11,9 @@ use yii\filters\VerbFilter;
 use yii\web\UploadedFile;
 
 /**
- * SiswaController implements the CRUD actions for Student model.
+ * StudentController implements the CRUD actions for Student model.
  */
-class SiswaController extends Controller
+class StudentController extends Controller
 {
     /**
      * {@inheritdoc}
@@ -36,7 +36,7 @@ class SiswaController extends Controller
      */
     public function actionIndex($q = null)
     {
-        \common\helpers\Sidebar::setActiveMenu('siswa', 'index');
+        \common\helpers\Sidebar::setActiveMenu('student', 'index');
 
         $query = Student::find()
             ->where(['school_id' => Yii::$app->session->get('school_id'), 'status' => 'ACTIVE']);
@@ -84,6 +84,28 @@ class SiswaController extends Controller
             $model->school_id = Yii::$app->session->get('school_id');
             $model->status = 'ACTIVE';
 
+            if ($model->save()) {
+                return $this->redirect(['view', 'id' => $model->id]);
+            } else {
+                foreach ($model->getErrors() as $error) {
+                    $message = $error[0];
+                }
+                Yii::$app->session->setFlash('danger', $message);
+                return $this->redirect(['create', 'id' => $model->id]);
+            }
+        }
+
+        return $this->render('create', [
+            'model' => $model,
+        ]);
+    }
+
+    public function actionImport()
+    {
+        $model = new Student();
+
+        if ($model->load(Yii::$app->request->post())) {
+
             $import = UploadedFile::getInstance($model, 'file');
             if(isset($import)){
                 $exploded_name = explode('.', $import->name);
@@ -102,11 +124,14 @@ class SiswaController extends Controller
                     $data = $result['data'];
 
                     foreach ($data as $item) {
-                        $model->nis = $item['NIS'];
-                        $model->nisn = $item['NISN'];
-                        $model->name = $item['NAMA LENGKAP'];
-                        $model->class = $item['KELAS'];
-                        $model->year = $item['TAHUN AJARAN'];
+                        $model = new Student();
+                        $model->status = 'ACTIVE';
+                        $model->school_id = Yii::$app->session->get('school_id');
+                        $model->nis = $item['nis'];
+                        $model->nisn = $item['nisn'];
+                        $model->name = $item['name'];
+                        $model->class = $item['class'];
+                        $model->year = $item['year'];
 
                         if (!$model->save()) {
                             foreach ($model->errors as $error) {
@@ -116,26 +141,16 @@ class SiswaController extends Controller
                                 'id' => $model->id
                             ]);
                         }
+                        $totalItem++;
                     }
                 }
                 $transaction->commit();
+                Yii::$app->session->setFlash('success', $totalItem.' siswa berhasil diimport');
                 return $this->redirect(['index']);
-            } else {
-                if ($model->save()) {
-                    return $this->redirect(['view', 'id' => $model->id]);
-                } else {
-                    foreach ($model->getErrors() as $error) {
-                        $message = $error[0];
-                    }
-                    Yii::$app->session->setFlash('danger', $message);
-                    return $this->redirect(['create', 'id' => $model->id]);
-                }
             }
-            
-            
         }
 
-        return $this->render('create', [
+        return $this->render('import', [
             'model' => $model,
         ]);
     }
@@ -192,5 +207,40 @@ class SiswaController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    private function populateDataExcel($fileName, $sheet = 0)
+    {
+        $phpexcel = \PHPExcel_IOFactory::load($fileName);
+        $worksheet = $phpexcel->getSheet($sheet);
+        $dataExcel = $worksheet->toArray();
+        $error = null;
+        $itemArray = [];
+        $row_number = 0;
+        if ($sheet == 0) {
+            foreach ($dataExcel as $rowExcelData) {
+                if ($row_number++ > 0 && $rowExcelData[0] !== null) {
+                    $itemArray[] = [
+                        'nis' => trim((string)$rowExcelData[0]),
+                        'nisn' => trim((string)$rowExcelData[1]),
+                        'name' => trim((string)$rowExcelData[2]),
+                        'class' => trim((string)$rowExcelData[3]),
+                        'year' => trim((string)$rowExcelData[4]),
+                    ];
+                }
+            }
+        }
+        @unlink($fileName);
+        if ($error != NULL) {
+            return [
+                'status' => 'ERROR',
+                'data' => $error
+            ];
+        } else {
+            return [
+                'status' => 'OK',
+                'data' => $itemArray
+            ];
+        }
     }
 }
