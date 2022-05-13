@@ -1,6 +1,7 @@
 <?php
 
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
@@ -13,11 +14,23 @@ use yii\widgets\ActiveForm;
         <div class="row">
             <div class="col-lg-6">
                 <div class="card">
-                    <!-- <div class="card-header">
-                        <h3>Form Siswa</h3>
-                        <p>Masukkan data siswa</p>
-                    </div> -->
                     <div class="card-body">
+                        <?= $form->field($model, 'year')->dropDownList(\common\models\Year::getList())->label('Tahun Ajaran') ?>
+
+                        <?= $form->field($model, 'school_payment_id')->dropDownList(\common\models\SchoolPayment::getList(), [
+                                'prompt' => '-- Select pembayaran --',
+                                'onchange' => '
+                                    $.get( "'.Url::toRoute('/invoice/list').'", { param: $(this).val() } )
+                                        .done(function( data ) {
+                                            $( "#'.Html::getInputId($model, 'jenis').'" ).val( data );
+                                        }
+                                    );
+                                    '
+                            ])->label('Nama Pembayaran');
+                        ?>
+
+
+                        <?= $form->field($model, 'jenis')->textInput(['disabled' => true]) ?>
 
                         <?= $form->field($model, 'student_id')->textInput() ?>
 
