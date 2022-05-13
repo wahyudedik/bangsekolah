@@ -4,6 +4,8 @@ namespace backend\controllers;
 
 use Yii;
 use common\models\Invoice;
+use common\models\SchoolPayment;
+use common\models\PaymentType;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -137,4 +139,12 @@ class InvoiceController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
+
+    public function actionList($param)
+    {
+        $school_payment = SchoolPayment::findOne($param);
+        echo $school_payment->paymentType->name;
+        //echo "<option value='" .$school_payment->paymentType->id. "'>".$school_payment->paymentType->name."</option>";
+    }
+
 }
