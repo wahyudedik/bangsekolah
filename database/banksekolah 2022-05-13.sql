@@ -62,13 +62,14 @@ INSERT INTO `menu` (`id`, `name`, `description`, `controller`, `actions`, `defau
 (8,	'General',	'',	'setting',	'[\"index\",\"create\",\"view\",\"update\",\"delete\"]',	'index',	'nav-icon fas fa-sliders-h',	6,	2,	1,	'2020-06-19 21:46:26',	'2020-06-19 21:46:26'),
 (9,	'Daftar Sekolah',	NULL,	'school',	'[\"index\",\"create\",\"view\",\"update\",\"delete\"]',	'index',	'nav-icon fas fa-school',	NULL,	1,	1,	'2021-10-16 09:59:30',	'2022-05-12 08:56:07'),
 (15,	'Daftar User',	NULL,	'user',	'[\"index\",\"create\",\"view\",\"update\",\"delete\",\"change-password\"]',	'index',	'nav-icon fas fa-users',	4,	2,	1,	'2022-02-24 09:50:59',	'2022-05-12 08:56:44'),
-(19,	'Daftar Pembayaran',	NULL,	'pembayaran',	'[\"index\",\"create\",\"view\",\"update\",\"delete\"]',	'index',	'nav-icon fas fa-receipt',	NULL,	1,	1,	'2022-05-12 09:02:48',	'2022-05-12 09:06:12'),
-(20,	'Daftar Siswa',	NULL,	'siswa',	'[\"index\",\"create\",\"view\",\"update\",\"delete\"]',	'index',	'nav-icon fas fa-users',	NULL,	1,	1,	'2022-05-12 09:07:11',	'2022-05-12 09:07:11'),
-(21,	'Tagihan',	NULL,	'tagihan',	'[\"index\",\"create\",\"view\",\"update\",\"delete\"]',	'index',	'nav-icon fas fa-file-invoice',	NULL,	1,	1,	'2022-05-12 09:14:32',	'2022-05-12 09:14:32'),
-(22,	'Transaksi',	NULL,	'transaksi',	'[\"index\",\"create\",\"view\",\"update\",\"delete\"]',	'index',	'nav-icon fas fa-hand-holding-usd',	NULL,	1,	1,	'2022-05-12 09:19:18',	'2022-05-12 09:19:18'),
-(23,	'Laporan',	NULL,	'laporan',	'[\"index\",\"create\",\"view\",\"update\",\"delete\"]',	'index',	'nav-icon fas fa-chart-line',	NULL,	1,	1,	'2022-05-12 09:21:33',	'2022-05-12 09:24:00'),
-(24,	'Daftar Bulan',	NULL,	'bulan',	'[\"index\",\"create\",\"view\",\"update\",\"delete\"]',	'index',	'nav-icon fas fa-tags',	6,	2,	1,	'2022-05-12 09:25:21',	'2022-05-12 09:26:40'),
-(25,	'Log Out',	NULL,	'site',	'[\"logout\"]',	'logout',	'nav-icon fas fa-sign-out-alt',	NULL,	1,	1,	'2022-05-12 09:28:04',	'2022-05-12 09:28:04');
+(19,	'Daftar Pembayaran',	NULL,	'school-payment',	'[\"index\",\"create\",\"view\",\"update\",\"delete\"]',	'index',	'nav-icon fas fa-receipt',	NULL,	1,	1,	'2022-05-12 09:02:48',	'2022-05-12 09:06:12'),
+(20,	'Daftar Siswa',	NULL,	'student',	'[\"index\",\"create\",\"view\",\"update\",\"delete\"]',	'index',	'nav-icon fas fa-users',	NULL,	1,	1,	'2022-05-12 09:07:11',	'2022-05-12 09:07:11'),
+(21,	'Tagihan',	NULL,	'invoice',	'[\"index\",\"create\",\"view\",\"update\",\"delete\"]',	'index',	'nav-icon fas fa-file-invoice',	NULL,	1,	1,	'2022-05-12 09:14:32',	'2022-05-12 09:14:32'),
+(22,	'Transaksi',	NULL,	'transaction',	'[\"index\",\"create\",\"view\",\"update\",\"delete\"]',	'index',	'nav-icon fas fa-hand-holding-usd',	NULL,	1,	1,	'2022-05-12 09:19:18',	'2022-05-12 09:19:18'),
+(23,	'Laporan',	NULL,	'report',	'[\"index\",\"create\",\"view\",\"update\",\"delete\"]',	'index',	'nav-icon fas fa-chart-line',	NULL,	1,	1,	'2022-05-12 09:21:33',	'2022-05-12 09:24:00'),
+(24,	'Daftar Bulan',	NULL,	'school-month',	'[\"index\",\"create\",\"view\",\"update\",\"delete\"]',	'index',	'nav-icon fas fa-tags',	6,	2,	1,	'2022-05-12 09:25:21',	'2022-05-12 09:26:40'),
+(25,	'Log Out',	NULL,	'site',	'[\"logout\"]',	'logout',	'nav-icon fas fa-sign-out-alt',	NULL,	1,	1,	'2022-05-12 09:28:04',	'2022-05-12 09:28:04'),
+(26,	'Daftar Kelas',	NULL,	'school-class',	'[\"index\",\"create\",\"view\",\"update\",\"delete\"]',	'index',	'nav-icon fas fa-tags',	6,	2,	1,	'2022-05-12 09:25:21',	'2022-05-12 09:26:40');
 
 DROP TABLE IF EXISTS `payment_type`;
 CREATE TABLE `payment_type` (
@@ -132,7 +133,8 @@ INSERT INTO `role_menu` (`id`, `role_id`, `menu_id`, `parameter`, `label`, `posi
 (48,	2,	23,	'',	'',	6,	'[\"index\",\"create\",\"view\",\"update\",\"delete\"]',	'2022-05-12 09:28:54',	'2022-05-12 09:28:54'),
 (49,	2,	6,	'',	'',	7,	'\"\"',	'2022-05-12 09:29:05',	'2022-05-12 09:29:05'),
 (50,	2,	24,	'',	'',	8,	'[\"index\",\"create\",\"view\",\"update\",\"delete\"]',	'2022-05-12 09:29:24',	'2022-05-12 09:29:24'),
-(51,	2,	25,	'',	'',	9,	'[\"logout\"]',	'2022-05-12 09:29:34',	'2022-05-12 09:29:34');
+(51,	2,	25,	'',	'',	9,	'[\"logout\"]',	'2022-05-12 09:29:34',	'2022-05-12 09:29:34'),
+(52,	2,	26,	'',	'',	9,	'[\"index\",\"create\",\"view\",\"update\",\"delete\"]',	'2022-05-12 09:29:24',	'2022-05-12 09:29:24');
 
 DROP TABLE IF EXISTS `school`;
 CREATE TABLE `school` (
@@ -162,6 +164,14 @@ CREATE TABLE `school_class` (
   CONSTRAINT `school_class_ibfk_1` FOREIGN KEY (`school_id`) REFERENCES `school` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+INSERT INTO `school_class` (`id`, `school_id`, `name`, `status`, `created_at`, `updated_at`) VALUES
+(1,	1,	'I',	'ACTIVE',	'2022-05-13 07:45:01',	'2022-05-13 07:45:01'),
+(2,	1,	'II',	'ACTIVE',	'2022-05-13 07:45:04',	'2022-05-13 07:45:04'),
+(3,	1,	'III',	'ACTIVE',	'2022-05-13 07:45:25',	'2022-05-13 07:45:25'),
+(4,	1,	'IV',	'ACTIVE',	'2022-05-13 07:45:29',	'2022-05-13 07:45:29'),
+(5,	1,	'V',	'ACTIVE',	'2022-05-13 07:45:44',	'2022-05-13 07:45:44'),
+(6,	1,	'VI',	'ACTIVE',	'2022-05-13 07:45:47',	'2022-05-13 07:45:47'),
+(7,	1,	'VII',	'ACTIVE',	'2022-05-13 07:45:52',	'2022-05-13 07:46:43');
 
 DROP TABLE IF EXISTS `school_month`;
 CREATE TABLE `school_month` (
@@ -177,8 +187,18 @@ CREATE TABLE `school_month` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 INSERT INTO `school_month` (`id`, `school_id`, `name`, `status`, `created_at`, `updated_at`) VALUES
-(1,	1,	'Juli',	'ACTIVE',	'2022-05-12 09:58:23',	'2022-05-12 10:37:45'),
-(2,	1,	'Agustus',	'ACTIVE',	'2022-05-12 10:39:12',	'2022-05-12 10:39:12');
+(3,	1,	'Juni',	'ACTIVE',	'2022-05-13 07:49:49',	'2022-05-13 07:49:49'),
+(4,	1,	'Juli',	'ACTIVE',	'2022-05-13 07:49:53',	'2022-05-13 07:49:53'),
+(5,	1,	'Agustus',	'ACTIVE',	'2022-05-13 07:49:57',	'2022-05-13 07:49:57'),
+(6,	1,	'September',	'ACTIVE',	'2022-05-13 07:50:05',	'2022-05-13 07:50:05'),
+(7,	1,	'Oktober',	'ACTIVE',	'2022-05-13 07:50:10',	'2022-05-13 07:50:10'),
+(8,	1,	'November',	'ACTIVE',	'2022-05-13 07:50:14',	'2022-05-13 07:50:14'),
+(9,	1,	'Desember',	'ACTIVE',	'2022-05-13 07:50:17',	'2022-05-13 07:50:17'),
+(10,	1,	'Januari',	'ACTIVE',	'2022-05-13 07:50:21',	'2022-05-13 07:50:21'),
+(11,	1,	'Februari',	'ACTIVE',	'2022-05-13 07:50:25',	'2022-05-13 07:50:25'),
+(12,	1,	'Maret',	'ACTIVE',	'2022-05-13 07:50:28',	'2022-05-13 07:50:28'),
+(13,	1,	'April',	'ACTIVE',	'2022-05-13 07:50:31',	'2022-05-13 07:50:31'),
+(14,	1,	'Mei',	'ACTIVE',	'2022-05-13 07:50:33',	'2022-05-13 07:50:33');
 
 DROP TABLE IF EXISTS `school_payment`;
 CREATE TABLE `school_payment` (
@@ -240,7 +260,8 @@ CREATE TABLE `student` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 INSERT INTO `student` (`id`, `school_id`, `nis`, `nisn`, `name`, `class`, `year`, `status`, `created_at`, `updated_at`) VALUES
-(1,	1,	'10001',	'10001',	'Cahyadi Nur Rahman',	'1',	'2021/2022',	'ACTIVE',	'2022-05-12 11:17:41',	'2022-05-12 11:17:41');
+(1,	1,	'10001',	'10001',	'Cahyadi Nur Rahman',	'1',	'2021/2022',	'ACTIVE',	'2022-05-12 11:17:41',	'2022-05-12 11:17:41'),
+(2,	1,	'123',	'123456789',	'Arief',	'VII',	'2021/2022',	'ACTIVE',	'2022-05-13 07:14:25',	'2022-05-13 07:14:25');
 
 DROP TABLE IF EXISTS `transaction`;
 CREATE TABLE `transaction` (
@@ -319,4 +340,4 @@ INSERT INTO `year` (`id`, `name`) VALUES
 (4,	'2023/2024'),
 (5,	'2024/2025');
 
--- 2022-05-12 23:42:41
+-- 2022-05-13 01:10:21
