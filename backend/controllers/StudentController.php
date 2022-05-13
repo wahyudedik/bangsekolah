@@ -4,6 +4,9 @@ namespace backend\controllers;
 
 use Yii;
 use common\models\Student;
+use common\models\SchoolMonth;
+use common\models\SchoolClass;
+use common\models\Year;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -234,6 +237,12 @@ class StudentController extends Controller
         if ($sheet == 0) {
             foreach ($dataExcel as $rowExcelData) {
                 if ($row_number++ > 0 && $rowExcelData[0] !== null) {
+                    // check nisn student
+                    $student = Student::find()->where(['school_id' => Yii::$app->session->get('school_id'),'nisn' => trim((string)$rowExcelData[1])])->one();
+                    if ($student) {
+                        $error = 'NISN siswa sudah ada '.$student->nisn;
+                        break;
+                    }
 
                     // validasi data
                     $class = trim((string)$rowExcelData[3]);
