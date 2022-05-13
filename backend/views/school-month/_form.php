@@ -9,6 +9,13 @@ use yii\widgets\ActiveForm;
             <div class="card-body">
                 <?php $form = ActiveForm::begin(); ?>
                 <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
+                <?= $form->field($model, 'month')->textInput(['maxlength' => true]) ?>
+
+                <div class="callout callout-info">
+                    <h5>Urutan Bulan</h5>
+                    <p>Merupakan urutan bulan dalam tahun dengan format MM.<br>Misal Juni (06), Juli (07), Agustus (08) dan sebagainya</p>
+                </div>
+
                 <div class="form-group">
                     <?php
                     if ($model->isNewRecord) {

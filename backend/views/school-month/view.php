@@ -26,7 +26,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     // 'id',
                     'name',
                     // ['attribute' => 'school.name', 'label' => 'Sekolah'],
-                    // 'status',
+                    'month',
                     ],
                 ]) ?>
             </div>

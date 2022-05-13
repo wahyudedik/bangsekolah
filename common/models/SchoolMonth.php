@@ -44,7 +44,7 @@ class SchoolMonth extends \yii\db\ActiveRecord
     {
         return [
             [['school_id'], 'integer'],
-            [['name', 'status'], 'string', 'max' => 255],
+            [['name', 'month', 'status'], 'string', 'max' => 255],
         ];
     }
 
@@ -55,7 +55,8 @@ class SchoolMonth extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'name' => 'Bulan',
+            'name' => 'Nama Bulan',
+            'month' => 'Urutan Bulan',
             'status' => 'Status',
         ];
     }
