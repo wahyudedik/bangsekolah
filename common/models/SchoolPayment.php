@@ -14,13 +14,7 @@ use Yii;
  * @property string $name
  * @property string $year
  * @property string $status ACTIVE, NONACTIVE
- * @property string $created_at
- * @property string $updated_at
  *
- * @property Invoice[] $invoices
- * @property School $school
- * @property PaymentType $paymentType
- * @property Transaction[] $transactions
  */
 class SchoolPayment extends \yii\db\ActiveRecord
 {
@@ -32,17 +26,28 @@ class SchoolPayment extends \yii\db\ActiveRecord
         return 'school_payment';
     }
 
+    public function behaviors()
+    {
+        return [
+            'timestamp' => [
+                 'class' => 'yii\behaviors\TimestampBehavior',
+                 'attributes' => [
+                     \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => ['created_at', 'updated_at'],
+                     \yii\db\ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_at'],
+                 ],
+                 'value' => new \yii\db\Expression('NOW()'),
+             ],
+        ];
+    }
+
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['school_id', 'payment_type_id'], 'integer'],
-            [['created_at', 'updated_at'], 'safe'],
-            [['number', 'name', 'year', 'status'], 'string', 'max' => 255],
-            [['school_id'], 'exist', 'skipOnError' => true, 'targetClass' => School::className(), 'targetAttribute' => ['school_id' => 'id']],
-            [['payment_type_id'], 'exist', 'skipOnError' => true, 'targetClass' => PaymentType::className(), 'targetAttribute' => ['payment_type_id' => 'id']],
+            [['school_id'], 'integer'],
+            [['name', 'status'], 'string', 'max' => 255],
         ];
     }
 
@@ -53,46 +58,24 @@ class SchoolPayment extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'school_id' => 'School ID',
-            'payment_type_id' => 'Payment Type ID',
-            'number' => 'Number',
-            'name' => 'Name',
-            'year' => 'Year',
+            'number' => 'Nomor Pembayaran',
+            'name' => 'Pembayaran',
+            'year' => 'Tahun Ajaran',
             'status' => 'Status',
-            'created_at' => 'Created At',
-            'updated_at' => 'Updated At',
         ];
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getInvoices()
-    {
-        return $this->hasMany(Invoice::className(), ['school_payment_id' => 'id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getSchool()
     {
-        return $this->hasOne(School::className(), ['id' => 'school_id']);
+        return $this->hasOne(School::className(), ['id' => 'school_id'])
+            ->andOnCondition(['status' => 'ACTIVE']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getPaymentType()
+    public static function getList()
     {
-        return $this->hasOne(PaymentType::className(), ['id' => 'payment_type_id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getTransactions()
-    {
-        return $this->hasMany(Transaction::className(), ['school_payment_id' => 'id']);
+        return \yii\helpers\ArrayHelper::map(
+            SchoolPayment::find()->where(['status' => 'ACTIVE'])->asArray()->all(),
+            'id', 'name'
+        );
     }
 }
