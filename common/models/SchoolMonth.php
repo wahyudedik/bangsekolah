@@ -9,12 +9,9 @@ use Yii;
  *
  * @property int $id
  * @property int $school_id
- * @property int $name
+ * @property string $name
  * @property string $status ACTIVE, NONACTIVE
- * @property string $created_at
- * @property string $updated_at
  *
- * @property School $school
  */
 class SchoolMonth extends \yii\db\ActiveRecord
 {
@@ -47,9 +44,7 @@ class SchoolMonth extends \yii\db\ActiveRecord
     {
         return [
             [['school_id'], 'integer'],
-            [['created_at', 'updated_at'], 'safe'],
-            [['status', 'name'], 'string', 'max' => 255],
-            [['school_id'], 'exist', 'skipOnError' => true, 'targetClass' => School::className(), 'targetAttribute' => ['school_id' => 'id']],
+            [['name', 'status'], 'string', 'max' => 255],
         ];
     }
 
@@ -60,19 +55,22 @@ class SchoolMonth extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'school_id' => 'School ID',
-            'name' => 'Name',
+            'name' => 'Bulan',
             'status' => 'Status',
-            'created_at' => 'Created At',
-            'updated_at' => 'Updated At',
         ];
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getSchool()
     {
-        return $this->hasOne(School::className(), ['id' => 'school_id']);
+        return $this->hasOne(School::className(), ['id' => 'school_id'])
+            ->andOnCondition(['status' => 'ACTIVE']);
+    }
+
+    public static function getList()
+    {
+        return \yii\helpers\ArrayHelper::map(
+            SchoolMonth::find()->where(['status' => 'ACTIVE'])->asArray()->all(),
+            'id', 'name'
+        );
     }
 }
