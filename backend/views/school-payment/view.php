@@ -11,7 +11,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="col-lg-6">
         <div class="card">
             <header class="card-header">
-                <?= Html::a('<i class="fas fa-chevron-left"></i> Kembali', ['school-month/index'], ['class' => 'btn btn-warning']) ?>
+                <?= Html::a('<i class="fas fa-chevron-left"></i> Kembali', ['school-payment/index'], ['class' => 'btn btn-warning']) ?>
                 <div class="filter-block float-right">
                     <?= Html::a('<i class="fas fa-pen"></i> Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
                 </div>
@@ -25,8 +25,10 @@ $this->params['breadcrumbs'][] = $this->title;
                     'attributes' => [
                     // 'id',
                     'name',
+                    'number',
+                    'year',
+                    ['attribute' => 'paymentType.name', 'label' => 'Jenis Pembayaran'],
                     // ['attribute' => 'school.name', 'label' => 'Sekolah'],
-                    // 'status',
                     ],
                 ]) ?>
             </div>
