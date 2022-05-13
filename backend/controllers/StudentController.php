@@ -211,6 +211,20 @@ class StudentController extends Controller
 
     private function populateDataExcel($fileName, $sheet = 0)
     {
+
+        // populate array for data validation
+        $arrClass = [];
+        $schoolClasses = SchoolClass::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'status' => 'ACTIVE'])->all();
+        foreach ($schoolClasses as $schoolClass) {
+            $arrClass[] = $schoolClass->name;
+        }
+        $arrYear = [];
+        $years = Year::find()->all();
+        foreach ($years as $year) {
+            $arrYear[] = $year->name;
+        }
+
+        // PHP Excel init        
         $phpexcel = \PHPExcel_IOFactory::load($fileName);
         $worksheet = $phpexcel->getSheet($sheet);
         $dataExcel = $worksheet->toArray();
@@ -220,13 +234,22 @@ class StudentController extends Controller
         if ($sheet == 0) {
             foreach ($dataExcel as $rowExcelData) {
                 if ($row_number++ > 0 && $rowExcelData[0] !== null) {
-                    $itemArray[] = [
-                        'nis' => trim((string)$rowExcelData[0]),
-                        'nisn' => trim((string)$rowExcelData[1]),
-                        'name' => trim((string)$rowExcelData[2]),
-                        'class' => trim((string)$rowExcelData[3]),
-                        'year' => trim((string)$rowExcelData[4]),
-                    ];
+
+                    // validasi data
+                    $class = trim((string)$rowExcelData[3]);
+                    $year = trim((string)$rowExcelData[4]);
+                    if (in_array($class, $arrClass) && in_array($year, $arrYear)) {
+                        $itemArray[] = [
+                            'nis' => trim((string)$rowExcelData[0]),
+                            'nisn' => trim((string)$rowExcelData[1]),
+                            'name' => trim((string)$rowExcelData[2]),
+                            'class' => trim((string)$rowExcelData[3]),
+                            'year' => trim((string)$rowExcelData[4]),
+                        ];
+                    } else {
+                        $error = 'Data tidak valid pada baris ke '.$row_number;
+                        break;
+                    }
                 }
             }
         }
