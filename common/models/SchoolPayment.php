@@ -74,7 +74,7 @@ class SchoolPayment extends \yii\db\ActiveRecord
     public static function getList()
     {
         return \yii\helpers\ArrayHelper::map(
-            SchoolPayment::find()->where(['status' => 'ACTIVE'])->asArray()->all(),
+            SchoolPayment::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'status' => 'ACTIVE'])->asArray()->all(),
             'id', 'name'
         );
     }
