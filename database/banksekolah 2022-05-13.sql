@@ -17,6 +17,7 @@ CREATE TABLE `invoice` (
   `description` text,
   `amount` int(11) DEFAULT NULL,
   `paid_amount` int(11) DEFAULT NULL,
+  `date` date DEFAULT NULL,
   `due_date` date DEFAULT NULL,
   `status` varchar(255) DEFAULT NULL COMMENT 'PAID, UNPAID',
   `user_id` int(11) DEFAULT NULL,
@@ -178,6 +179,7 @@ CREATE TABLE `school_month` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `school_id` int(11) DEFAULT NULL,
   `name` varchar(255) DEFAULT NULL,
+  `month` varchar(255) DEFAULT NULL,
   `status` varchar(255) DEFAULT NULL COMMENT 'ACTIVE, NONACTIVE',
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
@@ -186,19 +188,19 @@ CREATE TABLE `school_month` (
   CONSTRAINT `school_month_ibfk_1` FOREIGN KEY (`school_id`) REFERENCES `school` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-INSERT INTO `school_month` (`id`, `school_id`, `name`, `status`, `created_at`, `updated_at`) VALUES
-(3,	1,	'Juni',	'ACTIVE',	'2022-05-13 07:49:49',	'2022-05-13 07:49:49'),
-(4,	1,	'Juli',	'ACTIVE',	'2022-05-13 07:49:53',	'2022-05-13 07:49:53'),
-(5,	1,	'Agustus',	'ACTIVE',	'2022-05-13 07:49:57',	'2022-05-13 07:49:57'),
-(6,	1,	'September',	'ACTIVE',	'2022-05-13 07:50:05',	'2022-05-13 07:50:05'),
-(7,	1,	'Oktober',	'ACTIVE',	'2022-05-13 07:50:10',	'2022-05-13 07:50:10'),
-(8,	1,	'November',	'ACTIVE',	'2022-05-13 07:50:14',	'2022-05-13 07:50:14'),
-(9,	1,	'Desember',	'ACTIVE',	'2022-05-13 07:50:17',	'2022-05-13 07:50:17'),
-(10,	1,	'Januari',	'ACTIVE',	'2022-05-13 07:50:21',	'2022-05-13 07:50:21'),
-(11,	1,	'Februari',	'ACTIVE',	'2022-05-13 07:50:25',	'2022-05-13 07:50:25'),
-(12,	1,	'Maret',	'ACTIVE',	'2022-05-13 07:50:28',	'2022-05-13 07:50:28'),
-(13,	1,	'April',	'ACTIVE',	'2022-05-13 07:50:31',	'2022-05-13 07:50:31'),
-(14,	1,	'Mei',	'ACTIVE',	'2022-05-13 07:50:33',	'2022-05-13 07:50:33');
+INSERT INTO `school_month` (`id`, `school_id`, `name`, `month`, `status`, `created_at`, `updated_at`) VALUES
+(3,	1,	'Juni',	'06',	'ACTIVE',	'2022-05-13 07:49:49',	'2022-05-13 07:49:49'),
+(4,	1,	'Juli',	'07',	'ACTIVE',	'2022-05-13 07:49:53',	'2022-05-13 07:49:53'),
+(5,	1,	'Agustus',	'08',	'ACTIVE',	'2022-05-13 07:49:57',	'2022-05-13 07:49:57'),
+(6,	1,	'September',	'09',	'ACTIVE',	'2022-05-13 07:50:05',	'2022-05-13 10:46:19'),
+(7,	1,	'Oktober',	'10',	'ACTIVE',	'2022-05-13 07:50:10',	'2022-05-13 10:46:24'),
+(8,	1,	'November',	'11',	'ACTIVE',	'2022-05-13 07:50:14',	'2022-05-13 10:46:31'),
+(9,	1,	'Desember',	'12',	'ACTIVE',	'2022-05-13 07:50:17',	'2022-05-13 07:50:17'),
+(10,	1,	'Januari',	'01',	'ACTIVE',	'2022-05-13 07:50:21',	'2022-05-13 07:50:21'),
+(11,	1,	'Februari',	'02',	'ACTIVE',	'2022-05-13 07:50:25',	'2022-05-13 07:50:25'),
+(12,	1,	'Maret',	'03',	'ACTIVE',	'2022-05-13 07:50:28',	'2022-05-13 07:50:28'),
+(13,	1,	'April',	'04',	'ACTIVE',	'2022-05-13 07:50:31',	'2022-05-13 07:50:31'),
+(14,	1,	'Mei',	'05',	'ACTIVE',	'2022-05-13 07:50:33',	'2022-05-13 07:50:33');
 
 DROP TABLE IF EXISTS `school_payment`;
 CREATE TABLE `school_payment` (
@@ -218,6 +220,10 @@ CREATE TABLE `school_payment` (
   CONSTRAINT `school_payment_ibfk_3` FOREIGN KEY (`payment_type_id`) REFERENCES `payment_type` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+INSERT INTO `school_payment` (`id`, `school_id`, `payment_type_id`, `number`, `name`, `year`, `status`, `created_at`, `updated_at`) VALUES
+(4,	1,	1,	'1001',	'SPP',	'2020/2021',	'ACTIVE',	'2022-05-13 11:04:54',	'2022-05-13 11:04:54'),
+(5,	1,	2,	'1002',	'Uang Gedung',	'2020/2021',	'ACTIVE',	'2022-05-13 11:05:19',	'2022-05-13 11:05:19'),
+(6,	1,	3,	'2001',	'Zakat Idul Fitri',	'2020/2021',	'ACTIVE',	'2022-05-13 11:05:41',	'2022-05-13 11:05:41');
 
 DROP TABLE IF EXISTS `setting`;
 CREATE TABLE `setting` (
@@ -340,4 +346,4 @@ INSERT INTO `year` (`id`, `name`) VALUES
 (4,	'2023/2024'),
 (5,	'2024/2025');
 
--- 2022-05-13 01:10:21
+-- 2022-05-13 04:05:50

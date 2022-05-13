@@ -41,7 +41,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
                         //'id',
                     'name',
-                    // 'status',
+                    'number',
+                    'year',
+                    ['attribute' => 'paymentType.name', 'label' => 'Jenis Pembayaran'],
 
                         [
                             'class' => 'yii\grid\ActionColumn',

@@ -46,8 +46,8 @@ class SchoolPayment extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['school_id'], 'integer'],
-            [['name', 'status'], 'string', 'max' => 255],
+            [['school_id', 'payment_type_id'], 'integer'],
+            [['name', 'year', 'number', 'status'], 'string', 'max' => 255],
         ];
     }
 
@@ -58,10 +58,11 @@ class SchoolPayment extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'number' => 'Nomor Pembayaran',
-            'name' => 'Pembayaran',
+            'number' => 'Nomor (Kode Pembayaran)',
+            'name' => 'Nama Pembayaran',
             'year' => 'Tahun Ajaran',
             'status' => 'Status',
+            'payment_type_id' => 'Jenis Pembayaran',
         ];
     }
 
@@ -69,6 +70,11 @@ class SchoolPayment extends \yii\db\ActiveRecord
     {
         return $this->hasOne(School::className(), ['id' => 'school_id'])
             ->andOnCondition(['status' => 'ACTIVE']);
+    }
+
+    public function getPaymentType()
+    {
+        return $this->hasOne(PaymentType::className(), ['id' => 'payment_type_id']);
     }
 
     public static function getList()

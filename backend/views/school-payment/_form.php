@@ -1,5 +1,6 @@
 <?php
 use common\models\Year;
+use common\models\PaymentType;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 ?>
@@ -10,7 +11,9 @@ use yii\widgets\ActiveForm;
             <div class="card-body">
                 <?php $form = ActiveForm::begin(); ?>
                 <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
+                <?= $form->field($model, 'number')->textInput(['maxlength' => true]) ?>
                 <?= $form->field($model, 'year')->dropDownList(Year::getList()) ?>
+                <?= $form->field($model, 'payment_type_id')->dropDownList(PaymentType::getList()) ?>
                 <div class="form-group">
                     <?php
                     if ($model->isNewRecord) {
