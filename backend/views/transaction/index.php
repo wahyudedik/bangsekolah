@@ -44,7 +44,8 @@ $this->params['breadcrumbs'][] = $this->title;
                     ['attribute' => 'student.nisn', 'label' => 'NISN'],
                     ['attribute' => 'student.name', 'label' => 'Nama Siswa'],
                     ['attribute' => 'invoice.description', 'label' => 'Nama Pembayaran'],
-                    ['attribute' => 'amount', 'label' => 'Jumlah'],
+                    ['attribute' => 'amountRupiah', 'label' => 'Jumlah Bayar'],
+                    
                     [
                         'class' => 'yii\grid\ActionColumn',
                         'header' => 'Action',

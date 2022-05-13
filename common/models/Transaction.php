@@ -3,6 +3,7 @@
 namespace common\models;
 
 use Yii;
+use common\helpers\Strings;
 
 /**
  * This is the model class for table "transaction".
@@ -62,11 +63,35 @@ class Transaction extends \yii\db\ActiveRecord
         ];
     }
 
+    public function getUser()
+    {
+        return $this->hasOne(User::className(), ['id' => 'user_id']);
+    }
+
+    public function getInvoice()
+    {
+        return $this->hasOne(Invoice::className(), ['id' => 'invoice_id']);
+    }
+
+    public function getStudent()
+    {
+        return $this->hasOne(Student::className(), ['id' => 'student_id']);
+    }
+
+    public function getSchoolPayment()
+    {
+        return $this->hasOne(SchoolPayment::className(), ['id' => 'school_payment_id']);
+    }
+
     public static function getList()
     {
         return \yii\helpers\ArrayHelper::map(
             Transaction::find()->asArray()->all(),
             'id', 'name'
         );
+    }
+
+    public function getAmountRupiah() {
+        return Strings::getRupiah($this->amount);
     }
 }

@@ -68,8 +68,7 @@ class SchoolPayment extends \yii\db\ActiveRecord
 
     public function getSchool()
     {
-        return $this->hasOne(School::className(), ['id' => 'school_id'])
-            ->andOnCondition(['status' => 'ACTIVE']);
+        return $this->hasOne(School::className(), ['id' => 'school_id']);
     }
 
     public function getPaymentType()

@@ -46,6 +46,13 @@ class TransactionController extends Controller
         ]);
     }
 
+    public function actionPrint($id)
+    {
+        return $this->render('print', [
+            'model' => $this->findModel($id),
+        ]);
+    }
+
     /**
      * Creates a new Transaction model.
      * If creation is successful, the browser will be redirected to the 'view' page.

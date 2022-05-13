@@ -17,9 +17,9 @@ use yii\widgets\ActiveForm;
                 <div class="form-group">
                     <?php
                     if ($model->isNewRecord) {
-                        echo Html::a('<i class="fas fa-chevron-left"></i> Kembali', ['school-payment/index'], ['class' => 'btn btn-warning']);
+                        echo Html::a('<i class="fas fa-chevron-left"></i> Kembali', ['transaction/index'], ['class' => 'btn btn-warning']);
                     } else {
-                        echo Html::a('<i class="fas fa-chevron-left"></i> Kembali', ['school-payment/view', 'id' => $model->id], ['class' => 'btn btn-warning']);
+                        echo Html::a('<i class="fas fa-chevron-left"></i> Kembali', ['transaction/view', 'id' => $model->id], ['class' => 'btn btn-warning']);
                     }
                     ?>                    
                     <?= Html::submitButton('<i class="fas fa-save"></i> Simpan', ['class' => 'btn btn-success']) ?>
