@@ -70,12 +70,12 @@ class Student extends \yii\db\ActiveRecord
             'school_id' => 'School ID',
             'nis' => 'NIS',
             'nisn' => 'NISN',
-            'name' => 'Name',
-            'class' => 'Class',
-            'year' => 'Year',
+            'name' => 'Nama',
+            'class' => 'Kelas',
+            'year' => 'Tahun Ajaran',
             'status' => 'Status',
-            'created_at' => 'Created At',
-            'updated_at' => 'Updated At',
+            'created_at' => 'Terdaftar Pada',
+            'updated_at' => 'Terakhir Update',
         ];
     }
 

@@ -15,6 +15,7 @@ $baseUrl = Yii::$app->request->baseUrl;
 <div class="student-create">
 
     <?php $form = ActiveForm::begin(); ?>
+
     <div class="row">
         <div class="col-lg-6">
             <div class="card">
@@ -23,14 +24,13 @@ $baseUrl = Yii::$app->request->baseUrl;
                     <p>Untuk input data banyak student/</p>
                 </div> -->
                 <div class="card-body">
-                    <?= $form->field($model, 'file')->fileInput() ?>
-
                     <div class="callout callout-info">
                         <h5>Panduan import</h5>
                         <p>There is a problem that we need to fix. A wonderful serenity has taken possession of my entire soul, like these sweet mornings of spring which I enjoy with my whole heart. There is a problem that we need to fix. A wonderful serenity has taken possession of my entire soul, like these sweet mornings of spring which I enjoy with my whole heart.</p>
                         <p>Download template import data siswa di sini: <br><a href="<?= $baseUrl ?>/template/template-import-siswa.xlsx" download="template-import-siswa.xlsx">TEMPLATE IMPORT SISWA.xlsx</a></p>
                     </div>
-                    
+
+                    <?= $form->field($model, 'file')->fileInput() ?>
                     <div class="form-group">
                         <?php
                         if ($model->isNewRecord) {

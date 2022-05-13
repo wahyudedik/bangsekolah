@@ -27,10 +27,6 @@ use kartik\widgets\FileInput;
 
                         <?= $form->field($model, 'name')->textInput(['maxlength' => true])->label('Nama Siswa') ?>
 
-                        <?= $form->field($model, 'class')->textInput(['maxlength' => true])->label('Kelas') ?>
-
-                        <?= $form->field($model, 'year')->textInput(['maxlength' => true])->label('Tahun') ?>
-
                         <div class="form-group">
                             <?php
                             if ($model->isNewRecord) {

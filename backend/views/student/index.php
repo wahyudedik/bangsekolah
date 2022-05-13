@@ -9,7 +9,7 @@ use yii\widgets\ActiveForm;
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Daftar Siswa';
+$this->title = 'Siswa';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="card">
