@@ -14,11 +14,11 @@ $baseUrl = Yii::$app->request->baseUrl;
 <footer>
     <div class="container hidden-mobile">
         <!-- <center>
-            <h2 style="margin-bottom: 0px; font-size: 29px;">PT. PUS</h2>
+            <h2 style="margin-bottom: 0px; font-size: 29px;">BANKSEKOLAH</h2>
             <h4 style="font-size: 12.5px;">Connecting New Generation</h4>
         </center> -->
         <center>
-            <img src="<?= $baseUrl ?>/images/pus-motto.jpg" width="200px" alt="PT. PUS">
+            <img src="<?= $baseUrl ?>/images/banksekolah.png" width="200px" alt="BANKSEKOLAH">
         </center>
         <!--
         <div class="row">
@@ -35,7 +35,7 @@ $baseUrl = Yii::$app->request->baseUrl;
         <div class="row">
             <div class="col-md-12">
                 <center>
-                    <a class="footer-link" href="#" style="font-size: 12px; color: #333;">&copy; 2022 PT. PUS. ALL RIGHTS RESERVED</a>
+                    <a class="footer-link" href="#" style="font-size: 12px; color: #333;">&copy; 2022 BANKSEKOLAH. ALL RIGHTS RESERVED</a>
                 </center>
             </div>
         </div>
@@ -43,7 +43,7 @@ $baseUrl = Yii::$app->request->baseUrl;
     <div class="container hidden-desktop">
         <div class="row">
             <div class="col-md-6" style="text-align: left;">
-                <img src="<?= $baseUrl ?>/images/pus-motto.png" width="200px" alt="PT. PUS">
+                <img src="<?= $baseUrl ?>/images/banksekolah.png" width="200px" alt="BANKSEKOLAH">
                 <br><br>
                 <ul>
                     <li><?= Html::a('ABOUT US', ['page/view', 'slug' => 'about'], ['class' => 'footer-link']) ?></li>
@@ -67,7 +67,7 @@ $baseUrl = Yii::$app->request->baseUrl;
                 </a>
                 <br><br>
                 <ul>
-                    <li><a class="footer-link" href="#">&copy; 2022 PT. PUS</a></li>
+                    <li><a class="footer-link" href="#">&copy; 2022 BANKSEKOLAH</a></li>
                     <li><a class="footer-link" href="#">ALL RIGHTS RESERVED</a></li>
                 </ul>
             </div>

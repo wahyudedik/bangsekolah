@@ -3,7 +3,11 @@
 namespace backend\controllers;
 
 use Yii;
+
 use common\models\Transaction;
+use common\models\Student;
+use common\models\Invoice;
+
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -105,14 +109,31 @@ class TransactionController extends Controller
      */
     public function actionCreate($nisn = null, $name = null)
     {
-        $model = new Transaction();
+        $student = null;
+        $invoices = null;
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['index']);
+        if ($nisn) {
+            $student = Student::find()->where(['nisn' => $nisn])->one();
+        } else if ($name) {
+            $student = Student::find()->where(['like', 'name', $name, false])->one();
+        }
+        if ($student) {
+            $invoices = Invoice::find()->where(['student_id' => $student->id])->all();
+        }
+
+        if (isset($_POST['submit'])) {
+            $hobby = $_POST['hobby'];
+
+            foreach ($hobby as $hobys=>$value) {
+                echo "Hobby : ".$value."<br />";
+            }
         }
 
         return $this->render('create', [
-            'model' => $model,
+            'nisn' => $nisn,
+            'name' => $name,
+            'student' => $student,
+            'invoices' => $invoices,
         ]);
     }
 
