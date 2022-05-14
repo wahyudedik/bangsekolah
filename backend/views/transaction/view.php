@@ -13,7 +13,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <header class="card-header">
                 <?= Html::a('<i class="fas fa-chevron-left"></i> Kembali', ['transaction/index'], ['class' => 'btn btn-warning']) ?>
                 <div class="filter-block float-right">
-                    <?= Html::a('<i class="fas fa-print"></i> Cetak Bukti Bayar', ['print', 'id' => $model->id], ['class' => 'btn btn-info']) ?>
+                    <?= Html::a('<i class="fas fa-print"></i> Bukti Pembayaran', ['print', 'id' => $model->id], ['class' => 'btn btn-info', 'target' => '_blank']) ?>
                 </div>
             </header>
             <div class="card-body">

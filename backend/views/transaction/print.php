@@ -4,6 +4,12 @@ use yii\widgets\DetailView;
 
 $this->title = $model->invoice->description;
 ?>
+
+<div class="noprint">
+    <?= Html::a('<i class="fas fa-chevron-left"></i> Kembali', ['transaction/view', 'id' => $model->id], ['class' => 'btn btn-warning']) ?>
+    <button class="btn btn-info" onclick="window.print();return false;"><i class="fas fa-print"></i> Cetak Bukti Pembayaran</button>
+</div>
+<br>
 <div class="row">
     <div class="col-lg-12">
         <div class="card">
@@ -93,3 +99,22 @@ $this->title = $model->invoice->description;
         </div>
     </div>
 </div>
+
+<style type="text/css">
+@media print
+{
+    .noprint {
+        display:none;
+    }
+
+    @page {
+        size: 11in 8.5in; 
+        /*size: a5 landscape;*/
+        /*margin: 0;*/
+        /*size: 29.7cm 21cm ;*/
+        /*size: 14.8cm 21cm;*/
+        /*margin: 1cm 1cm 1cm 1cm;*/
+        /* change the margins as you want them to be. */
+    }
+}
+</style>

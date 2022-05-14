@@ -8,6 +8,7 @@ use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use kartik\mpdf\Pdf;
 
 /**
  * TransactionController implements the CRUD actions for Transaction model.
@@ -46,11 +47,55 @@ class TransactionController extends Controller
         ]);
     }
 
-    public function actionPrint($id)
+    // public function actionPrint($id)
+    // {
+    //     return $this->render('print', [
+    //         'model' => $this->findModel($id),
+    //     ]);
+    // }
+
+    public function actionPrint($id = null)
     {
-        return $this->render('print', [
-            'model' => $this->findModel($id),
+        $transaction = Transaction::findOne($id);
+        $transactions = Transaction::find()->where(['student_id' => $transaction->student_id, 'created_at' => $transaction->created_at])->all();
+
+        $content = $this->renderPartial('@app/views/print/payment-receipt', [
+            'transaction' => $transaction,
+            'transactions' => $transactions,
         ]);
+
+        // return $content;
+
+        $pdf = new Pdf([
+            'mode' => Pdf::MODE_CORE,
+            'filename' => 'receipt - '.$transaction->student->nisn.' - '.date('Ymd', strtotime($transaction->created_at)).'.pdf',
+            // 'format' => [210, 330],
+            'format' => [148, 210],
+            'orientation' => Pdf::ORIENT_PORTRAIT,
+            'destination' => Pdf::DEST_BROWSER,
+            // 'marginTop' => '10',
+            // 'marginLeft' => '15',
+            // 'marginRight' => '15',
+            'marginTop' => '5',
+            'marginLeft' => '5',
+            'marginRight' => '5',
+            'content' => $content,
+            // 'cssFile' => '@vendor/kartik-v/yii2-mpdf/assets/kv-mpdf-bootstrap.css',
+            // 'cssFile' => '@app/web/css/surat-penawaran.css',
+            'cssInline' => '.border-top{border-top: 1px solid grey;}',
+            'options' => [
+                'showWatermarkText' => true,
+                'showWatermarkImage' => true,
+            ],
+            'methods' => [
+                'SetTitle' => 'Receipt - '.$transaction->student->nisn,
+            ]
+        ]);
+
+        Yii::$app->response->format = \yii\web\Response::FORMAT_RAW;
+        $headers = Yii::$app->response->headers;
+        $headers->add('Content-Type', 'application/pdf');
+        return $pdf->render();
     }
 
     /**
