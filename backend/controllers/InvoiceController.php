@@ -83,9 +83,20 @@ class InvoiceController extends Controller
     {
         $model = new Invoice();
 
-        if ($model->load(Yii::$app->request->post()) ) {    
+        if ($model->load(Yii::$app->request->post()) ) {
+            //filter amount
+            if ($model->amount < 0) {
+                Yii::$app->session->setFlash('danger', 'Jumlah tagihan tidak boleh kurang dari Rp. 0');
+                return $this->redirect(['create', 'model' => $model]);
+            }
+
             //search student
             $students = Student::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'class' => $model->kelas])->all();
+            if (!$students) {
+                Yii::$app->session->setFlash('danger', 'Silahkan tambahkan daftar siswa');
+                return $this->redirect(['create', 'model' => $model]);
+            }
+            
             foreach ($students as $student) {
                 if ($model->jenis == "MONTHLY") {
                     $school_months = SchoolMonth::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'status' => 'ACTIVE'])->all();

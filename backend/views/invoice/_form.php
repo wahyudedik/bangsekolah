@@ -30,25 +30,16 @@ use yii\widgets\ActiveForm;
                         ?>
 
 
-                        <?= $form->field($model, 'jenis')->textInput() ?>
+                        <?= $form->field($model, 'jenis')->textInput(['disabled' => true]) ?>
 
-                        <?= $form->field($model, 'description')->textarea(['rows' => 3]) ?>
+                        <?= $form->field($model, 'description')->textarea(['rows' => 3])->label('Deskripsi') ?>
 
-                        <div class="form-group">
-                            <?php
-                            if ($model->isNewRecord) {
-                                echo Html::a('<i class="fas fa-chevron-left"></i> Kembali', ['invoice/index'], ['class' => 'btn btn-warning']);
-                            } else {
-                                echo Html::a('<i class="fas fa-chevron-left"></i> Kembali', ['invoice/view', 'id' => $model->id], ['class' => 'btn btn-warning']);
-                            }
-                            ?>
-                            <?= Html::submitButton('<i class="fas fa-save"></i> Simpan', ['class' => 'btn btn-success']) ?>
-                        </div>
                     </div>
                 </div>
             </div>
             <div class="col-lg-6">
                 <div class="card">
+                    <p id="test"></p>
                     <div class="card-body">
                         <?= $form->field($model, 'year')->dropDownList(\common\models\Year::getList())->label('Tahun Ajaran') ?>
 
@@ -63,7 +54,16 @@ use yii\widgets\ActiveForm;
                 </div>
             </div>
         </div>
-        
+        <div class="form-group">
+            <?php
+            if ($model->isNewRecord) {
+                echo Html::a('<i class="fas fa-chevron-left"></i> Kembali', ['invoice/index'], ['class' => 'btn btn-warning']);
+            } else {
+                echo Html::a('<i class="fas fa-chevron-left"></i> Kembali', ['invoice/view', 'id' => $model->id], ['class' => 'btn btn-warning']);
+            }
+            ?>
+            <?= Html::submitButton('<i class="fas fa-save"></i> Simpan', ['class' => 'btn btn-success']) ?>
+        </div>
         <?php ActiveForm::end(); ?>
     </div>
 </div>
