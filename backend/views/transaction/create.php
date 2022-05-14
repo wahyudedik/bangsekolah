@@ -1,12 +1,12 @@
 <?php
 use yii\helpers\Html;
 
-$this->title = 'Tambah Pembayaran';
-$this->params['breadcrumbs'][] = ['label' => 'Daftar Pembayaran', 'url' => ['index']];
+$this->title = 'Transaksi Baru';
+$this->params['breadcrumbs'][] = ['label' => 'Transaksi', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="school-class-create">
-    <?= $this->render('_form', [
-        'model' => $model,
-    ]) ?>
+<div class="card">
+    <div class="card-body">
+        Pilih Siswa
+    </div>
 </div>
