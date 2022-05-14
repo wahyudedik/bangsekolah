@@ -52,7 +52,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     ['attribute' => 'schoolPayment.name', 'label' => 'Payment Type'],
                     'description:ntext',
                     //'school_payment_id',
-                    'number',
+                    //'number',
                     'year',
                     'month',
                     //'amount',

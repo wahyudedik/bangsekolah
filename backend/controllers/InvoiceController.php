@@ -6,6 +6,8 @@ use Yii;
 use common\models\Invoice;
 use common\models\SchoolPayment;
 use common\models\PaymentType;
+use common\models\Student;
+use common\models\SchoolMonth;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -81,8 +83,72 @@ class InvoiceController extends Controller
     {
         $model = new Invoice();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($model->load(Yii::$app->request->post()) ) {    
+            //search student
+            $students = Student::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'class' => $model->kelas])->all();
+            foreach ($students as $student) {
+                if ($model->jenis == "MONTHLY") {
+                    $school_months = SchoolMonth::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'status' => 'ACTIVE'])->all();
+                    $x = 1;
+                    foreach ($school_months as $school_month) {
+                        $year = '';
+                        if($x <= 6){
+                            $year = substr($model->year,0,4);
+                        } else {
+                            $year = substr($model->year,-4);
+                        }
+                        $invoice = new Invoice();
+                        $invoice->school_id = Yii::$app->session->get('school_id');
+                        $invoice->student_id = $student->id;
+                        $invoice->school_payment_id = $model->school_payment_id;
+                        $invoice->number = ''.$x;
+                        $invoice->year = $model->year;
+                        $invoice->month = $school_month->name;
+                        $invoice->description = $model->description;
+                        $invoice->amount = $model->amount;
+                        $invoice->paid_amount = 0;
+                        $invoice->date = date('Y-m-01', strtotime(''.$year.'-'.$school_month->month));
+                        $invoice->due_date = date('Y-m-t', strtotime($invoice->date));
+                        $invoice->status = "UNPAID";
+                        $invoice->user_id = Yii::$app->user->identity->id;
+                        
+                        if (!$invoice->save()) {
+                            foreach ($invoice->getErrors() as $error) {
+                                $message = $error[0];
+                            }
+                            Yii::$app->session->setFlash('danger', $message);
+                            return $this->redirect(['create', 'model' => $model]);
+                        }
+                        $x++;
+
+                    }
+
+                    
+
+                } else {
+                    $invoice = new Invoice();
+                    $invoice->school_id = Yii::$app->session->get('school_id');
+                    $invoice->student_id = $student->id;
+                    $invoice->school_payment_id = $model->school_payment_id;
+                    $invoice->year = $model->year;
+                    $invoice->description = $model->description;
+                    $invoice->amount = $model->amount;
+                    $invoice->paid_amount = 0;
+                    $invoice->date = $model->date;
+                    $invoice->due_date = $model->due_date;
+                    $invoice->status = "UNPAID";
+                    $invoice->user_id = Yii::$app->user->identity->id; 
+
+                    if (!$invoice->save()) {
+                        foreach ($invoice->getErrors() as $error) {
+                            $message = $error[0];
+                        }
+                        Yii::$app->session->setFlash('danger', $message);
+                        return $this->redirect(['create', 'model' => $model]);
+                    }   
+                }
+            }
+            return $this->redirect(['index']);
         }
 
         return $this->render('create', [
