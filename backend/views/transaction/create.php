@@ -61,8 +61,9 @@ $this->params['breadcrumbs'][] = $this->title;
                         <td><?= $invoice->status ?></td>
                         <td>
                             <?php if ($invoice->status == 'UNPAID'): ?>
+                                <input type="hidden" id="amount-max-<?= $invoice->id ?>" value="<?= $invoice->amount ?>">
                                 <input type="checkbox" name="invoice[]" class="check-invoice" id="invoice-<?= $invoice->id ?>" value="<?= $invoice->id ?>">
-                                <input type="text" name="amount[]" id="amount-<?= $invoice->id ?>" value="<?= $invoice->amount ?>">
+                                <input type="number" name="amount[]" class="amount" id="amount-<?= $invoice->id ?>" value="<?= $invoice->amount ?>" max="<?= $invoice->amount ?>" disabled="disabled">
                             <?php endif; ?>
                         </td>
                     </tr>
@@ -89,6 +90,15 @@ $this->params['breadcrumbs'][] = $this->title;
 .form-group {
     margin-bottom: 0px;
 }
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+input[type="number"] {
+    -moz-appearance: textfield;
+}
 </style>
 
 <script type="text/javascript">
@@ -97,9 +107,24 @@ $this->params['breadcrumbs'][] = $this->title;
         var total = parseInt($('#total').val());
         if(this.checked) {
             total += amount;
+            $('#amount-'+$(this).val()).prop('disabled', false);
         } else {
             total -= amount;            
+            $('#amount-'+$(this).val()).prop('disabled', true);
         }
         $('#total').val(total);
     });
+
+    $('.amount').keydown(function(){
+        $(this).data('val', $(this).val());
+    });
+
+    $('.amount').keyup(function(){
+        var prev = parseInt($(this).data('val'));
+        var current = parseInt($(this).val());
+        var total = parseInt($('#total').val());
+        total = total - prev + current;
+        $('#total').val(total);
+    });
+
 </script>
