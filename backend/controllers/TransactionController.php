@@ -122,11 +122,46 @@ class TransactionController extends Controller
         }
 
         if (isset($_POST['submit'])) {
-            $hobby = $_POST['hobby'];
+            $invoices = $_POST['invoice'];
+            $amounts = $_POST['amount'];
 
-            foreach ($hobby as $hobys=>$value) {
-                echo "Hobby : ".$value."<br />";
+            $i = 0;
+            $saved = 0;
+            foreach ($invoices as $invoice_id) {
+                $amount = $amounts[$i];
+
+                $invoice = Invoice::findOne($invoice_id);
+                if ($invoice) {
+                    $transaction = new Transaction();
+                    $transaction->invoice_id = $invoice->id;
+                    $transaction->student_id = $invoice->student_id;
+                    $transaction->school_payment_id = $invoice->school_payment_id;
+                    $transaction->amount = $amount;
+                    $transaction->date = date('Y-m-d');
+                    $transaction->note = '';
+                    $transaction->payment_method = 'CASH';
+                    $transaction->user_id = Yii::$app->user->identity->id;
+                    $transaction->save();
+
+                    // update invoice paid_amount & status
+                    $invoice->paid_amount = $invoice->paid_amount + $amount;
+                    $invoice->save();
+                    if ($invoice->paid_amount == $invoice->amount) {
+                         $invoice->status = 'PAID';
+                         $invoice->save();
+                    }
+
+                    $saved++;
+                }
+                $i++;
             }
+
+            if ($saved > 0) {
+                Yii::$app->session->setFlash('success', $saved.' transaksi berhasil disimpan. Klik salah satu untuk mencetak bukti bayar');
+            } else {
+                Yii::$app->session->setFlash('danger', 'Tidak ada transaksi yang tersimpan');
+            }
+            return $this->redirect(['transaction/index']);
         }
 
         return $this->render('create', [

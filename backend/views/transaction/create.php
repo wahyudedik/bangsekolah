@@ -37,53 +37,63 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 </div>
 <?php if ($student): ?>
-    <div class="card">
-        <div class="card-header">
-            <h5>Daftar Tagihan Untuk <?= $student->name ?></h5>
-            NIS = <?= $student->nis ?>, NISN = <?= $student->nisn ?>, Kelas = <?= $student->class ?>, Tahun Ajaran = <?= $student->year ?>
-        </div>
-        <div class="card-body">
-            <table class="table table-bordered">
-                <tr>
-                    <th>No</th>
-                    <th>Nama Pembayaran</th>
-                    <th>Bulan</th>
-                    <th>Jumlah</th>
-                    <th>Status</th>
-                    <th>Bayar</th>
-                </tr>
-                <?php $i=1; foreach ($invoices as $invoice): ?>
+    <?php $form = ActiveForm::begin(['action' => ['transaction/create'], 'method' => 'post']) ?>
+        <div class="card">
+            <div class="card-header">
+                <h5>Daftar Tagihan Untuk <?= $student->name ?></h5>
+                NIS = <?= $student->nis ?>, NISN = <?= $student->nisn ?>, Kelas = <?= $student->class ?>, Tahun Ajaran = <?= $student->year ?>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered">
                     <tr>
-                        <td><?= $i++ ?></td>
-                        <td><?= $invoice->schoolPayment->name ?></td>
-                        <td><?= $invoice->month ?></td>
-                        <td><?= Strings::getRupiah($invoice->amount) ?></td>
-                        <td><?= $invoice->status ?></td>
-                        <td>
-                            <?php if ($invoice->status == 'UNPAID'): ?>
-                                <input type="hidden" id="amount-max-<?= $invoice->id ?>" value="<?= $invoice->amount ?>">
-                                <input type="checkbox" name="invoice[]" class="check-invoice" id="invoice-<?= $invoice->id ?>" value="<?= $invoice->id ?>">
-                                <input type="number" name="amount[]" class="amount" id="amount-<?= $invoice->id ?>" value="<?= $invoice->amount ?>" max="<?= $invoice->amount ?>" disabled="disabled">
-                            <?php endif; ?>
-                        </td>
+                        <th>No</th>
+                        <th>Nama Pembayaran</th>
+                        <th>Bulan</th>
+                        <th>Jumlah</th>
+                        <th>Status</th>
+                        <th>Bayar</th>
                     </tr>
-                <?php endforeach; ?>
-            </table>
+                    <?php $i=1; foreach ($invoices as $invoice): ?>
+                        <tr>
+                            <td><?= $i++ ?></td>
+                            <td><?= $invoice->schoolPayment->name ?></td>
+                            <td><?= $invoice->month ?></td>
+                            <td><?= Strings::getRupiah($invoice->amount) ?></td>
+                            <td><?= $invoice->status ?></td>
+                            <td>
+                                <?php if ($invoice->status == 'UNPAID'): ?>
+                                    <input type="hidden" id="amount-max-<?= $invoice->id ?>" value="<?= $invoice->amount ?>">
+                                    <input type="checkbox" name="invoice[]" class="check-invoice" id="invoice-<?= $invoice->id ?>" value="<?= $invoice->id ?>">
+                                    <input type="number" name="amount[]" class="amount" id="amount-<?= $invoice->id ?>" value="<?= $invoice->amount ?>" max="<?= $invoice->amount ?>" disabled="disabled">
+                                <?php endif; ?>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </table>
+            </div>
         </div>
-    </div>
-    <div class="card">
-        <div class="card-header">
-            <h5>Detail Pembayaran</h5>
-        </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-lg-4">
-                    <label>Total Bayar</label>
-                    <input type="text" id="total" class="form-control" name="total" value="0" style="font-size: 25px; height: 60px;">
+        <div class="card">
+            <div class="card-header">
+                <h5>Detail Pembayaran</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-4">
+                        <label>Total Bayar</label>
+                        <input type="text" id="total" class="form-control" name="total" value="0" style="font-size: 25px; height: 60px;">
+                        <br>
+                        <button type="submit" name="submit" class="btn btn-success"><i class="nav-icon fas fa-save"></i> Simpan Transaksi</button>
+                    </div>
+                    <div class="col-lg-8">
+                        <div class="callout callout-info">
+                            <h5>Panduan transaksi</h5>
+                            <p>There is a problem that we need to fix. A wonderful serenity has taken possession of my entire soul, like these sweet mornings of spring which I enjoy with my whole heart. There is a problem that we need to fix. A wonderful serenity has taken possession of my entire soul, like these sweet mornings of spring which I enjoy with my whole heart.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    <?php ActiveForm::end() ?>
 <?php endif; ?>
 
 <style type="text/css">
@@ -115,11 +125,11 @@ input[type="number"] {
         $('#total').val(total);
     });
 
-    $('.amount').keydown(function(){
+    $('.amount').focusin(function(){
         $(this).data('val', $(this).val());
     });
 
-    $('.amount').keyup(function(){
+    $('.amount').focusout(function(){
         var prev = parseInt($(this).data('val'));
         var current = parseInt($(this).val());
         var total = parseInt($('#total').val());
