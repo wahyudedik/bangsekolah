@@ -20,6 +20,7 @@ use common\helpers\Strings;
  */
 class Transaction extends \yii\db\ActiveRecord
 {
+
     /**
      * {@inheritdoc}
      */
