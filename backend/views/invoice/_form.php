@@ -30,23 +30,9 @@ use yii\widgets\ActiveForm;
                         ?>
 
 
-                        <?= $form->field($model, 'jenis')->textInput(['disabled' => true]) ?>
+                        <?= $form->field($model, 'jenis')->textInput() ?>
 
-                        <?= $form->field($model, 'student_id')->textInput() ?>
-
-                        <?= $form->field($model, 'school_payment_id')->textInput() ?>
-
-                        <?= $form->field($model, 'number')->textInput(['maxlength' => true]) ?>
-
-                        <?= $form->field($model, 'year')->textInput(['maxlength' => true]) ?>
-
-                        <?= $form->field($model, 'month')->textInput(['maxlength' => true]) ?>
-
-                        <?= $form->field($model, 'description')->textarea(['rows' => 6]) ?>
-
-                        <?= $form->field($model, 'amount')->textInput() ?>
-
-                        <?= $form->field($model, 'due_date')->textInput() ?>
+                        <?= $form->field($model, 'description')->textarea(['rows' => 3]) ?>
 
                         <div class="form-group">
                             <?php
@@ -58,6 +44,21 @@ use yii\widgets\ActiveForm;
                             ?>
                             <?= Html::submitButton('<i class="fas fa-save"></i> Simpan', ['class' => 'btn btn-success']) ?>
                         </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-body">
+                        <?= $form->field($model, 'year')->dropDownList(\common\models\Year::getList())->label('Tahun Ajaran') ?>
+
+                        <?= $form->field($model, 'kelas')->dropDownList(\common\models\SchoolClass::getList())->label('Kelas') ?>
+
+                        <?= $form->field($model, 'date')->textInput(['type' => 'date'])->label('Tanggal Awal') ?>
+
+                        <?= $form->field($model, 'due_date')->textInput(['type' => 'date'])->label('Jatuh Tempo') ?>
+
+                        <?= $form->field($model, 'amount')->textInput(['type' => 'number'])->label('Jumlah Tagihan') ?>
                     </div>
                 </div>
             </div>

@@ -31,6 +31,8 @@ use Yii;
 class Invoice extends \yii\db\ActiveRecord
 {
     public $jenis;
+    public $tahun_ajaran;
+    public $kelas;
     /**
      * {@inheritdoc}
      */
@@ -61,8 +63,8 @@ class Invoice extends \yii\db\ActiveRecord
         return [
             [['school_id', 'student_id', 'school_payment_id', 'amount', 'paid_amount', 'user_id'], 'integer'],
             [['description'], 'string'],
-            [['due_date', 'created_at', 'updated_at', 'jenis'], 'safe'],
-            [['number', 'year', 'month', 'status'], 'string', 'max' => 255],
+            [['date', 'due_date', 'created_at', 'updated_at'], 'safe'],
+            [['number', 'year', 'month', 'status', 'jenis', 'tahun_ajaran', 'kelas'], 'string', 'max' => 255],
             [['student_id'], 'exist', 'skipOnError' => true, 'targetClass' => Student::className(), 'targetAttribute' => ['student_id' => 'id']],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
             [['school_payment_id'], 'exist', 'skipOnError' => true, 'targetClass' => SchoolPayment::className(), 'targetAttribute' => ['school_payment_id' => 'id']],
@@ -86,6 +88,7 @@ class Invoice extends \yii\db\ActiveRecord
             'description' => 'Description',
             'amount' => 'Amount',
             'paid_amount' => 'Paid Amount',
+            'date' => 'Date',
             'due_date' => 'Due Date',
             'status' => 'Status',
             'user_id' => 'User ID',
