@@ -51,6 +51,7 @@ class School extends \yii\db\ActiveRecord
         return [
             [['created_at', 'updated_at'], 'safe'],
             [['name', 'status'], 'string', 'max' => 255],
+            [['invoice_number', 'transaction_number'], 'integer'],
         ];
     }
 

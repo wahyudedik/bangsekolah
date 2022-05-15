@@ -3,7 +3,7 @@
 use yii\helpers\Html;
 use yii\grid\GridView;
 
-$this->title = 'Daftar Tagihan '.$student->name;
+$this->title = 'Tagihan '.$student->name;
 $this->params['breadcrumbs'][] = ['label' => 'Tagihan', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $student->name;
 \yii\web\YiiAsset::register($this);
@@ -29,11 +29,22 @@ $this->params['breadcrumbs'][] = $student->name;
                                 //'id',
                             ['attribute' => 'number'],
                             ['attribute' => 'description'],
-                            ['attribute' => 'month'],
-                            ['attribute' => 'year'],
-                            ['attribute' => 'amount'],
-                            ['attribute' => 'paid_amount'],
-                            ['attribute' => 'status'],
+                            [
+                                'label' => 'Bulan',
+                                'value' => function($model) {
+                                    return $model->month ? $model->month : '';
+                                }
+                            ],
+                            // ['attribute' => 'year'],
+                            ['attribute' => 'amountRupiah'],
+                            ['attribute' => 'paidAmountRupiah'],
+                            [
+                                'label' => 'Jatuh Tempo',
+                                'value' => function($model){
+                                    return date('d M Y', strtotime($model->due_date));
+                                }
+                            ],
+                            ['attribute' => 'statusLabel', 'format' => 'raw'],
                             
                             [
                                 'class' => 'yii\grid\ActionColumn',

@@ -14,42 +14,38 @@ use yii\widgets\ActiveForm;
         <div class="row">
             <div class="col-lg-6">
                 <div class="card">
+                    <div class="card-header">
+                        <h5>Nama Pembayaran</h5>
+                    </div>
                     <div class="card-body">
                         <?= $form->field($model, 'year')->dropDownList(\common\models\Year::getList())->label('Tahun Ajaran') ?>
-
                         <?= $form->field($model, 'school_payment_id')->dropDownList(\common\models\SchoolPayment::getList(), [
-                                'prompt' => '-- Select pembayaran --',
-                                'onchange' => '
-                                    $.get( "'.Url::toRoute('/invoice/list').'", { param: $(this).val() } )
-                                        .done(function( data ) {
-                                            $( "#'.Html::getInputId($model, 'jenis').'" ).val( data );
-                                        }
-                                    );
-                                    '
+                                'prompt' => '-- Pilih pembayaran --',
                             ])->label('Nama Pembayaran');
                         ?>
-
-
-                        <?= $form->field($model, 'jenis')->textInput(['disabled' => true]) ?>
-
-                        <?= $form->field($model, 'description')->textarea(['rows' => 3])->label('Deskripsi') ?>
-
+                        <?= $form->field($model, 'payment_type')->hiddenInput()->label(false) ?>
+                        <div id="payment-type-info">
+                            
+                        </div>
+                        <div class="callout callout-info" id="payment-type-info">
+                            <h5 id="payment-type-name"></h5>
+                            <p>MONTHLY adalah blablabla. ONE TIME PAYMENT adalah blablabla. VOLUNTARY adalah blablabla</p>
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="col-lg-6">
                 <div class="card">
-                    <p id="test"></p>
+                    <div class="card-header">
+                        <h5>Diberikan Kepada</h5>
+                    </div>
                     <div class="card-body">
-                        <?= $form->field($model, 'year')->dropDownList(\common\models\Year::getList())->label('Tahun Ajaran') ?>
-
-                        <?= $form->field($model, 'kelas')->dropDownList(\common\models\SchoolClass::getList())->label('Kelas') ?>
-
-                        <?= $form->field($model, 'date')->textInput(['type' => 'date'])->label('Tanggal Awal') ?>
-
-                        <?= $form->field($model, 'due_date')->textInput(['type' => 'date'])->label('Jatuh Tempo') ?>
-
-                        <?= $form->field($model, 'amount')->textInput(['type' => 'number'])->label('Jumlah Tagihan') ?>
+                        <?= $form->field($model, 'class')->dropDownList(\common\models\SchoolClass::getList())->label('Kelas') ?>
+                        <div id="invoice-date" style="display: none;">
+                            <?= $form->field($model, 'date')->textInput(['type' => 'date'])->label('Tanggal Awal') ?>
+                            <?= $form->field($model, 'due_date')->textInput(['type' => 'date'])->label('Jatuh Tempo') ?>
+                        </div>
+                        <?= $form->field($model, 'amount')->textInput(['type' => 'number', 'value' => '0'])->label('Nominal Tagihan') ?>
                     </div>
                 </div>
             </div>
@@ -67,3 +63,25 @@ use yii\widgets\ActiveForm;
         <?php ActiveForm::end(); ?>
     </div>
 </div>
+
+<script type="text/javascript">
+    $('#invoice-school_payment_id').change(function(){
+        $.get('<?= Url::to(['invoice/get-payment-type']) ?>', { payment: $(this).val() })
+            .done(function(data) {
+                $('#invoice-payment_type').val(data);
+                if (data !== '') {
+                    $('#payment-type-info').show();
+                    $('#payment-type-name').html(data);
+                } else {
+                    $('#payment-type-info').hide();
+                }
+
+                if (data == 'MONTHLY') {
+                    $('#invoice-date').hide();
+                } else {
+                    $('#invoice-date').show();
+                }
+            }
+        );
+    });
+</script>

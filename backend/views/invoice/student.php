@@ -27,8 +27,7 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
             <div class="col-lg-6">
                 <div class="card-tools float-right">
-                    <?= Html::a('<i class="fas fa-plus fa-lg"></i> Tambah Tagihan', ['create'], ['class' => 'btn btn-success']) ?>
-                    <?= Html::a('<i class="fas fa-upload fa-lg"></i> Import', ['import'], ['class' => 'btn btn-success']) ?>
+                    <?= Html::a('<i class="fas fa-plus fa-lg"></i> Buat Tagihan', ['create'], ['class' => 'btn btn-success']) ?>
                     <?= Html::a('<i class="fas fa-sync-alt fa-lg"></i>', ['index'], ['class' => 'btn btn-primary']) ?>
                 </div>
             </div>

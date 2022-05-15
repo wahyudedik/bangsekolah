@@ -3,6 +3,7 @@
 namespace common\models;
 
 use Yii;
+use common\helpers\Strings;
 
 /**
  * This is the model class for table "invoice".
@@ -30,9 +31,10 @@ use Yii;
  */
 class Invoice extends \yii\db\ActiveRecord
 {
-    public $jenis;
-    public $tahun_ajaran;
-    public $kelas;
+    public $payment_type;
+    public $class;
+    // public $tahun_ajaran;
+
     /**
      * {@inheritdoc}
      */
@@ -63,8 +65,8 @@ class Invoice extends \yii\db\ActiveRecord
         return [
             [['school_id', 'student_id', 'school_payment_id', 'amount', 'paid_amount', 'user_id'], 'integer'],
             [['description'], 'string'],
-            [['date', 'due_date', 'created_at', 'updated_at'], 'safe'],
-            [['number', 'year', 'month', 'status', 'jenis', 'tahun_ajaran', 'kelas'], 'string', 'max' => 255],
+            [['date', 'due_date', 'created_at', 'updated_at', 'payment_type', 'class'], 'safe'],
+            [['number', 'year', 'month', 'status'], 'string', 'max' => 255],
             [['student_id'], 'exist', 'skipOnError' => true, 'targetClass' => Student::className(), 'targetAttribute' => ['student_id' => 'id']],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
             [['school_payment_id'], 'exist', 'skipOnError' => true, 'targetClass' => SchoolPayment::className(), 'targetAttribute' => ['school_payment_id' => 'id']],
@@ -94,6 +96,10 @@ class Invoice extends \yii\db\ActiveRecord
             'user_id' => 'User ID',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
+            
+            'statusLabel' => 'Status',
+            'amountRupiah' => 'Jumlah',
+            'paidAmountRupiah' => 'Jumlah Bayar',
         ];
     }
 
@@ -127,5 +133,26 @@ class Invoice extends \yii\db\ActiveRecord
     public function getSchool()
     {
         return $this->hasOne(School::className(), ['id' => 'school_id']);
+    }
+
+    public function getAmountRupiah() {
+        return Strings::getRupiah($this->amount);
+    }
+
+    public function getPaidAmountRupiah() {
+        return Strings::getRupiah($this->paid_amount);
+    }
+
+    public function getStatusLabel()
+    {
+        if ($this->status == 'PAID') {
+            return '<span class="text-success">Lunas</span>';
+        } else {
+            if ($this->paid_amount > 0) {
+                return '<span class="text-warning">Sebagian</span>';
+            } else {
+                return '<span class="text-danger">Belum Dibayar</span>';
+            }
+        }
     }
 }

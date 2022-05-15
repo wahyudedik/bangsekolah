@@ -80,6 +80,8 @@ class SchoolController extends Controller
     public function actionCreate()
     {
         $model = new School();
+        $model->invoice_number = 0;
+        $model->transaction_number = 0;
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);

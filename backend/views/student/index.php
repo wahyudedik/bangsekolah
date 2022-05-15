@@ -59,7 +59,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     [
                         'class' => 'yii\grid\ActionColumn',
                         'header' => 'Action',
-                        'template' => '{view}{update}{delete}', 
+                        'template' => '{view}{update}', 
                         'contentOptions' => ['style' => 'width:150px;'],
                         'buttons' => [
                             'view' => function ($url, $model) { return Html::a('<i class="fas fa-eye"></i>', $url, ['class' => 'btn btn-success']).' '; },
