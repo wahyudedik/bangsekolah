@@ -8,6 +8,8 @@ use common\models\SchoolPayment;
 use common\models\PaymentType;
 use common\models\Student;
 use common\models\SchoolMonth;
+use common\models\Transaction;
+
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -64,8 +66,13 @@ class InvoiceController extends Controller
 
     public function actionView($id)
     {
+        $query = Transaction::find()->where(['invoice_id' => $id]);
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
         return $this->render('view', [
             'model' => $this->findModel($id),
+            'dataProvider' => $dataProvider,
         ]);
     }
 

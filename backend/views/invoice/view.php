@@ -2,9 +2,7 @@
 
 use yii\helpers\Html;
 use yii\widgets\DetailView;
-
-/* @var $this yii\web\View */
-/* @var $model common\models\Invoice */
+use yii\grid\GridView;
 
 $this->title = $model->description.' '.$model->month;
 $this->params['breadcrumbs'][] = ['label' => 'Tagihan', 'url' => ['index']];
@@ -14,7 +12,7 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="row">
 
-    <div class="col-lg-6 col-md-8 col-sm-8">
+    <div class="col-lg-6 col-md-6 col-sm-12">
         <div class="card">
             <header class="card-header">
                 <?= Html::a('<i class="fas fa-chevron-left"></i> Kembali', ['invoice/invoices', 'student' => $model->student->id], ['class' => 'btn btn-warning']) ?>
@@ -26,23 +24,57 @@ $this->params['breadcrumbs'][] = $this->title;
                     ]) ?>
                 </div>
             </header>
-            
             <div class="card-body">
-            <?= DetailView::widget([
-                'model' => $model,
-                'attributes' => [
-                    'number',
-                    'description:ntext',
-                    'month',
-                    'year',
-                    'amount',
-                    'paid_amount',
-                    'date',
-                    'due_date',
-                    'status',
-                    ['attribute' => 'user.name', 'label' => 'User'],
-                ],
-            ]) ?>
+                <?= DetailView::widget([
+                    'model' => $model,
+                    'attributes' => [
+                        'number',
+                        'description:ntext',
+                        'month',
+                        'year',
+                        'amount',
+                        'paid_amount',
+                        'date',
+                        'due_date',
+                        'status',
+                        ['attribute' => 'user.name', 'label' => 'User'],
+                    ],
+                ]) ?>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-12">
+        <div class="card">
+            <header class="card-header">
+                <h5>Riwayat Pembayaran</h5>
+            </header>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <?= GridView::widget([
+                        'dataProvider' => $dataProvider,
+                        'summary'=> '',
+                        'tableOptions' => [
+                            'class' => 'table table-striped table-hover'
+                        ],
+                        'columns' => [
+                            ['class' => 'yii\grid\SerialColumn'],
+
+                            ['attribute' => 'date', 'label' => 'Tanggal'],
+                            ['attribute' => 'amountRupiah', 'label' => 'Jumlah Bayar'],
+                            // ['attribute' => 'user.name', 'label' => 'Admin'],
+                            
+                            [
+                                'class' => 'yii\grid\ActionColumn',
+                                'header' => 'Action',
+                                'template' => '{view}', 
+                                'contentOptions' => ['style' => 'width:150px;'],
+                                'buttons' => [
+                                    'view' => function ($url, $model) { return Html::a('<i class="fas fa-eye"></i>', ['transaction/view', 'id' => $model->id], ['class' => 'btn btn-success']).' '; },
+                                ]
+                            ],
+                        ],
+                    ]); ?>
+                </div>
             </div>
         </div>
     </div>  
