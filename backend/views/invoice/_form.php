@@ -24,10 +24,7 @@ use yii\widgets\ActiveForm;
                             ])->label('Nama Pembayaran');
                         ?>
                         <?= $form->field($model, 'payment_type')->hiddenInput()->label(false) ?>
-                        <div id="payment-type-info">
-                            
-                        </div>
-                        <div class="callout callout-info" id="payment-type-info">
+                        <div class="callout callout-info" id="payment-type-info" style="display: none;">
                             <h5 id="payment-type-name"></h5>
                             <p>MONTHLY adalah blablabla. ONE TIME PAYMENT adalah blablabla. VOLUNTARY adalah blablabla</p>
                         </div>
@@ -42,8 +39,8 @@ use yii\widgets\ActiveForm;
                     <div class="card-body">
                         <?= $form->field($model, 'class')->dropDownList(\common\models\SchoolClass::getList())->label('Kelas') ?>
                         <div id="invoice-date" style="display: none;">
-                            <?= $form->field($model, 'date')->textInput(['type' => 'date'])->label('Tanggal Awal') ?>
-                            <?= $form->field($model, 'due_date')->textInput(['type' => 'date'])->label('Jatuh Tempo') ?>
+                            <?= $form->field($model, 'date')->textInput(['type' => 'date', 'value' => date('Y-m-d')])->label('Tanggal Awal') ?>
+                            <?= $form->field($model, 'due_date')->textInput(['type' => 'date', 'value' => date('Y-m-t')])->label('Jatuh Tempo') ?>
                         </div>
                         <?= $form->field($model, 'amount')->textInput(['type' => 'number', 'value' => '0'])->label('Nominal Tagihan') ?>
                     </div>
@@ -69,7 +66,8 @@ use yii\widgets\ActiveForm;
         $.get('<?= Url::to(['invoice/get-payment-type']) ?>', { payment: $(this).val() })
             .done(function(data) {
                 $('#invoice-payment_type').val(data);
-                if (data !== '') {
+                // alert(data);
+                if (data) {
                     $('#payment-type-info').show();
                     $('#payment-type-name').html(data);
                 } else {
