@@ -41,23 +41,31 @@ class InvoiceController extends Controller
     {
         \common\helpers\Sidebar::setActiveMenu('invoice', 'index');
 
-        $query = Invoice::find()
+        $query = Student::find()
             ->where(['school_id' => Yii::$app->session->get('school_id')]);
 
-        if ($q !== null) {
-            $query->andFilterWhere([
-                'or',
-                ['like', 'description', $q],
-            ]);
-        }
+        // if ($q !== null) {
+        //     $query->andFilterWhere([
+        //         'or',
+        //         ['like', 'description', $q],
+        //     ]);
+        // }
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
 
-        return $this->render('index', [
+        return $this->render('student', [
             'dataProvider' => $dataProvider,
+            // 'students' => $students,
             'q' => $q,
+        ]);
+    }
+
+    public function actionView($id)
+    {
+        return $this->render('view', [
+            'model' => $this->findModel($id),
         ]);
     }
 
@@ -67,10 +75,16 @@ class InvoiceController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionView($id)
+    public function actionInvoices($student)
     {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
+        $student = Student::findOne($student);
+        $query = Invoice::find()->where(['student_id' => $student->id]);
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
+        return $this->render('invoices', [
+            'student' => $student,
+            'dataProvider' => $dataProvider,
         ]);
     }
 

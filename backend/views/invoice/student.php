@@ -45,34 +45,25 @@ $this->params['breadcrumbs'][] = $this->title;
                 'columns' => [
                     ['class' => 'yii\grid\SerialColumn'],
 
-                    //'id',
-                    //'school_id',
-                    //'student_id',
-                    ['attribute' => 'student.name', 'label' => 'Name'],
-                    ['attribute' => 'schoolPayment.name', 'label' => 'Payment Type'],
-                    'description:ntext',
-                    //'school_payment_id',
-                    //'number',
+                    'nisn',
+                    'name',
+                    'class',
                     'year',
-                    'month',
-                    //'amount',
-                    //'paid_amount',
-                    //'due_date',
-                    'status',
-                    //'user_id',
-                    //'created_at',
-                    //'updated_at',
+                    [
+                        'label' => 'Tagihan',
+                        'value' => function($model) {
+                            return count($model->invoices);
+                        }
+                    ],
 
                     [
                         'class' => 'yii\grid\ActionColumn',
                         'header' => 'Action',
-                        'template' => '{view}{update}{delete}', 
+                        'template' => '{view}', 
                         'contentOptions' => ['style' => 'width:150px;'],
                         'buttons' => [
-                            'view' => function ($url, $model) { return Html::a('<i class="fas fa-eye"></i>', $url, ['class' => 'btn btn-success']).' '; },
-                            'update' => function ($url, $model) { return Html::a('<i class="fas fa-pen"></i>', $url, ['class' => 'btn btn-primary']).' '; },
-                            'delete' => function ($url, $model) {
-                                return Html::a('<i class="fas fa-trash"></i>', $url, ['class' => 'btn btn-danger', 'onclick' => 'return confirm("Yakin untuk menghapus ini?");']).' ';
+                            'view' => function ($url, $model) {
+                                return Html::a('<i class="fas fa-eye"></i> Lihat Tagihan', ['invoice/invoices', 'student' => $model->id], ['class' => 'btn btn-success']).' ';
                             },
                         ]
                     ],

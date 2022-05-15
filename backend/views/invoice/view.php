@@ -6,8 +6,9 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model common\models\Invoice */
 
-$this->title = $model->id;
-$this->params['breadcrumbs'][] = ['label' => 'Invoices', 'url' => ['index']];
+$this->title = $model->description.' '.$model->month;
+$this->params['breadcrumbs'][] = ['label' => 'Tagihan', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => $model->student->name, 'url' => ['invoice/invoices', 'student' => $model->student->id]];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
@@ -16,13 +17,13 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="col-lg-6 col-md-8 col-sm-8">
         <div class="card">
             <header class="card-header">
-                <?= Html::a('<i class="fas fa-chevron-left"></i> Kembali', ['invoice/index'], ['class' => 'btn btn-warning']) ?>
+                <?= Html::a('<i class="fas fa-chevron-left"></i> Kembali', ['invoice/invoices', 'student' => $model->student->id], ['class' => 'btn btn-warning']) ?>
                 <div class="filter-block float-right">
-                    <?= Html::a('<i class="fas fa-pen"></i> Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-                    <?php //Html::a('<i class="fas fa-trash"></i> Hapus', ['delete', 'id' => $model->id], [
-                            //'class' => 'btn btn-danger',
-                            //'onclick' => 'return confirm("Yakin untuk menghapus ini?");',
-                    //]) ?>
+                    <?php //= Html::a('<i class="fas fa-pen"></i> Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+                    <?= Html::a('<i class="fas fa-trash"></i> Hapus', ['delete', 'id' => $model->id], [
+                        'class' => 'btn btn-danger',
+                        'onclick' => 'return confirm("Yakin hapus data ini?");',
+                    ]) ?>
                 </div>
             </header>
             
@@ -30,27 +31,16 @@ $this->params['breadcrumbs'][] = $this->title;
             <?= DetailView::widget([
                 'model' => $model,
                 'attributes' => [
-                    //'id',
-                    //'school_id',
-                    //'student_id',
-                    ['attribute' => 'student.nis', 'label' => 'NIS'],
-                    ['attribute' => 'student.nisn', 'label' => 'NISN'],
-                    ['attribute' => 'student.name', 'label' => 'Nama Siswa'],
-                    ['attribute' => 'schoolPayment.name', 'label' => 'Pembayaran'],
-                    //'school_payment_id',
                     'number',
-                    'year',
-                    'month',
                     'description:ntext',
+                    'month',
+                    'year',
                     'amount',
                     'paid_amount',
                     'date',
                     'due_date',
                     'status',
                     ['attribute' => 'user.name', 'label' => 'User'],
-                    //'user_id',
-                    //'created_at',
-                    //'updated_at',
                 ],
             ]) ?>
             </div>
