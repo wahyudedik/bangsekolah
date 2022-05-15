@@ -53,7 +53,7 @@ use common\helpers\Strings;
                         </tr>
                     </table>
                     <br>
-                    <table width="100%" cellspacing="0" cellpadding="5">
+                    <table width="100%" cellspacing="0" cellpadding="5" class="table table-bordered">
                         <tr class="border-top">
                             <th>No</th>
                             <th>Nama Pembayaran</th>

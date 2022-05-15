@@ -29,7 +29,7 @@ class TransactionController extends Controller
         \common\helpers\Sidebar::setActiveMenu('transaction', 'index');
 
         $dataProvider = new ActiveDataProvider([
-            'query' => Transaction::find(),
+            'query' => Transaction::find()->orderBy(['id' => SORT_DESC]),
         ]);
 
         return $this->render('index', [
@@ -61,7 +61,7 @@ class TransactionController extends Controller
     public function actionPrint($id = null)
     {
         $transaction = Transaction::findOne($id);
-        $transactions = Transaction::find()->where(['student_id' => $transaction->student_id, 'created_at' => $transaction->created_at])->all();
+        $transactions = Transaction::find()->where(['student_id' => $transaction->student_id, 'date(created_at)' => date('Y-m-d', strtotime($transaction->created_at))])->all();
 
         $content = $this->renderPartial('@app/views/print/payment-receipt', [
             'transaction' => $transaction,

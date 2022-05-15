@@ -40,40 +40,6 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php $form = ActiveForm::begin(['action' => ['transaction/create'], 'method' => 'post']) ?>
         <div class="card">
             <div class="card-header">
-                <h5>Daftar Tagihan Untuk <?= $student->name ?></h5>
-                NIS = <?= $student->nis ?>, NISN = <?= $student->nisn ?>, Kelas = <?= $student->class ?>, Tahun Ajaran = <?= $student->year ?>
-            </div>
-            <div class="card-body">
-                <table class="table table-bordered">
-                    <tr>
-                        <th>No</th>
-                        <th>Nama Pembayaran</th>
-                        <th>Bulan</th>
-                        <th>Jumlah</th>
-                        <th>Status</th>
-                        <th>Bayar</th>
-                    </tr>
-                    <?php $i=1; foreach ($invoices as $invoice): ?>
-                        <tr>
-                            <td><?= $i++ ?></td>
-                            <td><?= $invoice->schoolPayment->name ?></td>
-                            <td><?= $invoice->month ?></td>
-                            <td><?= Strings::getRupiah($invoice->amount) ?></td>
-                            <td><?= $invoice->status ?></td>
-                            <td>
-                                <?php if ($invoice->status == 'UNPAID'): ?>
-                                    <input type="hidden" id="amount-max-<?= $invoice->id ?>" value="<?= $invoice->amount ?>">
-                                    <input type="checkbox" name="invoice[]" class="check-invoice" id="invoice-<?= $invoice->id ?>" value="<?= $invoice->id ?>">
-                                    <input type="number" name="amount[]" class="amount" id="amount-<?= $invoice->id ?>" value="<?= $invoice->amount ?>" max="<?= $invoice->amount ?>" disabled="disabled">
-                                <?php endif; ?>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                </table>
-            </div>
-        </div>
-        <div class="card">
-            <div class="card-header">
                 <h5>Detail Pembayaran</h5>
             </div>
             <div class="card-body">
@@ -91,6 +57,40 @@ $this->params['breadcrumbs'][] = $this->title;
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h5>Daftar Tagihan Untuk <?= $student->name ?></h5>
+                NIS = <?= $student->nis ?>, NISN = <?= $student->nisn ?>, Kelas = <?= $student->class ?>, Tahun Ajaran = <?= $student->year ?>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered">
+                    <tr>
+                        <th>No</th>
+                        <th>Nama Pembayaran</th>
+                        <th>Bulan</th>
+                        <th>Jumlah</th>
+                        <th>Status Bayar</th>
+                        <th>Bayar</th>
+                    </tr>
+                    <?php $i=1; foreach ($invoices as $invoice): ?>
+                        <tr>
+                            <td><?= $i++ ?></td>
+                            <td><?= $invoice->schoolPayment->name ?></td>
+                            <td><?= $invoice->month ?></td>
+                            <td><?= Strings::getRupiah($invoice->amount) ?></td>
+                            <td><?= $invoice->statusLabel ?></td>
+                            <td>
+                                <?php if ($invoice->status == 'UNPAID'): ?>
+                                    <input type="hidden" id="amount-max-<?= $invoice->id ?>" value="<?= $invoice->amount ?>">
+                                    <input type="checkbox" name="invoice[]" class="check-invoice" id="invoice-<?= $invoice->id ?>" value="<?= $invoice->id ?>">
+                                    <input type="number" name="amount[]" class="amount" id="amount-<?= $invoice->id ?>" value="<?= ($invoice->amount-$invoice->paid_amount) ?>" max="<?= ($invoice->amount-$invoice->paid_amount) ?>" disabled="disabled">
+                                <?php endif; ?>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </table>
             </div>
         </div>
     <?php ActiveForm::end() ?>
