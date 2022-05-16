@@ -28,6 +28,9 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
         </div>
     </div>
+    <div class="card-body">
+        filter
+    </div>
     <div class="card-body p-0">
         <div class="table-responsive">
             <?= GridView::widget([
@@ -40,6 +43,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     ['class' => 'yii\grid\SerialColumn'],
 
                         //'id',
+                    ['attribute' => 'number', 'label' => 'Nomor Transaksi'],
                     ['attribute' => 'date', 'label' => 'Tanggal'],
                     ['attribute' => 'student.nisn', 'label' => 'NISN'],
                     ['attribute' => 'student.name', 'label' => 'Nama Siswa'],
