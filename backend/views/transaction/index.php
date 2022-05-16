@@ -29,7 +29,7 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
     </div>
     <div class="card-body">
-        filter
+        nomor, daterange, nisn, nama siswa, nama pembayaran, 
     </div>
     <div class="card-body p-0">
         <div class="table-responsive">
