@@ -8,7 +8,7 @@ $this->title = 'Transaksi';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="card">
-    <div class="card-header">
+    <!-- <div class="card-header">
         <div class="row">
             <div class="col-lg-6">
             </div>
@@ -19,38 +19,50 @@ $this->params['breadcrumbs'][] = $this->title;
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
     <div class="card-body">
-        <?php $form = ActiveForm::begin(['method' => 'get', 'action' => Url::to(['index']), 'options' => ['class' => 'form-inline']]) ?>
-        <div class="input-group input-group-sm">
-            <span for="startdate" style="margin-right: 5px">From: </span>
-            <div class="input-group input-group-sm" style="margin-right: 5px;">
-                <input type="date" name="startdate" class="form-control" value="<?= $startdate ?>">
+        <?php $form = ActiveForm::begin(['method' => 'get', 'action' => Url::to(['index'])]) ?>
+        <div class="row">
+            <div class="col-lg-2">
+                <label>Rentang Tanggal</label><br>
+                <input type="date" class="form-control" name="startdate" value="<?= $startdate ?>">
+                <input type="date" class="form-control" name="enddate" value="<?= $enddate ?>">
             </div>
-            <span for="enddate" style="margin-right: 5px">To: </span>
-            <div class="input-group input-group-sm" style="margin-right: 5px;">
-                <input type="date" name="enddate" class="form-control" value="<?= $enddate ?>">
+            <div class="col-lg-2">
+                <label>Kelas</label><br>
+                <select class="form-control" name="class">
+                    <option value="">Semua</option>
+                    <?php 
+                    foreach ($schoolClasses as $cls) {
+                        echo '<option '.($cls->name == $class ? 'selected' : '').' value="'.$cls->name.'">'.$cls->name.'</option>';
+                    }
+                    ?>
+                </select>
             </div>
-
-            <input type="text" name="no" class="form-control" placeholder="Cari nomor transaksi" value="<?=   $no ?>">
-            <span style="padding-left: 5px"></span>
-            <input type="text" name="nisn" class="form-control" placeholder="Cari NISN" value="<?=   $nisn ?>">
-            <span style="padding-left: 5px"></span>
-            <input type="text" name="name" class="form-control" placeholder="Cari nama" value="<?=   $name ?>">
-            <span style="padding-left: 5px"></span>
-            <select class="form-control" name="type">
-                <option <?= $type == 'ALL' ? 'selected="selected"' : '' ?> value="ALL">Semua Pembayaran</option>
-                <?php 
-                foreach ($payment_types as $payment_type) {
-                    echo '<option '.($payment_type->name == $type ? 'selected' : '').' value="'.$payment_type->name.'">'.$payment_type->name.'</option>';
-                }
-                ?>
-            </select>
-
-
-            <span class="input-group-append" style="padding-left: 5px">
-                <?= Html::submitButton('<i class="fas fa-search search-icon"></i>', ['class' => 'btn btn-info btn-flat']) ?>
-            </span>
+            <div class="col-lg-2">
+                <label>NISN</label><br>
+                <input type="text" name="nisn" class="form-control" value="<?= $nisn ?>">
+            </div>
+            <div class="col-lg-2">
+                <label>Nama Siswa</label><br>
+                <input type="text" name="name" class="form-control" value="<?= $name ?>">
+            </div>
+            <div class="col-lg-2">
+                <label>Pembayaran</label><br>
+                <select class="form-control" name="payment">
+                    <option value="">Semua</option>
+                    <?php 
+                    foreach ($schoolPayments as $pymnt) {
+                        echo '<option '.($pymnt->name == $payment ? 'selected' : '').' value="'.$pymnt->name.'">'.$pymnt->name.'</option>';
+                    }
+                    ?>
+                </select>
+            </div>
+            <div class="col-lg-2">
+                <br>
+                <?= Html::submitButton('<i class="fas fa-search"></i> Terapkan', ['class' => 'btn btn-success']) ?>
+                <?= Html::a('<i class="fas fa-sync-alt"></i> Reset', ['transaction/index'], ['class' => 'btn btn-primary']) ?>
+            </div>
         </div>
         <?php ActiveForm::end() ?>
     </div>
@@ -76,9 +88,9 @@ $this->params['breadcrumbs'][] = $this->title;
                     
                     [
                         'class' => 'yii\grid\ActionColumn',
-                        'header' => 'Action',
-                        'template' => '{view}{update}{delete}', 
-                        'contentOptions' => ['style' => 'width:150px;'],
+                        'header' => 'Detail',
+                        'template' => '{view}', 
+                        // 'contentOptions' => ['style' => 'width:150px;'],
                         'buttons' => [
                             'view' => function ($url, $model) { return Html::a('<i class="fas fa-eye"></i>', $url, ['class' => 'btn btn-success']).' '; },
                             'update' => function ($url, $model) { return Html::a('<i class="fas fa-pen"></i>', $url, ['class' => 'btn btn-primary']).' '; },
