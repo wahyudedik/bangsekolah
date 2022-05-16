@@ -15,7 +15,7 @@ foreach($transactions as $trx) {
     <table cellpadding="5px" width="100%">
         <tr>
             <td width="100px"><img src="images/banksekolah-logo.png" width="70px" height="70px"></td>
-            <td style="text-align: left;">
+            <td style="text-align: left; font-family: monospace;">
                 <span style="font-size: 20px;"><b><?= strtoupper($transaction->invoice->school->name) ?></b></span><br>
                 Jln. Soekarno Hatta 82 Ponorogo<br>
                 0352-364888<br>
@@ -27,11 +27,11 @@ foreach($transactions as $trx) {
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-body">
-                    <p align="center">
+                    <p align="center" style="font-family: monospace;">
                         <strong>BUKTI PEMBAYARAN</strong>
                         <br><br>
                     </p>
-                    <table width="100%">
+                    <table width="100%" style="font-family: monospace;">
                         <tr>
                             <td><strong>No Transaksi</strong></td>
                             <td>:</td>
@@ -61,7 +61,7 @@ foreach($transactions as $trx) {
                         </tr>
                     </table>
                     <br>
-                    <table width="100%" cellspacing="0" cellpadding="5" class="table table-bordered">
+                    <table width="100%" cellspacing="0" cellpadding="5" class="table table-bordered" style="font-family: monospace;">
                         <tr class="border-top">
                             <th>No</th>
                             <th>Nama Pembayaran</th>
@@ -80,9 +80,9 @@ foreach($transactions as $trx) {
                         </tr>
                     </table>
                     <br>
-                    <table width="100%">
+                    <table width="100%" style="font-family: monospace;">
                         <tr>
-                            <!-- <td width="50%"></td> -->
+                            <td width="50%"></td>
                             <td>
                                 Ponorogo, <?= date('d/m/Y', strtotime($transaction->date)) ?><br>
                                 Petugas<br><br><br>

@@ -18,7 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="col-lg-6">
                 <?php $form = ActiveForm::begin(['method' => 'get', 'action' => Url::to(['index']), 'options' => ['class' => 'form-inline']]) ?>
                 <div class="input-group input-group-sm">
-                    <input type="text" name="q" class="form-control" placeholder="Cari ..." value="<?=   $q ?>">
+                    <input type="text" name="q" class="form-control" placeholder="Cari NISN atau nama siswa ..." value="<?=   $q ?>">
                     <span class="input-group-append">
                         <button type="button" class="btn btn-info btn-flat"><i class="fas fa-search search-icon"></i></button>
                     </span>

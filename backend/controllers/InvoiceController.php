@@ -47,12 +47,13 @@ class InvoiceController extends Controller
         $query = Student::find()
             ->where(['school_id' => Yii::$app->session->get('school_id')]);
 
-        // if ($q !== null) {
-        //     $query->andFilterWhere([
-        //         'or',
-        //         ['like', 'description', $q],
-        //     ]);
-        // }
+        if ($q !== null) {
+            $query->andFilterWhere([
+                'or',
+                ['like', 'nisn', $q],
+                ['like', 'name', $q],
+            ]);
+        }
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -106,6 +107,7 @@ class InvoiceController extends Controller
         $model = new Invoice();
 
         if ($model->load(Yii::$app->request->post()) ) {
+
             // filter amount
             if ($model->amount <= 0) {
                 Yii::$app->session->setFlash('danger', 'Jumlah tagihan tidak boleh kurang dari Rp. 0');
@@ -123,47 +125,64 @@ class InvoiceController extends Controller
             $months = SchoolMonth::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'status' => 'ACTIVE'])->all();
             $school = School::findOne(Yii::$app->session->get('school_id'));
 
+            // total data
+            $totalInvoice = 0;
+
             foreach ($students as $student) {
                 if ($model->schoolPayment->paymentType->name == 'MONTHLY') {
-                    $i = 1;
+                    $monthNumber = 1;
                     foreach ($months as $month) {
-                        $year = '';
-                        if($i <= 6) {
-                            $year = substr($model->year, 0, 4);
-                        } else {
-                            $year = substr($model->year, -4);
-                        }
 
-                        // generate invoice number
-                        $lastNumber = $school->invoice_number;
-                        $invoiceNumber = str_pad($lastNumber+1, 5, '0', STR_PAD_LEFT).'/INV/'.$school->number.'/'.$month->month.'/'.$year;
-                        $lastNumber++;
-                        $school->invoice_number = $lastNumber;
-                        $school->save();
+                        // check if invoice has been created
+                        $exist = Invoice::find()->where([
+                            'year' => $model->year,
+                            'student_id' => $student->id,
+                            'school_payment_id' => $model->school_payment_id,
+                            'month' => $month->name,
+                        ])->one();
 
-                        $invoice = new Invoice();
-                        $invoice->school_id = $school->id;
-                        $invoice->student_id = $student->id;
-                        $invoice->school_payment_id = $model->school_payment_id;
-                        $invoice->number = $invoiceNumber;
-                        $invoice->year = $model->year;
-                        $invoice->month = $month->name;
-                        $invoice->description = $model->schoolPayment->name;
-                        $invoice->amount = $model->amount;
-                        $invoice->paid_amount = 0;
-                        $invoice->date = date('Y-m-01', strtotime(''.$year.'-'.$month->month));
-                        $invoice->due_date = date('Y-m-t', strtotime(date('Y-m-01', strtotime(''.$year.'-'.$month->month))));
-                        $invoice->status = 'UNPAID';
-                        $invoice->user_id = Yii::$app->user->identity->id;
-                        
-                        if (!$invoice->save()) {
-                            foreach ($invoice->getErrors() as $error) {
-                                $message = $error[0];
+                        if (!$exist) {
+
+                            // get tahun ajaran
+                            $year = '';
+                            if($monthNumber <= 6) {
+                                $year = substr($model->year, 0, 4);
+                            } else {
+                                $year = substr($model->year, -4);
                             }
-                            Yii::$app->session->setFlash('danger', $message);
-                            return $this->redirect(['create', 'model' => $model]);
+
+                            // generate invoice number
+                            $lastNumber = $school->invoice_number;
+                            $invoiceNumber = str_pad($lastNumber+1, 5, '0', STR_PAD_LEFT).'/INV/'.$school->number.'/'.$month->month.'/'.$year;
+                            $lastNumber++;
+                            $school->invoice_number = $lastNumber;
+                            $school->save();
+
+                            $invoice = new Invoice();
+                            $invoice->school_id = $school->id;
+                            $invoice->student_id = $student->id;
+                            $invoice->school_payment_id = $model->school_payment_id;
+                            $invoice->number = $invoiceNumber;
+                            $invoice->year = $model->year;
+                            $invoice->month = $month->name;
+                            $invoice->description = $model->schoolPayment->name;
+                            $invoice->amount = $model->amount;
+                            $invoice->paid_amount = 0;
+                            $invoice->date = date('Y-m-01', strtotime(''.$year.'-'.$month->month));
+                            $invoice->due_date = date('Y-m-t', strtotime(date('Y-m-01', strtotime(''.$year.'-'.$month->month))));
+                            $invoice->status = 'UNPAID';
+                            $invoice->user_id = Yii::$app->user->identity->id;
+                            
+                            if (!$invoice->save()) {
+                                foreach ($invoice->getErrors() as $error) {
+                                    $message = $error[0];
+                                }
+                                Yii::$app->session->setFlash('danger', $message);
+                                return $this->redirect(['create', 'model' => $model]);
+                            }
+                            $totalInvoice++;
+                            $monthNumber++;
                         }
-                        $i++;
                     }
 
                 } else {
@@ -196,7 +215,14 @@ class InvoiceController extends Controller
                         Yii::$app->session->setFlash('danger', $message);
                         return $this->redirect(['create', 'model' => $model]);
                     }   
+                    $totalInvoice++;
                 }
+            }
+
+            if ($totalInvoice > 0) {
+                Yii::$app->session->setFlash('success', 'Total '.$totalInvoice.' tagihan berhasil dibuat untuk '.count($students).' siswa');
+            } else {
+                Yii::$app->session->setFlash('danger', 'Tidak ada tagihan yang dibuat. Periksa kembali apakah tagihan untuk pembayaran tersebut sudah pernah dibuat.');
             }
             return $this->redirect(['index']);
         }
