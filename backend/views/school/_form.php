@@ -13,17 +13,20 @@ use yii\widgets\ActiveForm;
             <div class="card-body">
                 <?php $form = ActiveForm::begin(); ?>
 
-                <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
+                <?= $form->field($model, 'name')->textInput() ?>
+                <?= $form->field($model, 'address')->textArea() ?>
+                <?= $form->field($model, 'city')->textInput() ?>
+                <?= $form->field($model, 'phone')->textInput() ?>
 
                 <div class="form-group">
                     <?php
                     if ($model->isNewRecord) {
-                        echo Html::a('<i class="fas fa-chevron-left"></i> Back', ['school/index'], ['class' => 'btn btn-warning']);
+                        echo Html::a('<i class="fas fa-chevron-left"></i> Kembali', ['school/index'], ['class' => 'btn btn-warning']);
                     } else {
-                        echo Html::a('<i class="fas fa-chevron-left"></i> Back', ['school/view', 'id' => $model->id], ['class' => 'btn btn-warning']);
+                        echo Html::a('<i class="fas fa-chevron-left"></i> Kembali', ['school/view', 'id' => $model->id], ['class' => 'btn btn-warning']);
                     }
                     ?>
-                    <?= Html::submitButton('<i class="fas fa-save"></i> Save', ['class' => 'btn btn-success']) ?>
+                    <?= Html::submitButton('<i class="fas fa-save"></i> Simpan', ['class' => 'btn btn-success']) ?>
                 </div>
 
                 <?php ActiveForm::end(); ?>

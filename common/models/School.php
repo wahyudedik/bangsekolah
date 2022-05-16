@@ -50,7 +50,7 @@ class School extends \yii\db\ActiveRecord
     {
         return [
             [['created_at', 'updated_at'], 'safe'],
-            [['name', 'status'], 'string', 'max' => 255],
+            [['name', 'status', 'address', 'city', 'phone'], 'string', 'max' => 255],
             [['invoice_number', 'transaction_number'], 'integer'],
         ];
     }
@@ -62,10 +62,13 @@ class School extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'name' => 'Name',
+            'name' => 'Nama Sekolah',
+            'address' => 'Alamat',
+            'city' => 'Kota',
+            'phone' => 'Telepon',
             'status' => 'Status',
-            'created_at' => 'Created At',
-            'updated_at' => 'Updated At',
+            'created_at' => 'Tanggal Daftar',
+            'updated_at' => 'Terakhir Diupdate',
         ];
     }
 

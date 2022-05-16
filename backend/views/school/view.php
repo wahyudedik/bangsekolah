@@ -17,7 +17,7 @@ $baseUrl = Yii::$app->request->baseUrl;
     <div class="col-lg-3 col-md-4 col-sm-4">
         <div class="card">
             <header class="card-header">
-                <?= Html::a('<i class="fas fa-chevron-left"></i> Back', ['school/index'], ['class' => 'btn btn-warning']) ?>
+                <?= Html::a('<i class="fas fa-chevron-left"></i> Kembali', ['school/index'], ['class' => 'btn btn-warning']) ?>
             </header>
             <div class="card-body">
                 <div class="profile-status text-center" style="padding-bottom: 10px;">
@@ -49,8 +49,8 @@ $baseUrl = Yii::$app->request->baseUrl;
                         </div>
                         <br>
                         <?= '<div class="profile-message-btn center-block text-center">'; ?>
-                        <?= Html::a('<i class="fas fa-lock"></i> Change Password', ['user/change-password', 'id' => $user_school->user_id], ['class' => 'btn btn-primary']).'<br><br>'; ?>
-                        <?= Html::a('<i class="fas fa-pen"></i> Edit Profile', ['user/update', 'id' => $user_school->user_id, 'school_id' => $model->id], ['class' => 'btn btn-primary']); ?>
+                        <?= Html::a('<i class="fas fa-lock"></i> Ubah Password', ['user/change-password', 'id' => $user_school->user_id], ['class' => 'btn btn-primary']).'<br><br>'; ?>
+                        <?= Html::a('<i class="fas fa-pen"></i> Edit Profil', ['user/update', 'id' => $user_school->user_id, 'school_id' => $model->id], ['class' => 'btn btn-primary']); ?>
                         <?= '</div>';?>
                     <?php } ?>
                 </div>
@@ -70,8 +70,11 @@ $baseUrl = Yii::$app->request->baseUrl;
             <?= DetailView::widget([
                 'model' => $model,
                 'attributes' => [
-                    'id',
+                    // 'id',
                     'name',
+                    'address',
+                    'city',
+                    'phone',
                     // 'status',
                     'created_at',
                     'updated_at',

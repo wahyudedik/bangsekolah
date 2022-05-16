@@ -29,7 +29,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="card-tools float-right">
                     <?= Html::a('<i class="fas fa-plus fa-lg"></i> Buat Sekolah Baru', ['create'], ['class' => 'btn btn-success']) ?>
                     <?= Html::a('<i class="fas fa-sync-alt fa-lg"></i>', ['index'], ['class' => 'btn btn-primary']) ?> 
-                    <?= Html::a('<i class="fas fa-download fa-lg"></i> Download', ['export', 'q' => $q], ['class' => 'btn btn-primary']) ?>
                 </div>
             </div>
         </div>
@@ -47,6 +46,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
                     //'id',
                     'name',
+                    'address',
+                    'city',
+                    'phone',
                     // 'status',
                     // 'created_at',
                     // 'updated_at',
