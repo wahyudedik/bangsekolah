@@ -50,8 +50,21 @@ $this->params['breadcrumbs'][] = $this->title;
                     'year',
                     [
                         'label' => 'Tagihan',
+                        'format' => 'raw',
                         'value' => function($model) {
-                            return count($model->invoices);
+                            $paid = 0;
+                            $inv = 0;
+                            foreach ($model->invoices as $invoice) {
+                                $inv++;
+                                if ($invoice->status == 'PAID') {
+                                    $paid++;
+                                }
+                            }
+                            if ($inv == $paid) {
+                                return '<span class="text-success">'.$paid.'/'.$inv.'</span>';
+                            } else {
+                                return '<span class="text-danger">'.$paid.'/'.$inv.'</span>';
+                            }
                         }
                     ],
 

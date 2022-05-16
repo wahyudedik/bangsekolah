@@ -47,17 +47,19 @@ class TransactionController extends Controller
      */
     public function actionView($id)
     {
+        $model = $this->findModel($id);
+
+        // get other transaction with same number
+        $query = Transaction::find()->where(['number' => $model->number]);
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
+
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model' => $model,
+            'dataProvider' => $dataProvider,
         ]);
     }
-
-    // public function actionPrint($id)
-    // {
-    //     return $this->render('print', [
-    //         'model' => $this->findModel($id),
-    //     ]);
-    // }
 
     public function actionPrint($id = null)
     {

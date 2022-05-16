@@ -30,7 +30,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 </div>
                 <div class="col-lg-4">
                     <button type="submit" class="btn btn-primary"><i class="nav-icon fas fa-search"></i> Lihat Tagihan</button>
-                    <?= Html::a('<i class="nav-icon fas fa-sync-alt"></i> Refresh', ['transaction/create'], ['class' => 'btn btn-success']) ?>
                 </div>
             </div>
         <?php ActiveForm::end() ?>
@@ -49,7 +48,9 @@ $this->params['breadcrumbs'][] = $this->title;
                         <input type="text" id="label-total" class="form-control" name="total" value="0" readonly style="font-size: 25px; height: 60px;">
                         <input type="hidden" id="total" class="form-control" name="total" value="0">
                         <br>
-                        <button type="submit" name="submit" class="btn btn-success"><i class="nav-icon fas fa-save"></i> Simpan Transaksi</button>
+                        <button name="submit" class="btn btn-success" id="btn-submit">
+                            <i class="nav-icon fas fa-save"></i> Simpan Transaksi
+                        </button>
                     </div>
                     <div class="col-lg-8">
                         <div class="callout callout-info">
@@ -146,6 +147,23 @@ input[type="number"] {
         total = total - prev + current;
         $('#label-total').val(formatRupiah(total));
         $('#total').val(total);
+    });
+
+    var submitClicked = false;
+    $("#btn-submit").click(function(e){
+        if (parseInt($('#total').val()) > 0) {
+            if (submitClicked == false) {
+                if (confirm('Apakah data pembayaran di atas sudah benar?')) {
+                    $('#w1').submit();
+                    setTimeout(function(){
+                        $('#btn-submit').trigger('click');
+                    }, 500)
+                }
+            }
+            submitClicked = true;
+        } else {
+            alert('Pilih dahulu tagihan yang akan dibayarkan');
+        }
     });
 
 </script>
