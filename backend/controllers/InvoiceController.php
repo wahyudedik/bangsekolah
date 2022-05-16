@@ -3,18 +3,18 @@
 namespace backend\controllers;
 
 use Yii;
+use yii\web\Controller;
+use yii\filters\VerbFilter;
+use yii\data\ActiveDataProvider;
+use yii\web\NotFoundHttpException;
+
+use common\models\School;
 use common\models\Invoice;
-use common\models\SchoolPayment;
-use common\models\PaymentType;
 use common\models\Student;
 use common\models\SchoolMonth;
 use common\models\Transaction;
-use common\models\School;
-
-use yii\data\ActiveDataProvider;
-use yii\web\Controller;
-use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
+use common\models\PaymentType;
+use common\models\SchoolPayment;
 
 /**
  * InvoiceController implements the CRUD actions for Invoice model.
@@ -264,6 +264,12 @@ class InvoiceController extends Controller
         } else {
             return '';
         }
+    }
+
+    public function actionGetStudentClass($class)
+    {
+        $students = Student::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'class' => $class])->all();
+        return count($students);
     }
 
 }

@@ -17,8 +17,8 @@ $this->params['breadcrumbs'][] = $this->title;
             <header class="card-header">
                 <?= Html::a('<i class="fas fa-chevron-left"></i> Kembali', ['invoice/invoices', 'student' => $model->student->id], ['class' => 'btn btn-warning']) ?>
                 <div class="filter-block float-right">
-                    <?php //= Html::a('<i class="fas fa-pen"></i> Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-                    <?= Html::a('<i class="fas fa-trash"></i> Hapus', ['delete', 'id' => $model->id], [
+                    <?= Html::a('<i class="nav-icon fas fa-hand-holding-usd"></i> Bayar', ['transaction/create', 'nisn' => $model->student->nisn], ['class' => 'btn btn-primary']) ?>
+                    <?= Html::a('<i class="nav-icon fas fa-trash"></i> Hapus', ['delete', 'id' => $model->id], [
                         'class' => 'btn btn-danger',
                         'onclick' => 'return confirm("Yakin hapus data ini?");',
                     ]) ?>
@@ -29,15 +29,16 @@ $this->params['breadcrumbs'][] = $this->title;
                     'model' => $model,
                     'attributes' => [
                         'number',
+                        ['attribute' => 'student.name', 'label' => 'Diberikan Kepada'],
                         'description:ntext',
                         'month',
                         'year',
-                        'amount',
-                        'paid_amount',
+                        'amountRupiah',
+                        'paidAmountRupiah',
                         'date',
                         'due_date',
                         ['attribute' => 'statusLabel', 'format' => 'raw'],
-                        ['attribute' => 'user.name', 'label' => 'User'],
+                        ['attribute' => 'user.name', 'label' => 'Pembuat'],
                     ],
                 ]) ?>
             </div>

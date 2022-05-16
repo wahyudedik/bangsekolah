@@ -168,7 +168,7 @@ class TransactionController extends Controller
             }
 
             if ($saved > 0) {
-                Yii::$app->session->setFlash('success', $saved.' transaksi berhasil disimpan. Klik salah satu untuk mencetak bukti bayar');
+                Yii::$app->session->setFlash('success', $saved.' transaksi berhasil disimpan. Klik detail transaksi untuk mencetak bukti bayar');
             } else {
                 Yii::$app->session->setFlash('danger', 'Tidak ada transaksi yang tersimpan');
             }
