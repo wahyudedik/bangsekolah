@@ -8,6 +8,7 @@ use common\models\Transaction;
 use common\models\Student;
 use common\models\Invoice;
 use common\models\School;
+use common\models\SchoolPayment;
 
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
@@ -25,17 +26,41 @@ class TransactionController extends Controller
      * Lists all Transaction models.
      * @return mixed
      */
-    public function actionIndex($q = null)
+    public function actionIndex($no = null, $nisn = null, $startdate = null, $enddate = null, $name = null, $type = 'ALL')
     {
         \common\helpers\Sidebar::setActiveMenu('transaction', 'index');
 
+        $query = Transaction::find()
+            ->joinWith(['student', 'schoolPayment'])
+            ->where(['student.school_id' => Yii::$app->session->get('school_id')]);
+
+        if($startdate == null && $enddate == null){
+            $startdate = date('Y-m-d', strtotime('-1 month'));
+            $enddate = date('Y-m-d');
+        }
+
+        if ($startdate) { $query->andFilterWhere(['and', ['>=', 'DATE(transaction.date)', $startdate]]); }
+        if ($enddate) { $query->andFilterWhere(['and', ['<=', 'DATE(transaction.date)', $enddate]]); }
+        if($no) { $query->andFilterWhere(['number' => $no]); }
+        if($nisn) { $query->andFilterWhere(['student.nisn' => $nisn]); }
+        if($name) { $query->andFilterWhere(['or', ['like', 'student.name', $name]]); }
+        if($type !== 'ALL') { $query->andFilterWhere(['or', ['like', 'school_payment.name', $type]]); }
+
+        $payment_types = SchoolPayment::find()->where(['school_id' => Yii::$app->session->get('school_id')])->all();
+
         $dataProvider = new ActiveDataProvider([
-            'query' => Transaction::find()->orderBy(['id' => SORT_DESC]),
+            'query' => $query->orderBy(['id' => SORT_DESC]),
         ]);
 
         return $this->render('index', [
             'dataProvider' => $dataProvider,
-            'q' => $q,
+            'no' => $no,
+            'nisn' => $nisn,
+            'startdate' => $startdate,
+            'enddate' => $enddate,
+            'name' => $name,
+            'type' => $type,
+            'payment_types' => $payment_types,
         ]);
     }
 

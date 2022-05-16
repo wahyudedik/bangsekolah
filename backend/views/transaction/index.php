@@ -11,14 +11,6 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="card-header">
         <div class="row">
             <div class="col-lg-6">
-                <?php $form = ActiveForm::begin(['method' => 'get', 'action' => Url::to(['index']), 'options' => ['class' => 'form-inline']]) ?>
-                <div class="input-group input-group-sm">
-                    <input type="text" name="q" class="form-control" placeholder="Search ..." value="<?=   $q ?>">
-                    <span class="input-group-append">
-                        <button type="button" class="btn btn-info btn-flat"><i class="fas fa-search search-icon"></i></button>
-                    </span>
-                </div>
-                <?php ActiveForm::end() ?>
             </div>
             <div class="col-lg-6">
                 <div class="card-tools float-right">
@@ -29,7 +21,38 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
     </div>
     <div class="card-body">
-        nomor, daterange, nisn, nama siswa, nama pembayaran, 
+        <?php $form = ActiveForm::begin(['method' => 'get', 'action' => Url::to(['index']), 'options' => ['class' => 'form-inline']]) ?>
+        <div class="input-group input-group-sm">
+            <span for="startdate" style="margin-right: 5px">From: </span>
+            <div class="input-group input-group-sm" style="margin-right: 5px;">
+                <input type="date" name="startdate" class="form-control" value="<?= $startdate ?>">
+            </div>
+            <span for="enddate" style="margin-right: 5px">To: </span>
+            <div class="input-group input-group-sm" style="margin-right: 5px;">
+                <input type="date" name="enddate" class="form-control" value="<?= $enddate ?>">
+            </div>
+
+            <input type="text" name="no" class="form-control" placeholder="Cari nomor transaksi" value="<?=   $no ?>">
+            <span style="padding-left: 5px"></span>
+            <input type="text" name="nisn" class="form-control" placeholder="Cari NISN" value="<?=   $nisn ?>">
+            <span style="padding-left: 5px"></span>
+            <input type="text" name="name" class="form-control" placeholder="Cari nama" value="<?=   $name ?>">
+            <span style="padding-left: 5px"></span>
+            <select class="form-control" name="type">
+                <option <?= $type == 'ALL' ? 'selected="selected"' : '' ?> value="ALL">Semua Pembayaran</option>
+                <?php 
+                foreach ($payment_types as $payment_type) {
+                    echo '<option '.($payment_type->name == $type ? 'selected' : '').' value="'.$payment_type->name.'">'.$payment_type->name.'</option>';
+                }
+                ?>
+            </select>
+
+
+            <span class="input-group-append" style="padding-left: 5px">
+                <?= Html::submitButton('<i class="fas fa-search search-icon"></i>', ['class' => 'btn btn-info btn-flat']) ?>
+            </span>
+        </div>
+        <?php ActiveForm::end() ?>
     </div>
     <div class="card-body p-0">
         <div class="table-responsive">
@@ -47,6 +70,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     ['attribute' => 'date', 'label' => 'Tanggal'],
                     ['attribute' => 'student.nisn', 'label' => 'NISN'],
                     ['attribute' => 'student.name', 'label' => 'Nama Siswa'],
+                    ['attribute' => 'student.class', 'label' => 'Kelas'],
                     ['attribute' => 'invoice.description', 'label' => 'Nama Pembayaran'],
                     ['attribute' => 'amountRupiah', 'label' => 'Jumlah Bayar'],
                     
