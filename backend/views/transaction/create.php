@@ -46,7 +46,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="row">
                     <div class="col-lg-4">
                         <label>Total Bayar</label>
-                        <input type="text" id="total" class="form-control" name="total" value="0" style="font-size: 25px; height: 60px;">
+                        <input type="text" id="label-total" class="form-control" name="total" value="0" readonly style="font-size: 25px; height: 60px;">
+                        <input type="hidden" id="total" class="form-control" name="total" value="0">
                         <br>
                         <button type="submit" name="submit" class="btn btn-success"><i class="nav-icon fas fa-save"></i> Simpan Transaksi</button>
                     </div>
@@ -112,6 +113,14 @@ input[type="number"] {
 </style>
 
 <script type="text/javascript">
+
+    function formatRupiah(number) {
+        var format = number.toString().split('').reverse().join('');
+        var convert = format.match(/\d{1,3}/g);
+        var rupiah = 'Rp ' + convert.join('.').split('').reverse().join('');
+        return rupiah;
+    }
+
     $('.check-invoice').change(function() {
         var amount = parseInt($('#amount-'+$(this).val()).val());
         var total = parseInt($('#total').val());
@@ -122,6 +131,7 @@ input[type="number"] {
             total -= amount;            
             $('#amount-'+$(this).val()).prop('disabled', true);
         }
+        $('#label-total').val(formatRupiah(total));
         $('#total').val(total);
     });
 
@@ -134,6 +144,7 @@ input[type="number"] {
         var current = parseInt($(this).val());
         var total = parseInt($('#total').val());
         total = total - prev + current;
+        $('#label-total').val(formatRupiah(total));
         $('#total').val(total);
     });
 

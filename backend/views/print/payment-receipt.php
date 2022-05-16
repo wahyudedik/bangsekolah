@@ -1,5 +1,13 @@
 <?php
 use common\helpers\Strings;
+
+$transactionNumber = '';
+$transactionDate = '';
+foreach($transactions as $trx) {
+    $transactionNumber = $trx->number;
+    $transactionDate = date('d/m/Y', strtotime($trx->date));
+    break;
+}
 ?>
 <div style="color: #000000;">
     
@@ -27,25 +35,25 @@ use common\helpers\Strings;
                         <tr>
                             <td><strong>No Transaksi</strong></td>
                             <td>:</td>
-                            <td>238748327432</td>
+                            <td><?= $transactionNumber ?></td>
                             <td></td>
                             <td><strong>Tanggal</strong></td>
                             <td>:</td>
-                            <td>01/06/2022 09:00:00</td>
+                            <td><?= $transactionDate ?></td>
                         </tr>
                         <tr>
                             <td><strong>NISN</strong></td>
                             <td>:</td>
-                            <td>932327883</td>
+                            <td><?= $transaction->student->nisn ?></td>
                             <td></td>
                             <td><strong>Kelas</strong></td>
                             <td>:</td>
-                            <td>VII</td>
+                            <td><?= $transaction->student->class ?></td>
                         </tr>
                         <tr>
                             <td><strong>Nama Siswa</strong></td>
                             <td>:</td>
-                            <td>M. Arief Fakhrudin</td>
+                            <td><?= $transaction->student->name ?></td>
                             <td></td>
                             <td></td>
                             <td></td>

@@ -9,6 +9,7 @@ use Yii;
  *
  * @property int $id
  * @property string $name
+ * @property string $status
  *
  */
 class Year extends \yii\db\ActiveRecord
@@ -41,7 +42,7 @@ class Year extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name'], 'string', 'max' => 255],
+            [['name', 'status'], 'string', 'max' => 255],
         ];
     }
 
@@ -59,7 +60,7 @@ class Year extends \yii\db\ActiveRecord
     public static function getList()
     {
         return \yii\helpers\ArrayHelper::map(
-            Year::find()->asArray()->all(),
+            Year::find()->where(['status' => 'ACTIVE'])->orderBy(['id' => SORT_DESC])->asArray()->all(),
             'name', 'name'
         );
     }

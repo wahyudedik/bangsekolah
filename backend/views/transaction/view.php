@@ -23,6 +23,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'class' => 'table table-striped table-bordered detail-view'
                     ],
                     'attributes' => [
+                        ['attribute' => 'number', 'label' => 'Nomor Transaksi'],
                         ['attribute' => 'date', 'label' => 'Tanggal'],
                         ['attribute' => 'student.nisn', 'label' => 'NISN'],
                         ['attribute' => 'student.name', 'label' => 'Nama Siswa'],

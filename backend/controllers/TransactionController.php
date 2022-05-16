@@ -7,6 +7,7 @@ use Yii;
 use common\models\Transaction;
 use common\models\Student;
 use common\models\Invoice;
+use common\models\School;
 
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
@@ -61,7 +62,7 @@ class TransactionController extends Controller
     public function actionPrint($id = null)
     {
         $transaction = Transaction::findOne($id);
-        $transactions = Transaction::find()->where(['student_id' => $transaction->student_id, 'date(created_at)' => date('Y-m-d', strtotime($transaction->created_at))])->all();
+        $transactions = Transaction::find()->where(['number' => $transaction->number])->all();
 
         $content = $this->renderPartial('@app/views/print/payment-receipt', [
             'transaction' => $transaction,
@@ -125,6 +126,14 @@ class TransactionController extends Controller
             $invoices = $_POST['invoice'];
             $amounts = $_POST['amount'];
 
+            // generate transaction number
+            $school = School::findOne(Yii::$app->session->get('school_id'));
+            $lastNumber = $school->transaction_number;
+            $transactionNumber = str_pad($lastNumber+1, 5, '0', STR_PAD_LEFT).'/TRX/'.$school->number.'/'.date('m/Y');
+            $lastNumber++;
+            $school->transaction_number = $lastNumber;
+            $school->save();
+
             $i = 0;
             $saved = 0;
             foreach ($invoices as $invoice_id) {
@@ -132,10 +141,12 @@ class TransactionController extends Controller
 
                 $invoice = Invoice::findOne($invoice_id);
                 if ($invoice) {
+
                     $transaction = new Transaction();
                     $transaction->invoice_id = $invoice->id;
                     $transaction->student_id = $invoice->student_id;
                     $transaction->school_payment_id = $invoice->school_payment_id;
+                    $transaction->number = $transactionNumber;
                     $transaction->amount = $amount;
                     $transaction->date = date('Y-m-d');
                     $transaction->note = '';
