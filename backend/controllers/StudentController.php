@@ -37,17 +37,23 @@ class StudentController extends Controller
      * Lists all Student models.
      * @return mixed
      */
-    public function actionIndex($q = null)
+    public function actionIndex($name = null, $class = null)
     {
         \common\helpers\Sidebar::setActiveMenu('student', 'index');
 
-        $query = Student::find()
-            ->where(['school_id' => Yii::$app->session->get('school_id'), 'status' => 'ACTIVE']);
+        $query = Student::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'status' => 'ACTIVE']);
+        $classes = SchoolClass::find()->where(['school_id' => Yii::$app->session->get('school_id')])->all();
 
-        if ($q !== null) {
+        if ($name !== null) {
             $query->andFilterWhere([
                 'or',
-                ['like', 'name', $q],
+                ['like', 'name', $name],
+            ]);
+        }
+        if ($class !== null) {
+            $query->andFilterWhere([
+                'and',
+                ['class' => $class],
             ]);
         }
 
@@ -57,7 +63,9 @@ class StudentController extends Controller
 
         return $this->render('index', [
             'dataProvider' => $dataProvider,
-            'q' => $q,
+            'name' => $name,
+            'class' => $class,
+            'classes' => $classes,
         ]);
     }
 

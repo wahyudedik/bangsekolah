@@ -6,9 +6,6 @@ use yii\grid\GridView;
 use yii\widgets\LinkPager;
 use yii\widgets\ActiveForm;
 
-/* @var $this yii\web\View */
-/* @var $dataProvider yii\data\ActiveDataProvider */
-
 $this->title = 'Siswa';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
@@ -17,12 +14,20 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="row">
             <div class="col-lg-6">
                 <?php $form = ActiveForm::begin(['method' => 'get', 'action' => Url::to(['index']), 'options' => ['class' => 'form-inline']]) ?>
-                <div class="input-group input-group-sm">
-                    <input type="text" name="q" class="form-control" placeholder="Cari siswa ..." value="<?=   $q ?>">
-                    <span class="input-group-append">
-                        <button type="button" class="btn btn-info btn-flat"><i class="fas fa-search search-icon"></i></button>
-                    </span>
-                </div>
+                    <div class="input-group input-group-sm">
+                    <select name="class" class="form-control">
+                        <option value="">Semua Kelas</option>
+                        <?php
+                        foreach ($classes as $cls) {
+                            echo '<option value="'.$cls->name.'" '.($cls->name == $class ? 'selected' : '').'>'.$cls->name.'</option>';
+                        }
+                        ?>
+                    </select>
+                        <input type="text" name="name" class="form-control" placeholder="Nama siswa ..." value="<?= $name ?>">
+                        <span class="input-group-append">
+                            <button type="submit" class="btn btn-info btn-flat"><i class="fas fa-search search-icon"></i></button>
+                        </span>
+                    </div>
                 <?php ActiveForm::end() ?>
             </div>
             <div class="col-lg-6">
@@ -45,16 +50,11 @@ $this->params['breadcrumbs'][] = $this->title;
                 'columns' => [
                     ['class' => 'yii\grid\SerialColumn'],
 
-                    //'id',
-                    //'school_id',
                     'nis',
                     'nisn',
                     'name',
                     'class',
                     'year',
-                    //'status',
-                    //'created_at',
-                    //'updated_at',
 
                     [
                         'class' => 'yii\grid\ActionColumn',
