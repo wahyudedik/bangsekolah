@@ -4,10 +4,9 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use kartik\widgets\FileInput;
 
+use common\models\Year;
+use common\models\SchoolClass;
 
-/* @var $this yii\web\View */
-/* @var $model common\models\Student */
-/* @var $form yii\widgets\ActiveForm */
 ?>
 <div class="row">
     <div class="col-lg-12">
@@ -21,11 +20,13 @@ use kartik\widgets\FileInput;
                     </div> -->
                     <div class="card-body">
 
-                        <?= $form->field($model, 'nis')->textInput(['maxlength' => true]) ?>
+                        <?= $form->field($model, 'nis')->textInput() ?>
 
-                        <?= $form->field($model, 'nisn')->textInput(['maxlength' => true]) ?>
+                        <?= $form->field($model, 'nisn')->textInput() ?>
 
-                        <?= $form->field($model, 'name')->textInput(['maxlength' => true])->label('Nama Siswa') ?>
+                        <?= $form->field($model, 'name')->textInput() ?>
+                        <?= $form->field($model, 'year')->dropDownList(Year::getList()) ?>
+                        <?= $form->field($model, 'class')->dropDownList(SchoolClass::getList()) ?>
 
                         <div class="form-group">
                             <?php
