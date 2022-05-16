@@ -97,7 +97,7 @@ class Invoice extends \yii\db\ActiveRecord
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
             
-            'statusLabel' => 'Status',
+            'statusLabel' => 'Status Bayar',
             'amountRupiah' => 'Jumlah',
             'paidAmountRupiah' => 'Jumlah Bayar',
         ];

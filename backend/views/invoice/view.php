@@ -36,7 +36,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'paid_amount',
                         'date',
                         'due_date',
-                        'status',
+                        ['attribute' => 'statusLabel', 'format' => 'raw'],
                         ['attribute' => 'user.name', 'label' => 'User'],
                     ],
                 ]) ?>

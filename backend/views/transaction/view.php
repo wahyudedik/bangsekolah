@@ -24,11 +24,19 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                     'attributes' => [
                         ['attribute' => 'number', 'label' => 'Nomor Transaksi'],
+                        [
+                            'label' => 'Nomor Invoice',
+                            'format' => 'raw',
+                            'value' => function($model){
+                                return Html::a($model->invoice->number, ['invoice/view', 'id' => $model->invoice->id]);
+                            }
+                        ],
                         ['attribute' => 'date', 'label' => 'Tanggal'],
                         ['attribute' => 'student.nisn', 'label' => 'NISN'],
                         ['attribute' => 'student.name', 'label' => 'Nama Siswa'],
                         ['attribute' => 'invoice.description', 'label' => 'Nama Pembayaran'],
                         ['attribute' => 'amountRupiah', 'label' => 'Jumlah Bayar'],
+
                         ['attribute' => 'user.name', 'label' => 'Admin'],
                     ],
                 ]) ?>
