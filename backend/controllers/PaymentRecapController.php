@@ -6,6 +6,7 @@ use Yii;
 
 use common\models\SchoolClass;
 use common\models\SchoolPayment;
+use common\models\SchoolMonth;
 use common\models\Year;
 use common\models\Student;
 
@@ -24,6 +25,7 @@ class PaymentRecapController extends Controller
         $years = Year::find()->where(['status' => 'ACTIVE'])->all();
         $schoolPayments = SchoolPayment::find()->where(['school_id' => Yii::$app->session->get('school_id')])->all();
         $schoolClasses = SchoolClass::find()->where(['school_id' => Yii::$app->session->get('school_id')])->all();
+        $schoolMonths = SchoolMonth::find()->where(['status' => 'ACTIVE'])->all();
 
         $students = null;
         if ($year && $class && $payment) {
@@ -38,6 +40,7 @@ class PaymentRecapController extends Controller
             'years' => $years,
             'schoolPayments' => $schoolPayments,
             'schoolClasses' => $schoolClasses,
+            'schoolMonths' => $schoolMonths,
             'students' => $students,
         ]);
     }

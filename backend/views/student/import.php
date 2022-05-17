@@ -39,9 +39,8 @@ $baseUrl = Yii::$app->request->baseUrl;
                             echo Html::a('<i class="fas fa-chevron-left"></i> Kembali', ['student/view', 'id' => $model->id], ['class' => 'btn btn-warning']);
                         }
                         ?>
-                        <?= Html::submitButton('<i class="fas fa-save"></i> Simpan', ['class' => 'btn btn-success']) ?>
+                        <?= Html::submitButton('<i class="fas fa-save"></i> Import', ['class' => 'btn btn-success']) ?>
                     </div>
-
                 </div>
             </div>
         </div>

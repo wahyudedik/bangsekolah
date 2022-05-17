@@ -292,9 +292,14 @@ class InvoiceController extends Controller
         }
     }
 
-    public function actionGetStudentClass($class)
+    public function actionGetStudentClass($class, $year)
     {
-        $students = Student::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'class' => $class])->all();
+        $students = Student::find()->where([
+            'school_id' => Yii::$app->session->get('school_id'),
+            'year' => $year,
+            'class' => $class
+        ])->all();
+        
         return count($students);
     }
 

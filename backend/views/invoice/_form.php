@@ -105,8 +105,13 @@ use yii\widgets\ActiveForm;
         checkValidation();
     });
 
+    $('#invoice-year').change(function(){
+        $("#invoice-class").val($("#invoice-class option:first").val());
+        $("#invoice-class").trigger('change');
+    });
+
     $('#invoice-class').change(function(){
-        $.get('<?= Url::to(['invoice/get-student-class']) ?>', { class: $(this).val() })
+        $.get('<?= Url::to(['invoice/get-student-class']) ?>', { year: $('#invoice-year').val(), class: $('#invoice-class').val() })
             .done(function(data) {
                 if (data > 0) {
                     $('#student-class-div').show();
