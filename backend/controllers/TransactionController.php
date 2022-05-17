@@ -246,6 +246,7 @@ class TransactionController extends Controller
                         $model->number = $item['number'];
                         $model->amount = $item['amount'];
                         $model->date = date('Y-m-d', strtotime($item['date']));
+                        $model->note = '';
                         $model->payment_method = 'CASH';
                         $model->user_id = Yii::$app->user->identity->id;
 
