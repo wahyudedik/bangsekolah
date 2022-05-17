@@ -10,12 +10,14 @@ use common\models\Invoice;
 use common\models\School;
 use common\models\SchoolPayment;
 use common\models\SchoolClass;
+use common\models\Year;
 
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use kartik\mpdf\Pdf;
+use yii\web\UploadedFile;
 
 /**
  * TransactionController implements the CRUD actions for Transaction model.
@@ -213,6 +215,71 @@ class TransactionController extends Controller
         ]);
     }
 
+    public function actionImport()
+    {
+        $model = new Transaction();
+
+        if ($model->load(Yii::$app->request->post())) {
+
+            $import = UploadedFile::getInstance($model, 'file');
+            if(isset($import)){
+                $exploded_name = explode('.', $import->name);
+                $extension = end($exploded_name);
+                $model->file = Yii::$app->security->generateRandomString() . ".{$extension}";
+                $path = Yii::getAlias('@uploads/import/') . $model->file;
+                $import->saveAs($path);
+
+                $totalItem = 0;
+                $transaction = Yii::$app->db->beginTransaction();
+
+                $result = $this->populateDataExcel($path, 0);
+                if ($result['status'] == 'ERROR') {
+                    Yii::$app->session->setFlash('danger', $result['data']);
+                } else {
+                    $data = $result['data'];
+
+                    foreach ($data as $item) {
+                        $model = new Transaction();
+                        $model->invoice_id = $item['invoice'];
+                        $model->student_id = $item['student'];
+                        $model->school_payment_id = $item['payment'];
+                        $model->number = $item['number'];
+                        $model->amount = $item['amount'];
+                        $model->date = date('Y-m-d', strtotime($item['date']));
+                        $model->payment_method = 'CASH';
+                        $model->user_id = Yii::$app->user->identity->id;
+
+                        if ($model->save()) {
+                            $invoice = Invoice::findOne($item['invoice']);
+                            // check paid and unpaid
+                            $total = $invoice->amount - $item['amount'];
+                            if ($total <= 0) {
+                                $invoice->status = 'PAID';
+                            }
+                            $invoice->paid_amount = $item['amount'];
+                            $invoice->save();
+                        } else {
+                            foreach ($model->errors as $error) {
+                                Yii::$app->session->setFlash('danger', $error[0]);
+                            }
+                            return $this->render('create', [
+                                'id' => $model->id
+                            ]);
+                        }
+                        $totalItem++;
+                    }
+                }
+                $transaction->commit();
+                Yii::$app->session->setFlash('success', $totalItem.' transaksi berhasil diimport');
+                return $this->redirect(['index']);
+            }
+        }
+
+        return $this->render('import', [
+            'model' => $model,
+        ]);
+    }
+
     /**
      * Updates an existing Transaction model.
      * If update is successful, the browser will be redirected to the 'view' page.
@@ -263,5 +330,95 @@ class TransactionController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    private function populateDataExcel($fileName, $sheet = 0)
+    {
+
+        // populate array for data validation
+        $arrYear = [];
+        $years = Year::find()->all();
+        foreach ($years as $year) {
+            $arrYear[] = $year->name;
+        }
+
+        // PHP Excel init        
+        $phpexcel = \PHPExcel_IOFactory::load($fileName);
+        $worksheet = $phpexcel->getSheet($sheet);
+        $dataExcel = $worksheet->toArray();
+        $error = null;
+        $itemArray = [];
+        $row_number = 0;
+        if ($sheet == 0) {
+            // generate transaction number
+            $school = School::findOne(Yii::$app->session->get('school_id'));
+            $lastNumber = $school->transaction_number;
+            $transactionNumber = str_pad($lastNumber+1, 5, '0', STR_PAD_LEFT).'/TRX/'.$school->number.'/'.date('m/Y');
+            $lastNumber++;
+            $school->transaction_number = $lastNumber;
+            $school->save();
+
+            foreach ($dataExcel as $rowExcelData) {
+                if ($row_number++ > 0 && $rowExcelData[0] !== null) {
+                    // check nisn student
+                    $student = Student::find()->where(['school_id' => Yii::$app->session->get('school_id'),'nisn' => trim((string)$rowExcelData[1])])->one();
+                    if (!$student) {
+                        $error = 'NISN '.$student->nisn.' belum terdaftar ';
+                        break;
+                    }
+
+                    // check school payment
+                    $schoolPayment = SchoolPayment::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'number' => trim((string)$rowExcelData[2])])->one();
+                    if (!$schoolPayment) {
+                        $error = 'Kode pembayaran tidak sesuai';
+                        break;
+                    }
+
+                    // check invoice
+                    $invoice = Invoice::find()->where([
+                        'school_id' => Yii::$app->session->get('school_id'), 
+                        'student_id' => $student->id, 
+                        'month' => trim((string)$rowExcelData[3]) == '' ? NULL : trim((string)$rowExcelData[3]), 
+                        'year' => trim((string)$rowExcelData[4]), 
+                        'description' => $schoolPayment->name])
+                        ->one();
+
+                    if (!$invoice) {
+                        $error = 'Tagihan belum terdaftar';
+                        break;
+                    }
+
+                    // validasi data
+                    $year = trim((string)$rowExcelData[4]);
+                    if (in_array($year, $arrYear)) {
+                        $itemArray[] = [
+                            'invoice' => $invoice->id,
+                            'student' => $student->id,
+                            'payment' => $schoolPayment->id,
+                            'number' => $transactionNumber,
+                            'amount' => trim((string)$rowExcelData[5]),
+                            'date' => trim((string)$rowExcelData[0]),
+                            'month' => trim((string)$rowExcelData[3]),
+                            'year' => trim((string)$rowExcelData[4]),
+                        ];
+                    } else {
+                        $error = 'Data tidak valid pada baris ke '.$row_number;
+                        break;
+                    }
+                }
+            }
+        }
+        @unlink($fileName);
+        if ($error != NULL) {
+            return [
+                'status' => 'ERROR',
+                'data' => $error
+            ];
+        } else {
+            return [
+                'status' => 'OK',
+                'data' => $itemArray
+            ];
+        }
     }
 }
