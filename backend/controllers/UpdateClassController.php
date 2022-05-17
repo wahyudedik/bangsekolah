@@ -19,12 +19,15 @@ class UpdateClassController extends \yii\web\Controller
     {
         $classes = SchoolClass::find()->where(['school_id' => Yii::$app->session->get('school_id')])->all();
         $years = Year::find()->all();
+        $students = Student::find()->where(['school_id' => Yii::$app->session->get('school_id'), 
+            'year' => $year, 'class' => $class])->all();
 
         return $this->render('index', [
             'year' => $year,
             'class' => $class,
             'years' => $years,
             'classes' => $classes,
+            'students' => $students,
         ]);
     }
 
