@@ -18,7 +18,6 @@ use yii\widgets\ActiveForm;
                         <h5>Nama Pembayaran</h5>
                     </div>
                     <div class="card-body">
-                        <?= $form->field($model, 'year')->dropDownList(\common\models\Year::getList())->label('Tahun Ajaran') ?>
                         <?= $form->field($model, 'school_payment_id')->dropDownList(\common\models\SchoolPayment::getList(), [
                             'prompt' => '-- Pilih pembayaran --',
                         ])->label('Nama Pembayaran');
@@ -45,6 +44,7 @@ use yii\widgets\ActiveForm;
                         <h5>Diberikan Kepada</h5>
                     </div>
                     <div class="card-body">
+                        <?= $form->field($model, 'year')->dropDownList(\common\models\Year::getList())->label('Tahun Ajaran') ?>
                         <?= $form->field($model, 'class')->dropDownList(\common\models\SchoolClass::getList(), [
                             'prompt' => '-- Pilih kelas --',
                         ])->label('Kelas') ?>
