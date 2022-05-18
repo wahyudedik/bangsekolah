@@ -9,15 +9,15 @@ use yii\widgets\ActiveForm;
 $this->title = 'Naik Kelas';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-
+<?php $form = ActiveForm::begin(['action' => ['update-class/create', 'fromYear' => $year, 'fromClass' => $class], 'method' => 'post']) ?>
 <div class="row">
+    
     <div class="col-lg-6">
         <div class="card">
             <div class="card-header">
                 <h5>Dari Kelas</h5>
             </div>
             <div class="card-body">
-                <?php $form = ActiveForm::begin(['method' => 'get', 'action' => Url::to(['index'])]) ?>
                     <div class="row">
                         <div class="col-lg-6">
                             <div class="input-group input-group-sm">
@@ -44,20 +44,21 @@ $this->params['breadcrumbs'][] = $this->title;
                             </div><br>
                         </div>
                         <div class="col-lg-6">
-                            <?= Html::submitButton('<i class="fas fa-search"></i> Tampilkan', ['class' => 'btn btn-primary', 'id' => 'btn-search']) ?>
+                            <button name="search" class="btn btn-primary" id="btn-search">
+                                <i class="fas fa-search"></i> Tampilkan
+                            </button>
                         </div>
                     </div>
-                <?php ActiveForm::end() ?>
             </div>
         </div>
-
+    
         <?php if ($year && $class): ?>
             <div class="card">
                 <div class="card-header">
                     <h5>Daftar Siswa Kelas <?= $class ?></h5>
                 </div>
                 <div class="card-body p-0" id="card-body-hidden">
-                    <?php $form = ActiveForm::begin(['action' => ['update-class/create'], 'method' => 'post']) ?>
+                    
                         <div class="table-responsive">
                             <table class="table table-striped table-hover">
                                 <thead>
@@ -81,7 +82,6 @@ $this->params['breadcrumbs'][] = $this->title;
                                 </tbody>
                             </table>
                         </div>
-                    <?php ActiveForm::end() ?>
                 </div>
             </div>
         <?php endif; ?>
@@ -93,7 +93,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <h5>Ke Kelas</h5>
             </div>            
             <div class="card-body">
-                <?php $form = ActiveForm::begin(['action' => ['update-class/create'], 'method' => 'post']) ?>
+
                     <div class="row">
                         <div class="col-lg-6">
                             <div class="input-group input-group-sm">
@@ -116,21 +116,21 @@ $this->params['breadcrumbs'][] = $this->title;
                                         echo '<option value="'.$cls->name.'">'.$cls->name.'</option>';
                                     }
                                     ?>
+                                    <option value="lulus">LULUS</option>
                                 </select>
                             </div><br>
                         </div>
                         <div class="col-lg-6">
-                            <?= Html::submitButton('<i class="fas fa-upload"></i> Proses', ['class' => 'btn btn-success', 'id' => 'btn-submit']) ?>
+                            <?= Html::submitButton('<i class="fas fa-upload"></i> Proses', ['class' => 'btn btn-success', 'id' => 'btn-submit', 'name' => 'submit']) ?>
                         </div>
                     </div>
-                <?php ActiveForm::end() ?>
+                
             </div>
         </div>  
     </div>
 </div>
-
+<?php ActiveForm::end() ?>
 <script type="text/javascript">
-    $(document).ready(function(){
         $("#card-body-hidden").hide();
 
         if (
@@ -139,5 +139,11 @@ $this->params['breadcrumbs'][] = $this->title;
         ) {
             $("#card-body-hidden").show();
         }
-    });
+        // $("#btn-search").click(function(){
+        //     $("#card-body-hidden").show();
+        // });
+
+        $("#btn-search").click(function(){
+            window.location.replace('<?= Url::to(['update-class/index']) ?>&year='+$('#from-year').val()+'&class='+$('#from-class').val()+'');
+        });
 </script>
