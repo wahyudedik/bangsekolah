@@ -32,7 +32,7 @@ use yii\widgets\ActiveForm;
                             </ul>
                         </div>
                         <div id="invoice-date" style="display: none;">
-                            <?= $form->field($model, 'date')->textInput(['type' => 'date', 'value' => date('Y-m-d')])->label('Tanggal Awal') ?>
+                            <?= $form->field($model, 'date')->textInput(['type' => 'date', 'value' => date('Y-m-d')])->label('Tanggal Tagihan') ?>
                             <?= $form->field($model, 'due_date')->textInput(['type' => 'date', 'value' => date('Y-m-t')])->label('Jatuh Tempo') ?>
                         </div>                        
                     </div>
@@ -44,7 +44,9 @@ use yii\widgets\ActiveForm;
                         <h5>Diberikan Kepada</h5>
                     </div>
                     <div class="card-body">
-                        <?= $form->field($model, 'year')->dropDownList(\common\models\Year::getList())->label('Tahun Ajaran') ?>
+                        <?= $form->field($model, 'year')->dropDownList(\common\models\Year::getList(), [
+                            'prompt' => '-- Pilih tahun ajaran --'
+                        ])->label('Tahun Ajaran') ?>
                         <?= $form->field($model, 'class')->dropDownList(\common\models\SchoolClass::getList(), [
                             'prompt' => '-- Pilih kelas --',
                         ])->label('Kelas') ?>

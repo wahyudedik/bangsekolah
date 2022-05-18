@@ -22,41 +22,48 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="row">
             <div class="col-lg-2">
                 <label>Tahun Ajaran</label><br>
-                <select class="form-control" name="year">
-                    <option value="">-- Pilih tahun --</option>
-                    <?php 
-                    foreach ($years as $yr) {
-                        echo '<option '.($yr->name == $year ? 'selected' : '').' value="'.$yr->name.'">'.$yr->name.'</option>';
-                    }
-                    ?>
-                </select>
+                <div class="input-group input-group-sm">
+                    <select class="form-control" name="year">
+                        <option value="">-- Pilih tahun --</option>
+                        <?php 
+                        foreach ($years as $yr) {
+                            echo '<option '.($yr->name == $year ? 'selected' : '').' value="'.$yr->name.'">'.$yr->name.'</option>';
+                        }
+                        ?>
+                    </select>
+                </div>
             </div>
             <div class="col-lg-2">
                 <label>Kelas</label><br>
-                <select class="form-control" name="class">
-                    <option value="">-- Pilih kelas --</option>
-                    <?php 
-                    foreach ($schoolClasses as $cls) {
-                        echo '<option '.($cls->name == $class ? 'selected' : '').' value="'.$cls->name.'">'.$cls->name.'</option>';
-                    }
-                    ?>
-                </select>
+                <div class="input-group input-group-sm">
+                    <select class="form-control" name="class">
+                        <option value="">-- Pilih kelas --</option>
+                        <?php 
+                        foreach ($schoolClasses as $cls) {
+                            echo '<option '.($cls->name == $class ? 'selected' : '').' value="'.$cls->name.'">'.$cls->name.'</option>';
+                        }
+                        ?>
+                    </select>
+                </div>
             </div>
             <div class="col-lg-3">
                 <label>Pembayaran</label><br>
-                <select class="form-control" name="payment">
-                    <option value="">-- Pilih pembayaran --</option>
-                    <?php 
-                    foreach ($schoolPayments as $pymnt) {
-                        echo '<option '.($pymnt->number == ($payment ? $payment->number : '') ? 'selected' : '').' value="'.$pymnt->number.'">'.$pymnt->name.'</option>';
-                    }
-                    ?>
-                </select>
+                <div class="input-group input-group-sm">
+                    <select class="form-control" name="payment">
+                        <option value="">-- Pilih pembayaran --</option>
+                        <?php 
+                        foreach ($schoolPayments as $pymnt) {
+                            echo '<option '.($pymnt->number == ($payment ? $payment->number : '') ? 'selected' : '').' value="'.$pymnt->number.'">'.$pymnt->name.'</option>';
+                        }
+                        ?>
+                    </select>
+                </div>
             </div>
             <div class="col-lg-3">
-                <br>
-                <?= Html::submitButton('<i class="fas fa-search"></i> Tampilkan', ['class' => 'btn btn-success']) ?>
-                <?= Html::a('<i class="fas fa-sync-alt"></i> Reset', ['transaction/index'], ['class' => 'btn btn-primary']) ?>
+                <div style="margin-top: 30px;">
+                    <?= Html::submitButton('<i class="fas fa-search"></i> Tampilkan', ['class' => 'btn btn-success']) ?>
+                    <?= Html::a('<i class="fas fa-sync-alt"></i> Reset', ['transaction/index'], ['class' => 'btn btn-primary']) ?>
+                </div>
             </div>
         </div>
         <?php ActiveForm::end() ?>

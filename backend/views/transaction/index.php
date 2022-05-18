@@ -20,53 +20,62 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
         </div>
     </div> -->
-    <div class="card-body">
-        <?php $form = ActiveForm::begin(['method' => 'get', 'action' => Url::to(['index'])]) ?>
-        <div class="row">
-            <div class="col-lg-2">
-                <label>Rentang Tanggal</label><br>
-                <input type="date" class="form-control" name="startdate" value="<?= $startdate ?>">
-                <input type="date" class="form-control" name="enddate" value="<?= $enddate ?>">
-            </div>
-            <div class="col-lg-2">
-                <label>Kelas</label><br>
-                <select class="form-control" name="class">
-                    <option value="">Semua</option>
-                    <?php 
-                    foreach ($schoolClasses as $cls) {
-                        echo '<option '.($cls->name == $class ? 'selected' : '').' value="'.$cls->name.'">'.$cls->name.'</option>';
-                    }
-                    ?>
-                </select>
-            </div>
-            <div class="col-lg-2">
-                <label>NISN</label><br>
-                <input type="text" name="nisn" class="form-control" value="<?= $nisn ?>">
-            </div>
-            <div class="col-lg-2">
-                <label>Nama Siswa</label><br>
-                <input type="text" name="name" class="form-control" value="<?= $name ?>">
-            </div>
-            <div class="col-lg-2">
-                <label>Pembayaran</label><br>
-                <select class="form-control" name="payment">
-                    <option value="">Semua</option>
-                    <?php 
-                    foreach ($schoolPayments as $pymnt) {
-                        echo '<option '.($pymnt->name == $payment ? 'selected' : '').' value="'.$pymnt->name.'">'.$pymnt->name.'</option>';
-                    }
-                    ?>
-                </select>
-            </div>
-            <div class="col-lg-2">
-                <br>
-                <?= Html::submitButton('<i class="fas fa-search"></i> Terapkan', ['class' => 'btn btn-success']) ?>
-                <?= Html::a('<i class="fas fa-upload"></i> Import', ['import'], ['class' => 'btn btn-success']) ?>
-                <?= Html::a('<i class="fas fa-sync-alt"></i> Reset', ['transaction/index'], ['class' => 'btn btn-primary']) ?>
+    <?php $form = ActiveForm::begin(['method' => 'get', 'action' => Url::to(['index'])]) ?>
+        <div class="card-header">
+            <div class="row">
+                <div class="col-lg-4">
+                    <label>Rentang Tanggal</label><br>
+                    <div class="input-group input-group-sm">
+                        <input type="date" class="form-control" name="startdate" value="<?= $startdate ?>">
+                        <input type="date" class="form-control" name="enddate" value="<?= $enddate ?>">                    
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <label>Kelas</label><br>
+                    <div class="input-group input-group-sm">
+                        <select class="form-control" name="class">
+                            <option value="">Semua</option>
+                            <?php 
+                            foreach ($schoolClasses as $cls) {
+                                echo '<option '.($cls->name == $class ? 'selected' : '').' value="'.$cls->name.'">'.$cls->name.'</option>';
+                            }
+                            ?>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <label>NISN</label><br>
+                    <div class="input-group input-group-sm">
+                        <input type="text" name="nisn" class="form-control" value="<?= $nisn ?>">
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <label>Nama Siswa</label><br>
+                    <div class="input-group input-group-sm">
+                        <input type="text" name="name" class="form-control" value="<?= $name ?>">
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <label>Pembayaran</label><br>
+                    <div class="input-group input-group-sm">
+                        <select class="form-control" name="payment">
+                            <option value="">Semua</option>
+                            <?php 
+                            foreach ($schoolPayments as $pymnt) {
+                                echo '<option '.($pymnt->name == $payment ? 'selected' : '').' value="'.$pymnt->name.'">'.$pymnt->name.'</option>';
+                            }
+                            ?>
+                        </select>
+                    </div>
+                </div>
             </div>
         </div>
-        <?php ActiveForm::end() ?>
-    </div>
+        <div class="card-header">
+            <?= Html::submitButton('<i class="fas fa-search"></i> Terapkan', ['class' => 'btn btn-success']) ?>
+            <?= Html::a('<i class="fas fa-upload"></i> Import', ['import'], ['class' => 'btn btn-success']) ?>
+            <?= Html::a('<i class="fas fa-sync-alt"></i> Reset', ['transaction/index'], ['class' => 'btn btn-primary']) ?>
+        </div>        
+    <?php ActiveForm::end() ?>
     <div class="card-body p-0">
         <div class="table-responsive">
             <?= GridView::widget([
