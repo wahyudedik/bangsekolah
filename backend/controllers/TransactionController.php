@@ -175,6 +175,7 @@ class TransactionController extends Controller
                 if ($invoice) {
 
                     $transaction = new Transaction();
+                    $transaction->school_id = Yii::$app->session->get('school_id');
                     $transaction->invoice_id = $invoice->id;
                     $transaction->student_id = $invoice->student_id;
                     $transaction->school_payment_id = $invoice->school_payment_id;
@@ -218,6 +219,7 @@ class TransactionController extends Controller
     public function actionImport()
     {
         $model = new Transaction();
+        $model->school_id = Yii::$app->session->get('school_id');
 
         if ($model->load(Yii::$app->request->post())) {
 
@@ -240,6 +242,7 @@ class TransactionController extends Controller
 
                     foreach ($data as $item) {
                         $model = new Transaction();
+                        $model->school_id = Yii::$app->session->get('school_id');
                         $model->invoice_id = $item['invoice'];
                         $model->student_id = $item['student'];
                         $model->school_payment_id = $item['payment'];

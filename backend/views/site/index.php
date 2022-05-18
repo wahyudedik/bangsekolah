@@ -1,17 +1,58 @@
 <?php
-use common\models\Order;
+use common\models\Transaction;
 
-$this->title = 'Laporan Hari Ini';
+$this->title = 'Laporan 30 Hari Terakhir';
 
 $user = Yii::$app->user->identity;
 $baseUrl = Yii::$app->request->baseUrl;
+$schoolId = Yii::$app->session->get('school_id');
 
+/**
+ *-------------------------------
+ * Card Report
+ *-------------------------------
+ */
+
+
+/**
+ *-------------------------------
+ * Last 30 Days Chart
+ *-------------------------------
+ */
+$card1 = '';
+$dateTime = new DateTime('-30 days');
+$transactionCount = Transaction::find()
+->where(['school_id' => $schoolId])
+->andWhere(['between', 'date', $dateTime->format('Y-m-d'), date('Y-m-d')])->count();
+
+// variable definition
+$jsonDay = '';
+$jsonTotal = '';
+
+// loop last 30 days
+$dateTime = new DateTime('-30 days');
+for ($i = 1; $i <= 31; $i++) {
+    $transactions = Transaction::find()
+        ->where(['date' => $dateTime->format('Y-m-d')])
+        ->all();
+    $totalInDay = 0;
+    foreach ($transactions as $transaction) {
+        $totalInDay += $transaction->amount;
+    }
+
+    // add value to array
+    $jsonDay .= '"'.$dateTime->format('d').'", ';
+    $jsonTotal .= $totalInDay.', ';
+
+    // modify date -1 month
+    $dateTime->modify('+1 day');
+}
 ?>
 <div class="row">
     <div class="col-lg-3 col-6">
         <div class="small-box bg-info">
             <div class="inner">
-                <h3>13</h3>
+                <h3><?= $card1 ?></h3>
                 <p>Pembayaran</p>
             </div>
             <div class="icon">
@@ -58,16 +99,61 @@ $baseUrl = Yii::$app->request->baseUrl;
     </div>
 </div>
 
-<!-- <div class="card card-default">
+<div class="card card-default">
     <div class="card-header">
-        <h3 class="card-title">Omzet By Month</h3>
+        <h3 class="card-title">Total Pembayaran 30 Hari Terakhir</h3>
     </div>
     <div class="card-body">
         <div class="chart">
             <canvas id="bar-chart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
         </div>
     </div>
-</div> -->
+</div>
 
 <script src="<?= $baseUrl ?>/theme/js/jquery-1.11.2.min.js"></script>
 <script src="<?= $baseUrl ?>/theme/plugins/chart.js/Chart.min.js"></script>
+<script type="text/javascript">
+    $(function () {
+        /* ChartJS
+         * -------
+         * Here we will create a few charts using ChartJS
+         */
+
+        var areaChartData = {
+          labels  : [<?= $jsonDay ?>],
+          datasets: [
+            {
+              label               : 'Total Outlet Order (Rupiah)',
+              backgroundColor     : 'rgba(60,141,188,0.9)',
+              borderColor         : 'rgba(60,141,188,0.8)',
+              pointRadius          : false,
+              pointColor          : '#3b8bba',
+              pointStrokeColor    : 'rgba(60,141,188,1)',
+              pointHighlightFill  : '#fff',
+              pointHighlightStroke: 'rgba(60,141,188,1)',
+              data                : [<?= $jsonTotal ?>]
+            },
+          ]
+        }
+
+        //-------------
+        //- BAR CHART -
+        //-------------
+        var barChartCanvas = $('#bar-chart').get(0).getContext('2d')
+        var barChartData = $.extend(true, {}, areaChartData)
+        var temp0 = areaChartData.datasets[0]
+        barChartData.datasets[0] = temp0
+
+        var barChartOptions = {
+          responsive              : true,
+          maintainAspectRatio     : false,
+          datasetFill             : false
+        }
+
+        new Chart(barChartCanvas, {
+          type: 'bar',
+          data: barChartData,
+          options: barChartOptions
+        })
+    });
+</script>
