@@ -62,7 +62,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="col-lg-3">
                 <div style="margin-top: 30px;">
                     <?= Html::submitButton('<i class="fas fa-search"></i> Tampilkan', ['class' => 'btn btn-success']) ?>
-                    <?= Html::a('<i class="fas fa-sync-alt"></i> Reset', ['transaction/index'], ['class' => 'btn btn-primary']) ?>
+                    <?= Html::a('<i class="fas fa-sync-alt"></i> Reset', ['payment-recap/index'], ['class' => 'btn btn-primary']) ?>
                 </div>
             </div>
         </div>
