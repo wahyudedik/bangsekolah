@@ -1,4 +1,6 @@
 <?php
+use common\helpers\Strings;
+use common\models\Invoice;
 use common\models\Transaction;
 
 $this->title = 'Laporan 30 Hari Terakhir';
@@ -13,17 +15,42 @@ $schoolId = Yii::$app->session->get('school_id');
  *-------------------------------
  */
 
+// CARD 1
+$last30Day = new DateTime('-30 days');
+$transactionCount = Transaction::find()
+    ->select('number')
+    ->where(['school_id' => $schoolId])
+    ->andWhere(['between', 'date', $last30Day->format('Y-m-d'), date('Y-m-d')])
+    ->distinct()
+    ->count();
+
+// CARD 2
+$totalPayment = 0;
+
+// CARD 3
+$last7Day = new DateTime('+7 days');
+$almostOverdueCount = Invoice::find()
+    ->select('number')
+    ->where(['school_id' => $schoolId])
+    ->andWhere(['between', 'due_date', date('Y-m-d'), $last7Day->format('Y-m-d')])
+    ->distinct()
+    ->count();
+
+// CARD 4
+$last30Day = new DateTime('-30 days');
+$overdueCount = Invoice::find()
+    ->select('number')
+    ->where(['school_id' => $schoolId])
+    ->andWhere(['between', 'due_date', $last30Day->format('Y-m-d'), date('Y-m-d')])
+    ->andWhere('paid_amount < amount')
+    ->distinct()
+    ->count();
 
 /**
  *-------------------------------
  * Last 30 Days Chart
  *-------------------------------
  */
-$card1 = '';
-$dateTime = new DateTime('-30 days');
-$transactionCount = Transaction::find()
-->where(['school_id' => $schoolId])
-->andWhere(['between', 'date', $dateTime->format('Y-m-d'), date('Y-m-d')])->count();
 
 // variable definition
 $jsonDay = '';
@@ -46,55 +73,58 @@ for ($i = 1; $i <= 31; $i++) {
 
     // modify date -1 month
     $dateTime->modify('+1 day');
+
+    // add total payment
+    $totalPayment += $totalInDay;
 }
 ?>
 <div class="row">
     <div class="col-lg-3 col-6">
         <div class="small-box bg-info">
             <div class="inner">
-                <h3><?= $card1 ?></h3>
-                <p>Pembayaran</p>
+                <h3><?= $transactionCount ?></h3>
+                <p>Transaksi Pembayaran</p>
             </div>
             <div class="icon">
                 <i class="ion ion-bag"></i>
             </div>
-            <a href="#" class="small-box-footer">Lihat detail <i class="fas fa-arrow-circle-right"></i></a>
+            <!-- <a href="#" class="small-box-footer">Lihat detail <i class="fas fa-arrow-circle-right"></i></a> -->
         </div>
     </div>
     <div class="col-lg-3 col-6">
         <div class="small-box bg-success">
             <div class="inner">
-                <h3>2.550.000<sup style="font-size: 20px;"></sup></h3>
+                <h3><?= Strings::getRupiah($totalPayment) ?><sup style="font-size: 20px;"></sup></h3>
                 <p>Total Pembayaran</p>
             </div>
             <div class="icon">
                 <i class="ion ion-stats-bars"></i>
             </div>
-            <a href="#" class="small-box-footer">Lihat detail <i class="fas fa-arrow-circle-right"></i></a>
+            <!-- <a href="#" class="small-box-footer">Lihat detail <i class="fas fa-arrow-circle-right"></i></a> -->
         </div>
     </div>
     <div class="col-lg-3 col-6">
         <div class="small-box bg-warning">
             <div class="inner">
-                <h3>5</h3>
-                <p>Akan Jatuh Tempo</p>
+                <h3><?= $almostOverdueCount ?></h3>
+                <p>Tagihan Akan Jatuh Tempo</p>
             </div>
             <div class="icon">
                 <i class="ion ion-person-add"></i>
             </div>
-            <a href="#" class="small-box-footer">Lihat detail <i class="fas fa-arrow-circle-right"></i></a>
+            <!-- <a href="#" class="small-box-footer">Lihat detail <i class="fas fa-arrow-circle-right"></i></a> -->
         </div>
     </div>
     <div class="col-lg-3 col-6">
         <div class="small-box bg-danger">
             <div class="inner">
-                <h3>12</h3>
-                <p>Tunggakan</p>
+                <h3><?= $overdueCount ?></h3>
+                <p>Tunggakan Tagihan</p>
             </div>
             <div class="icon">
                 <i class="ion ion-pie-graph"></i>
             </div>
-            <a href="#" class="small-box-footer">Lihat detail <i class="fas fa-arrow-circle-right"></i></a>
+            <!-- <a href="#" class="small-box-footer">Lihat detail <i class="fas fa-arrow-circle-right"></i></a> -->
         </div>
     </div>
 </div>

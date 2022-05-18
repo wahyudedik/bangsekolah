@@ -9,6 +9,7 @@ use common\helpers\Strings;
  * This is the model class for table "transaction".
  *
  * @property int $id
+ * @property int $school_id
  * @property int $invoice_id
  * @property int $student_id
  * @property int $school_payment_id
@@ -50,7 +51,7 @@ class Transaction extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['invoice_id', 'student_id', 'school_payment_id', 'amount', 'user_id'], 'integer'],
+            [['school_id', 'invoice_id', 'student_id', 'school_payment_id', 'amount', 'user_id'], 'integer'],
             [['date', 'note', 'payment_method'], 'string', 'max' => 255],
         ];
     }
