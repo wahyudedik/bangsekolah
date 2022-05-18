@@ -1,4 +1,5 @@
 <?php
+use yii\helpers\Url;
 use yii\helpers\Html;
 use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
@@ -6,13 +7,15 @@ use yii\widgets\Breadcrumbs;
 use frontend\assets\AppAsset;
 use common\widgets\Alert;
 
-// if (!isset(Yii::$app->user->identity->id)) {
-// 	Yii::$app->user->logout();
-// 	return Yii::$app->response->redirect(['site/login']);
-// }
+// check session school_id
+if (Yii::$app->session->get('school_id') == null) {
+    // echo '<meta http-equiv="refresh" content="0; url='.Url::to(['site/login']).'">';
+	Yii::$app->user->logout();
+	return Yii::$app->response->redirect(['site/login']);
+}
 
-// AppAsset::register($this);
 // Exclude asset from rendering
+// AppAsset::register($this);
 unset($this->assetBundles['yii\bootstrap\BootstrapAsset']);
 unset($this->assetBundles['yii\web\JqueryAsset']);
 unset($this->assetBundles['yii\web\YiiAsset']);
