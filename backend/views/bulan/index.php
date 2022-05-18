@@ -60,7 +60,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             'view' => function ($url, $model) { return Html::a('<i class="fas fa-eye"></i>', $url, ['class' => 'btn btn-success']).' '; },
                             'update' => function ($url, $model) { return Html::a('<i class="fas fa-pen"></i>', $url, ['class' => 'btn btn-primary']).' '; },
                             'delete' => function ($url, $model) {
-                                return Html::a('<i class="fas fa-trash"></i>', $url, ['class' => 'btn btn-danger', 'onclick' => 'return confirm("Yakin untuk menghapus ini?");']).' ';
+                                return Html::a('<i class="fas fa-trash"></i>', $url, ['class' => 'btn btn-danger', 'onclick' => 'return confirm("Apakah Anda yakin hapus data ini?");']).' ';
                             },
                         ]
                     ],
