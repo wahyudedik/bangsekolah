@@ -53,8 +53,8 @@ class TransactionController extends Controller
             'query' => $query->orderBy(['id' => SORT_DESC]),
         ]);
 
-        $schoolPayments = SchoolPayment::find()->where(['school_id' => Yii::$app->session->get('school_id')])->all();
-        $schoolClasses = SchoolClass::find()->where(['school_id' => Yii::$app->session->get('school_id')])->all();
+        $schoolPayments = SchoolPayment::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'status' => 'ACTIVE'])->all();
+        $schoolClasses = SchoolClass::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'status' => 'ACTIVE'])->all();
 
         return $this->render('index', [
             'dataProvider' => $dataProvider,
