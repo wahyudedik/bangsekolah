@@ -33,8 +33,8 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="col-lg-6">
                 <div class="card-tools float-right">
                     <?= Html::a('<i class="fas fa-plus fa-lg"></i> Tambah Siswa', ['create'], ['class' => 'btn btn-success']) ?>
-                    <?= Html::a('<i class="fas fa-chalkboard-teacher fa-lg"></i> Naik Kelas', ['update-class/index'], ['class' => 'btn btn-success']) ?>
-                    <?= Html::a('<i class="fas fa-upload fa-lg"></i> Import', ['import'], ['class' => 'btn btn-success']) ?>
+                    <?= Html::a('<i class="fas fa-chalkboard-teacher fa-lg"></i> Naik Kelas', ['update-class/index'], ['class' => 'btn btn-primary']) ?>
+                    <?= Html::a('<i class="fas fa-upload fa-lg"></i> Import', ['import'], ['class' => 'btn btn-primary']) ?>
                     <?= Html::a('<i class="fas fa-sync-alt fa-lg"></i>', ['index'], ['class' => 'btn btn-primary']) ?>
                 </div>
             </div>
@@ -60,7 +60,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     [
                         'class' => 'yii\grid\ActionColumn',
                         'header' => 'Detail',
-                        'template' => '{view}{update}', 
+                        'template' => '{view}', 
                         'contentOptions' => ['style' => 'width:150px;'],
                         'buttons' => [
                             'view' => function ($url, $model) { return Html::a('<i class="fas fa-eye"></i>', $url, ['class' => 'btn btn-success']).' '; },

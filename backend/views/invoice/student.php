@@ -60,22 +60,24 @@ $this->params['breadcrumbs'][] = $this->title;
                                     $paid++;
                                 }
                             }
-                            if ($inv == $paid) {
-                                return '<span class="text-success">'.$paid.'/'.$inv.'</span>';
-                            } else {
+                            if ($paid == 0) {
                                 return '<span class="text-danger">'.$paid.'/'.$inv.'</span>';
+                            } else if ($inv == $paid) {
+                                return '<span class="text-success">'.$paid.'/'.$inv.'</span>';
+                            } else if ($inv > $paid) {
+                                return '<span class="text-warning">'.$paid.'/'.$inv.'</span>';
                             }
                         }
                     ],
 
                     [
                         'class' => 'yii\grid\ActionColumn',
-                        'header' => 'Detail',
+                        'header' => 'Daftar Tagihan',
                         'template' => '{view}', 
                         'contentOptions' => ['style' => 'width:150px;'],
                         'buttons' => [
                             'view' => function ($url, $model) {
-                                return Html::a('<i class="fas fa-eye"></i> Lihat Tagihan', ['invoice/invoices', 'student' => $model->id], ['class' => 'btn btn-success']).' ';
+                                return Html::a('<i class="fas fa-eye"></i>', ['invoice/invoices', 'student' => $model->id], ['class' => 'btn btn-success']).' ';
                             },
                         ]
                     ],

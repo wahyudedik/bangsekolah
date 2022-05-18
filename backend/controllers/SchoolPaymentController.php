@@ -57,9 +57,21 @@ class SchoolPaymentController extends Controller
         $model->school_id = Yii::$app->session->get('school_id');
         $model->status = 'ACTIVE';
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            // return $this->redirect(['view', 'id' => $model->id]);
-            return $this->redirect(['index']);
+        if ($model->load(Yii::$app->request->post())) {
+
+            // validasi data form
+            $number = strtoupper(str_replace(' ', '', $model->number));
+            $model->number = $number;
+
+            if ($model->save()) {
+                Yii::$app->session->setFlash('success', 'Master pembayaran berhasil disimpan');
+                return $this->redirect(['view', 'id' => $model->id]);
+            } else {
+                foreach ($model->errors as $error) {
+                    Yii::$app->session->setFlash('danger', $error[0]);
+                }
+                return $this->redirect(['index']);
+            }
         }
 
         return $this->render('create', [

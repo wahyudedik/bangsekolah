@@ -33,7 +33,7 @@ use yii\widgets\ActiveForm;
                         </div>
                         <div id="invoice-date" style="display: none;">
                             <?= $form->field($model, 'date')->textInput(['type' => 'date', 'value' => date('Y-m-d')])->label('Tanggal Tagihan') ?>
-                            <?= $form->field($model, 'due_date')->textInput(['type' => 'date', 'value' => date('Y-m-t')])->label('Jatuh Tempo') ?>
+                            <?= $form->field($model, 'due_date')->textInput(['type' => 'date', 'value' => date('Y-m-t')])->label('Tanggal Jatuh Tempo') ?>
                         </div>                        
                     </div>
                 </div>

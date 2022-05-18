@@ -48,6 +48,8 @@ class SchoolPayment extends \yii\db\ActiveRecord
         return [
             [['school_id', 'payment_type_id'], 'integer'],
             [['name', 'year', 'number', 'status'], 'string', 'max' => 255],
+            [['name', 'year', 'number', 'payment_type_id'], 'required'],
+            [['number'], 'unique'],
         ];
     }
 

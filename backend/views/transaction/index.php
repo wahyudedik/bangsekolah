@@ -72,7 +72,7 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
         <div class="card-header">
             <?= Html::submitButton('<i class="fas fa-search"></i> Terapkan', ['class' => 'btn btn-success']) ?>
-            <?= Html::a('<i class="fas fa-upload"></i> Import', ['import'], ['class' => 'btn btn-success']) ?>
+            <?= Html::a('<i class="fas fa-upload"></i> Import', ['import'], ['class' => 'btn btn-primary']) ?>
             <?= Html::a('<i class="fas fa-sync-alt"></i> Reset', ['transaction/index'], ['class' => 'btn btn-primary']) ?>
         </div>        
     <?php ActiveForm::end() ?>
