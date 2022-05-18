@@ -343,6 +343,12 @@ class TransactionController extends Controller
             $arrYear[] = $year->name;
         }
 
+        $arrMonth = [];
+        $months = SchoolMonth::find()->where(['school_id' => Yii::$app->session->get('school_id')])->all();
+        foreach ($months as $month) {
+            $arrYear[] = $month->name;
+        }
+
         // PHP Excel init        
         $phpexcel = \PHPExcel_IOFactory::load($fileName);
         $worksheet = $phpexcel->getSheet($sheet);
@@ -391,7 +397,8 @@ class TransactionController extends Controller
 
                     // validasi data
                     $year = trim((string)$rowExcelData[4]);
-                    if (in_array($year, $arrYear)) {
+                    $month = trim((string)$rowExcelData[3]);
+                    if (in_array($year, $arrYear) && in_array($month, $arrMonth)) {
                         $itemArray[] = [
                             'invoice' => $invoice->id,
                             'student' => $student->id,
