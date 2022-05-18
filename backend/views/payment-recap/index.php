@@ -80,6 +80,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <table class="table table-bordered">
                     <tr>
                         <th>No</th>
+                        <th>NISN</th>
                         <th>Nama Siswa</th>
                         <th>Total Bayar</th>
                         <th>Sudah Bayar</th>
@@ -94,6 +95,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             ?>
                             <tr>
                                 <td><?= $i++; ?></td>
+                                <td><?= $student->nisn ?></td>
                                 <td><?= $student->name ?></td>
                                 <td><?= $invoice->amountRupiah ?></td>
                                 <td><?= $invoice->paidAmountRupiah ?></td>
@@ -108,6 +110,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <table class="table table-bordered table-responsive">
                     <tr>
                         <th>No</th>
+                        <th>NISN</th>
                         <th>Nama Siswa</th>
                         <?php
                         foreach ($schoolMonths as $month) {
@@ -127,6 +130,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         ?>
                         <tr>
                             <td><?= $i++; ?></td>
+                            <td><?= $student->nisn ?></td>
                             <td><?= $student->name ?></td>
                             <?php
                             foreach ($schoolMonths as $month) {
@@ -152,6 +156,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 </table>
             </div>
         <?php endif; ?>
+    </div>
+<?php else: ?>
+    <div class="callout callout-info">
+        Pilih tahun ajaran, kelas, dan jenis pembayaran
     </div>
 <?php endif; ?>
 
