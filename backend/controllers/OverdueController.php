@@ -23,8 +23,8 @@ class OverdueController extends Controller
         \common\helpers\Sidebar::setActiveMenu('overdue', 'index');
 
         $years = Year::find()->where(['status' => 'ACTIVE'])->all();
-        $schoolPayments = SchoolPayment::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'payment_type_id' => '1'])->all();
-        $schoolClasses = SchoolClass::find()->where(['school_id' => Yii::$app->session->get('school_id')])->all();
+        $schoolPayments = SchoolPayment::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'payment_type_id' => '1', 'status' => 'ACTIVE'])->all();
+        $schoolClasses = SchoolClass::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'status' => 'ACTIVE'])->all();
         $schoolMonths = SchoolMonth::find()->where(['status' => 'ACTIVE'])->all();
 
         $students = null;
