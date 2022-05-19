@@ -26,8 +26,13 @@ $baseUrl = Yii::$app->request->baseUrl;
                 <div class="card-body">
                     <div class="callout callout-info">
                         <h5>Panduan import</h5>
-                        <p>There is a problem that we need to fix. A wonderful serenity has taken possession of my entire soul, like these sweet mornings of spring which I enjoy with my whole heart. There is a problem that we need to fix. A wonderful serenity has taken possession of my entire soul, like these sweet mornings of spring which I enjoy with my whole heart.</p>
-                        <p>Download template import data siswa di sini: <br><a href="<?= $baseUrl ?>/template/template-import-siswa.xlsx" download="template-import-siswa.xlsx">TEMPLATE IMPORT SISWA.xlsx</a></p>
+                        <p>Daftar siswa selain diinput secara manual, bisa juga diimport dari dokumen Excel. Beberapa hal yang harus diperhatikan ketika melakukan import transaksi adalah memastikan bahwa master kelas telah dibuat terlebih dahulu.
+                        Berikut adalah tampilan template excel untuk import data siswa:</p>
+                        </p>
+                        <p>
+                            <img src="<?= $baseUrl ?>/images/template-preview-student.png" width="100%">
+                        </p>
+                        <p>Download template import data siswa di sini: <br><a href="<?= $baseUrl ?>/template/template-import-siswa.xlsx" download="template-import-siswa.xlsx" style="color: #007bff;">TEMPLATE IMPORT SISWA.xlsx</a></p>
                     </div>
 
                     <?= $form->field($model, 'file')->fileInput() ?>

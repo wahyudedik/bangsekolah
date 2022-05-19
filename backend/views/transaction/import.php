@@ -26,8 +26,12 @@ $baseUrl = Yii::$app->request->baseUrl;
                 <div class="card-body">
                     <div class="callout callout-info">
                         <h5>Panduan import</h5>
-                        <p>There is a problem that we need to fix. A wonderful serenity has taken possession of my entire soul, like these sweet mornings of spring which I enjoy with my whole heart. There is a problem that we need to fix. A wonderful serenity has taken possession of my entire soul, like these sweet mornings of spring which I enjoy with my whole heart.</p>
-                        <p>Download template import data transaksi di sini: <br><a href="<?= $baseUrl ?>/template/template-import-transaksi.xlsx" download="template-import-transaksi.xlsx">TEMPLATE IMPORT TRANSAKSI.xlsx</a></p>
+                        <p>Transaksi pembayaran siswa bisa diimport dari dokumen Excel. Beberapa hal yang harus diperhatikan ketika melakukan import transaksi adalah memastikan bahwa data pembayaran dan tagihan sudah dibuat terlebih dahulu.
+                        Berikut adalah tampilan template excel untuk import data transaksi pembayaran:</p>
+                        <p>
+                            <img src="<?= $baseUrl ?>/images/template-preview-transaction.png" width="100%">
+                        </p>
+                        <p>Download template import data transaksi di sini: <br><a href="<?= $baseUrl ?>/template/template-import-transaksi.xlsx" download="template-import-transaksi.xlsx" style="color: #007bff;">TEMPLATE IMPORT TRANSAKSI.xlsx</a></p>
                     </div>
 
                     <?= $form->field($model, 'file')->fileInput() ?>
