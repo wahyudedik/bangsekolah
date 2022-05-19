@@ -19,17 +19,25 @@ class SchoolPaymentController extends Controller
      * Lists all SchoolPayment models.
      * @return mixed
      */
-    public function actionIndex($q = null)
+    public function actionIndex($search = null)
     {
         \common\helpers\Sidebar::setActiveMenu('school-payment', 'index');
 
+        $query = SchoolPayment::find()->where(['status' => 'ACTIVE']);
+        if ($search) {
+            $query->andFilterWhere([
+                'or',
+                ['like', 'name', $search]
+            ]);
+        }
+
         $dataProvider = new ActiveDataProvider([
-            'query' => SchoolPayment::find()->where(['status' => 'ACTIVE']),
+            'query' => $query,
         ]);
 
         return $this->render('index', [
             'dataProvider' => $dataProvider,
-            'q' => $q,
+            'search' => $search,
         ]);
     }
 
