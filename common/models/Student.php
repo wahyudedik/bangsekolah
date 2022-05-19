@@ -85,7 +85,8 @@ class Student extends \yii\db\ActiveRecord
      */
     public function getInvoices()
     {
-        return $this->hasMany(Invoice::className(), ['student_id' => 'id']);
+        return $this->hasMany(Invoice::className(), ['student_id' => 'id'])
+        ->andOnCondition(['year' => $this->year]);
     }
 
     /**

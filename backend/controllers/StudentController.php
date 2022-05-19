@@ -7,6 +7,7 @@ use common\models\Student;
 use common\models\SchoolMonth;
 use common\models\SchoolClass;
 use common\models\Year;
+
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -37,17 +38,26 @@ class StudentController extends Controller
      * Lists all Student models.
      * @return mixed
      */
-    public function actionIndex($name = null, $class = null)
+    public function actionIndex($search = null, $class = null)
     {
         \common\helpers\Sidebar::setActiveMenu('student', 'index');
 
         $query = Student::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'status' => 'ACTIVE']);
         $classes = SchoolClass::find()->where(['school_id' => Yii::$app->session->get('school_id')])->all();
 
-        if ($name !== null) {
+        // force fill default class
+        if (!$class) {
+            foreach ($classes as $cls) {
+                $class = $cls->name;
+                break;
+            }
+        }
+
+        if ($search !== null) {
             $query->andFilterWhere([
                 'or',
-                ['like', 'name', $name],
+                ['like', 'nisn', $search],
+                ['like', 'name', $search],
             ]);
         }
         if ($class !== null) {
@@ -63,7 +73,7 @@ class StudentController extends Controller
 
         return $this->render('index', [
             'dataProvider' => $dataProvider,
-            'name' => $name,
+            'search' => $search,
             'class' => $class,
             'classes' => $classes,
         ]);

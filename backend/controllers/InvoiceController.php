@@ -15,6 +15,7 @@ use common\models\SchoolMonth;
 use common\models\Transaction;
 use common\models\PaymentType;
 use common\models\SchoolPayment;
+use common\models\SchoolClass;
 
 /**
  * InvoiceController implements the CRUD actions for Invoice model.
@@ -40,18 +41,32 @@ class InvoiceController extends Controller
      * Lists all Invoice models.
      * @return mixed
      */
-    public function actionIndex($q = null)
+    public function actionIndex($search = null, $class = null)
     {
         \common\helpers\Sidebar::setActiveMenu('invoice', 'index');
 
-        $query = Student::find()
-            ->where(['school_id' => Yii::$app->session->get('school_id')]);
+        $query = Student::find()->where(['school_id' => Yii::$app->session->get('school_id')]);
+        $classes = SchoolClass::find()->where(['school_id' => Yii::$app->session->get('school_id')])->all();
 
-        if ($q !== null) {
+        // force fill default class
+        if (!$class) {
+            foreach ($classes as $cls) {
+                $class = $cls->name;
+                break;
+            }
+        }
+
+        if ($search !== null) {
             $query->andFilterWhere([
                 'or',
-                ['like', 'nisn', $q],
-                ['like', 'name', $q],
+                ['like', 'nisn', $search],
+                ['like', 'name', $search],
+            ]);
+        }
+        if ($class !== null) {
+            $query->andFilterWhere([
+                'and',
+                ['class' => $class],
             ]);
         }
 
@@ -61,8 +76,9 @@ class InvoiceController extends Controller
 
         return $this->render('student', [
             'dataProvider' => $dataProvider,
-            // 'students' => $students,
-            'q' => $q,
+            'search' => $search,
+            'class' => $class,
+            'classes' => $classes,
         ]);
     }
 
@@ -87,7 +103,7 @@ class InvoiceController extends Controller
     public function actionInvoices($student)
     {
         $student = Student::findOne($student);
-        $query = Invoice::find()->where(['student_id' => $student->id]);
+        $query = Invoice::find()->where(['student_id' => $student->id, 'year' => $student->year]);
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);

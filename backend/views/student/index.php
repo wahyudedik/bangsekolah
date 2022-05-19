@@ -15,15 +15,16 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="col-lg-6">
                 <?php $form = ActiveForm::begin(['method' => 'get', 'action' => Url::to(['index']), 'options' => ['class' => 'form-inline']]) ?>
                     <div class="input-group input-group-sm">
-                    <select name="class" class="form-control">
-                        <option value="">Semua Kelas</option>
-                        <?php
-                        foreach ($classes as $cls) {
-                            echo '<option value="'.$cls->name.'" '.($cls->name == $class ? 'selected' : '').'>'.$cls->name.'</option>';
-                        }
-                        ?>
-                    </select>
-                        <input type="text" name="name" class="form-control" placeholder="Nama siswa ..." value="<?= $name ?>">
+                        <label style="margin-right: 10px;">Pilih Kelas</label>
+                        <select name="class" class="form-control">
+                            <option value="">Semua Kelas</option>
+                            <?php
+                            foreach ($classes as $cls) {
+                                echo '<option value="'.$cls->name.'" '.($cls->name == $class ? 'selected' : '').'>'.$cls->name.'</option>';
+                            }
+                            ?>
+                        </select>
+                        <input type="text" name="search" class="form-control" placeholder="Cari siswa ..." value="<?= $search ?>">
                         <span class="input-group-append">
                             <button type="submit" class="btn btn-info btn-flat"><i class="fas fa-search search-icon"></i></button>
                         </span>
