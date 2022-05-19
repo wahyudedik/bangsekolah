@@ -74,9 +74,13 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
             <div class="col-lg-4">
                 <div style="margin-top: 30px;">
-                    <?= Html::submitButton('<i class="fas fa-search"></i> Tampilkan', ['class' => 'btn btn-success']) ?>
-                    <?= Html::a('<i class="fas fa-sync-alt"></i> Reset', ['overdue/index'], ['class' => 'btn btn-primary']) ?>
-                    <?= Html::a('<i class="fas fa-download"></i> Download', ['overdue/download'], ['class' => 'btn btn-info']) ?>
+                    <?php
+                    echo Html::submitButton('<i class="fas fa-search"></i> Tampilkan', ['class' => 'btn btn-success']).' ';
+                    if ($year && $class && $payment && $month) {
+                        echo Html::a('<i class="fas fa-sync-alt"></i> Reset', ['overdue/index'], ['class' => 'btn btn-primary']).' ';
+                        echo Html::a('<i class="fas fa-download"></i> Download', ['overdue/download'], ['class' => 'btn btn-info']);
+                    }
+                    ?>
                 </div>
             </div>
         </div>
