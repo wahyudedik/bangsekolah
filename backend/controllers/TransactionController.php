@@ -96,7 +96,7 @@ class TransactionController extends Controller
         $transaction = Transaction::findOne($id);
         $transactions = Transaction::find()->where(['number' => $transaction->number])->all();
 
-        $content = $this->renderPartial('@app/views/print/payment-receipt', [
+        $content = $this->renderPartial('@app/views/pdf-template/payment-receipt', [
             'transaction' => $transaction,
             'transactions' => $transactions,
         ]);

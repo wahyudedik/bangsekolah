@@ -59,10 +59,15 @@ $this->params['breadcrumbs'][] = $this->title;
                     </select>
                 </div>
             </div>
-            <div class="col-lg-3">
+            <div class="col-lg-5">
                 <div style="margin-top: 30px;">
-                    <?= Html::submitButton('<i class="fas fa-search"></i> Tampilkan', ['class' => 'btn btn-success']) ?>
-                    <?= Html::a('<i class="fas fa-sync-alt"></i> Reset', ['payment-recap/index'], ['class' => 'btn btn-primary']) ?>
+                    <?php
+                    echo Html::submitButton('<i class="fas fa-search"></i> Tampilkan', ['class' => 'btn btn-success']).' ';
+                    if ($year && $class && $payment) {
+                        echo Html::a('<i class="fas fa-sync-alt"></i> Reset', ['payment-recap/index'], ['class' => 'btn btn-primary']).' ';
+                        echo Html::a('<i class="fas fa-download"></i> Download', ['payment-recap/download', 'year' => $year, 'class' => $class, 'payment' => $payment->number], ['class' => 'btn btn-info', 'download' => 'payment-recap-'.$year.'-'.$class.'-'.$payment->number.'.pdf']).' ';
+                    }
+                    ?>
                 </div>
             </div>
         </div>
