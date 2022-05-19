@@ -9,8 +9,10 @@ use common\models\SchoolPayment;
 use common\models\SchoolMonth;
 use common\models\Year;
 use common\models\Student;
+use common\models\School;
 
 use yii\web\Controller;
+use kartik\mpdf\Pdf;
 
 /**
  * OverdueController implements the CRUD actions for Transaction model.
@@ -51,13 +53,17 @@ class OverdueController extends Controller
         $schoolMonths = SchoolMonth::find()->where(['status' => 'ACTIVE', 'school_id' => Yii::$app->session->get('school_id')])->all();
         $students = null;
         if ($year && $class && $payment && $month) {
+            $school = School::findOne(Yii::$app->session->get('school_id'));
             $payment = SchoolPayment::find()->where(['number' => $payment])->one();
-            $students = Student::find()->where(['year' => $year, 'class' => $class, 'school_id' => Yii::$app->session->get('school_id')])->all();
+            $students = Student::find()->where(['year' => $year, 'class' => $class, 'school_id' => Yii::$app->session->get('school_id'), 'status' => 'ACTIVE'])->all();
         }
 
         $content = $this->renderPartial('@app/views/pdf-template/overdue', [
             'month' => $month,
+            'year' => $year,
+            'class' => $class,
             'payment' => $payment,
+            'school' => $school,
             'students' => $students,
             'schoolMonths' => $schoolMonths,
         ]);
@@ -66,7 +72,7 @@ class OverdueController extends Controller
 
         $pdf = new Pdf([
             'mode' => Pdf::MODE_CORE,
-            'filename' => 'payment-recap-'.$year.'-'.$class.'-'.$payment->number.'.pdf',
+            'filename' => 'overdue-'.$year.'-'.$class.'-'.$payment->number.'.pdf',
             'format' => [210, 330],
             // 'format' => [148, 210],
             'orientation' => Pdf::ORIENT_LANDSCAPE,
@@ -78,7 +84,7 @@ class OverdueController extends Controller
             'marginLeft' => '5',
             'marginRight' => '5',
             'content' => $content,
-            // 'cssFile' => '@vendor/kartik-v/yii2-mpdf/assets/kv-mpdf-bootstrap.css',
+            'cssFile' => '@vendor/kartik-v/yii2-mpdf/src/assets/kv-mpdf-bootstrap.min.css',
             // 'cssFile' => '@app/web/css/surat-penawaran.css',
             'cssInline' => '.border-top{border-top: 1px solid grey;}',
             'options' => [
@@ -86,7 +92,7 @@ class OverdueController extends Controller
                 'showWatermarkImage' => true,
             ],
             'methods' => [
-                'SetTitle' => 'payment-recap-'.$year.'-'.$class.'-'.$payment->number.'.pdf',
+                'SetTitle' => 'overdue-'.$year.'-'.$class.'-'.$payment->number.'.pdf',
             ]
         ]);
 

@@ -9,6 +9,7 @@ use common\models\SchoolPayment;
 use common\models\SchoolMonth;
 use common\models\Year;
 use common\models\Student;
+use common\models\School;
 
 use yii\web\Controller;
 use kartik\mpdf\Pdf;
@@ -51,11 +52,15 @@ class PaymentRecapController extends Controller
         $schoolMonths = SchoolMonth::find()->where(['status' => 'ACTIVE'])->all();
         $students = null;
         if ($year && $class && $payment) {
+            $school = School::findOne(Yii::$app->session->get('school_id'));
             $payment = SchoolPayment::find()->where(['number' => $payment])->one();
             $students = Student::find()->where(['year' => $year, 'class' => $class, 'school_id' => Yii::$app->session->get('school_id')])->all();
         }
 
         $content = $this->renderPartial('@app/views/pdf-template/payment-recap', [
+            'year' => $year,
+            'class' => $class,
+            'school' => $school,
             'payment' => $payment,
             'students' => $students,
             'schoolMonths' => $schoolMonths,

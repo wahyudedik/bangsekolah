@@ -1,14 +1,51 @@
 <?php
 use common\models\Invoice;
 use common\helpers\Strings;
+$baseUrl = Yii::$app->request->baseUrl;
 ?>
 
 <?php if ($students): ?>
     <div class="card">
-        <div class="card-header">
-            <h3>Tunggakan Siswa</h3>
+        <div class="card-header" style="width: 100%; border-bottom: 5px solid black; margin-bottom: 25px;  ">
+            <table style="width: 100%">
+                <tr>
+                    <td style="width:10%">
+                        <?php if ($school->image == null) { ?>
+                            <img src="<?= $baseUrl ?>/images/banksekolah-logo.png" alt="BANKSEKOLAH" class="brand-image img-circle elevation-3" style="opacity: 0.8; width: 80px;" />
+                        <?php } else { ?>
+                            <img src="<?= $baseUrl ?>/uploads/school/<?= $school->image ?>" alt="BANKSEKOLAH" class="brand-image img-circle elevation-3" style="opacity: 0.8;" />
+                        <?php } ?>
+                    </td>
+                    <td style="width:80%" align="center">
+                        <h4><b><?= $school->name ?></b></h4><br>
+                        <p><?= 'Alamat: '.$school->address.', '.$school->city ?></p>
+                        <p><?= 'Telp: '.$school->phone ?></p>
+                    </td>
+                    <td style="width:10%"></td>
+                </tr>
+            </table>
         </div>
         <div class="card-body p-0">
+            <h4 align="center"><b>Laporan Tunggakan Siswa</b></h4>
+            <div class="title-body" style="padding-bottom: 15px">
+                <table>
+                    <tr>
+                        <td>Jenis Pembayaran</td>
+                        <td>:</td>
+                        <td><?= $payment->name ?></td>
+                    </tr>
+                    <tr>
+                        <td>Periode Tahun</td>
+                        <td>:</td>
+                        <td><?= $year ?></td>
+                    </tr>
+                    <tr>
+                        <td>Kelas</td>
+                        <td>:</td>
+                        <td><?= $class ?></td>
+                    </tr>
+                </table>
+            </div>
             <table class="table table-bordered">
                 <tr>
                     <th>No</th>
@@ -67,6 +104,18 @@ use common\helpers\Strings;
                     <?php endif; ?>
                 <?php endforeach; ?>
             </table>
+            <div class="footer-body">
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="width: 70%"></td>
+                        <td style="width: 30%" align="center">
+                            <span><?= $school->city.', '.date('d M Y') ?></span><br />
+                            <span>Mengetahui</span><br /><br /><br />
+                            <span>(...............)</span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
         </div>
     </div>
 <?php else: ?>
