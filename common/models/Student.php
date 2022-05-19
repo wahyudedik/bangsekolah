@@ -114,4 +114,15 @@ class Student extends \yii\db\ActiveRecord
             }
         );
     }
+
+    public function getUnpaidInvoiceCount()
+    {
+        $invoices = Invoice::find()->where([
+                'student_id' => $this->id,
+                'year' => $this->year,
+                'status' => 'UNPAID'
+            ])->all();
+
+        return count($invoices);
+    }
 }

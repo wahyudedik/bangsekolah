@@ -37,34 +37,25 @@ class UpdateClassController extends \yii\web\Controller
         ]);
     }
 
-    public function actionCreate($fromYear = null, $fromClass = null)
+    public function actionCreate()
     {
         if (isset($_POST['submit'])) {
-            if ($fromYear == null || $fromClass == null) {
-                Yii::$app->session->setFlash('danger', 'Isi "Dari Kelas" terlebih dahulu');
-                return $this->redirect(['update-class/index']);
-            }
-
             if (!empty( $_POST['student'])){
                 $students = $_POST['student'];
             } else {
-                Yii::$app->session->setFlash('danger', 'Pilih siswa terlebih dahulu');
+                Yii::$app->session->setFlash('danger', 'Pilih atau centang siswa yang akan dipindah kelasnya');
                 return $this->redirect(['update-class/index']);
             }
             $year = $_POST['next-year'];
             $class = $_POST['next-class'];
-            
 
             if ($year == '' || $class == ''){
                 Yii::$app->session->setFlash('danger', 'Tahun dan kelas tidak boleh kosong');
                 return $this->redirect(['update-class/index']);
             }
             
-            $i = 0;
             $saved = 0;
             foreach ($students as $student_id) {
-                //$amount = $amounts[$i];
-
                 $student = Student::findOne($student_id);
                 if ($student) {
                     if ($class == 'lulus') {
@@ -74,15 +65,16 @@ class UpdateClassController extends \yii\web\Controller
                         $student->year = $year;
                         $student->class = $class;
                     }
-                    $student->save();
-                    $saved++;
+                    if ($student->save()) {
+                        $saved++;
+                    }
                 }
             }
 
             if ($saved > 0) {
-                Yii::$app->session->setFlash('success', $saved.' siswa berhasil naik kelas');
+                Yii::$app->session->setFlash('success', $saved.' siswa berhasil pindah kelas');
             } else {
-                Yii::$app->session->setFlash('danger', 'Proses naik kelas gagal');
+                Yii::$app->session->setFlash('danger', 'Proses pindah kelas gagal');
             }
             return $this->redirect(['student/index', 'class' => $class]);
         }
