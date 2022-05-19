@@ -110,7 +110,6 @@ class Student extends \yii\db\ActiveRecord
         return \yii\helpers\ArrayHelper::map(
             Student::find()->where(['school_id' => Yii::$app->session->get('school_id'),'status' => 'ACTIVE'])->asArray()->all(),
             'id', function($model) {
-                // return $model['name'].' ('.$model['unit'].')';
                 return $model['name'];
             }
         );

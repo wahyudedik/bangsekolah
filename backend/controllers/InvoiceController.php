@@ -124,6 +124,9 @@ class InvoiceController extends Controller
 
         if ($model->load(Yii::$app->request->post()) ) {
 
+            // get current class for redirection
+            $currentClass = $model->class;
+
             // filter amount
             if ($model->amount <= 0) {
                 Yii::$app->session->setFlash('danger', 'Jumlah tagihan tidak boleh kurang dari Rp. 0');
@@ -240,7 +243,7 @@ class InvoiceController extends Controller
             } else {
                 Yii::$app->session->setFlash('danger', 'Tidak ada tagihan yang dibuat. Periksa kembali apakah tagihan untuk pembayaran tersebut sudah pernah dibuat.');
             }
-            return $this->redirect(['index']);
+            return $this->redirect(['index', 'class' => $currentClass]);
         }
 
         return $this->render('create', [
