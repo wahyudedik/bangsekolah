@@ -78,7 +78,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     echo Html::submitButton('<i class="fas fa-search"></i> Tampilkan', ['class' => 'btn btn-success']).' ';
                     if ($year && $class && $payment && $month) {
                         echo Html::a('<i class="fas fa-sync-alt"></i> Reset', ['overdue/index'], ['class' => 'btn btn-primary']).' ';
-                        echo Html::a('<i class="fas fa-download"></i> Download', ['overdue/download'], ['class' => 'btn btn-info']);
+                        echo Html::a('<i class="fas fa-download"></i> Download', ['overdue/download', 'year' => $year, 'class' => $class, 'payment' => $payment->number, 'month' => $month], ['class' => 'btn btn-info', 'download' => 'overdue-'.$year.'-'.$class.'-'.$payment->number.'.pdf']);
                     }
                     ?>
                 </div>
