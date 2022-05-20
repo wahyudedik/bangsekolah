@@ -30,7 +30,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     // 'id',
                     'name',
                     'number',
-                    'year',
+                    // 'year',
                     ['attribute' => 'paymentType.name', 'label' => 'Jenis Pembayaran'],
                     // ['attribute' => 'school.name', 'label' => 'Sekolah'],
                     ],

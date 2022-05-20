@@ -12,7 +12,7 @@ use yii\widgets\ActiveForm;
                 <?php $form = ActiveForm::begin(); ?>
                 <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
                 <?= $form->field($model, 'number')->textInput(['maxlength' => true]) ?>
-                <?= $form->field($model, 'year')->dropDownList(Year::getList()) ?>
+                <?php //= $form->field($model, 'year')->dropDownList(Year::getList()) ?>
                 <?= $form->field($model, 'payment_type_id')->dropDownList(PaymentType::getList()) ?>
                 <div class="form-group">
                     <?php

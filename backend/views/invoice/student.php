@@ -75,6 +75,8 @@ $this->params['breadcrumbs'][] = $this->title;
                                 return '<span class="text-success">'.$paid.'/'.$inv.'</span>';
                             } else if ($inv > $paid) {
                                 return '<span class="text-warning">'.$paid.'/'.$inv.'</span>';
+                            } else {
+                                return '<span class="text-success">'.$paid.'/'.$inv.'</span>';
                             }
                         }
                     ],
