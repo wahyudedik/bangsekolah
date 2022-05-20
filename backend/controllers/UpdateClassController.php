@@ -37,9 +37,19 @@ class UpdateClassController extends \yii\web\Controller
         ]);
     }
 
-    public function actionCreate()
+    public function actionCreate($fromYear = null)
     {
         if (isset($_POST['submit'])) {
+            // filter year
+            if ($fromYear) {
+                $min_year = substr($fromYear, 0, 4);
+                $max_year = substr($_POST['next-year'], 0, 4);
+                if ($min_year > $max_year) {
+                    Yii::$app->session->setFlash('danger', 'Tahun ajaran pindah kelas tidak valid');
+                    return $this->redirect(['update-class/index']);
+                }
+            }
+
             if (!empty( $_POST['student'])){
                 $students = $_POST['student'];
             } else {

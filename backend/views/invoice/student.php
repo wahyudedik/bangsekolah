@@ -20,7 +20,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="input-group input-group-sm">
                     <label style="margin-right: 10px;">Pilih Kelas</label>
                     <select name="class" class="form-control">
-                        <option value="">Semua Kelas</option>
+                        <option value="ALL">Semua Kelas</option>
                         <?php
                         foreach ($classes as $cls) {
                             echo '<option value="'.$cls->name.'" '.($cls->name == $class ? 'selected' : '').'>'.$cls->name.'</option>';

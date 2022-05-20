@@ -64,10 +64,12 @@ class InvoiceController extends Controller
             ]);
         }
         if ($class !== null) {
-            $query->andFilterWhere([
-                'and',
-                ['class' => $class],
-            ]);
+            if ($class !== 'ALL') {
+                $query->andFilterWhere([
+                    'and',
+                    ['class' => $class],
+                ]);
+            }
         }
 
         $dataProvider = new ActiveDataProvider([
