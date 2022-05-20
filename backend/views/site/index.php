@@ -153,7 +153,7 @@ for ($i = 1; $i <= 31; $i++) {
           labels  : [<?= $jsonDay ?>],
           datasets: [
             {
-              label               : 'Total Outlet Order (Rupiah)',
+              label               : 'Total Pembayaran (Rupiah)',
               backgroundColor     : 'rgba(60,141,188,0.9)',
               borderColor         : 'rgba(60,141,188,0.8)',
               pointRadius          : false,
