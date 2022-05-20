@@ -79,14 +79,14 @@ $baseUrl = Yii::$app->request->baseUrl;
             </div>
         <?php else: ?>
             <div class="card-body p-0">
-                <table class="table table-bordered table-responsive">
+                <table class="table table-bordered table-responsive" style="font-size: 12px">
                     <tr>
                         <th>No</th>
                         <th>NISN</th>
                         <th>Nama Siswa</th>
                         <?php
                         foreach ($schoolMonths as $month) {
-                            echo '<th style="min-width: 100px;">'.$month->name.'</th>';
+                            echo '<th style="width: 60px;">'.$month->name.'</th>';
                         }
                         ?>
                         <th>Total Bayar</th>
