@@ -33,6 +33,7 @@ class User extends ActiveRecord implements IdentityInterface
     public $mode_create;
     public $mode_add_user;
     public $mode_change_password;
+    public $logo;
 
     /**
      * {@inheritdoc}
@@ -66,7 +67,7 @@ class User extends ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
-            [['name', 'image', 'username', 'password'], 'string', 'max' => 255],
+            [['name', 'image', 'username', 'password', 'logo'], 'string', 'max' => 255],
 
             /**
              * Role pada saat buat user baru, yang required hanya:

@@ -21,7 +21,7 @@ $user_school = UserSchool::find()->where(['user_id' => $user->id])->one();
 	</ul>
 	<ul class="navbar-nav ml-auto">
 		<li class="nav-item">
-			<a class="nav-link" href="#">
+			<a class="nav-link" href="<?= Url::to(['profile/index']) ?>">
 				<?php if ($user_school) { ?>
 					<strong><?= Yii::$app->session->get('school_name') ?></strong> ( <?= $user->username ?> )
 				<?php } else { ?>
