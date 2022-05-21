@@ -70,7 +70,7 @@ class ProfileController extends \yii\web\Controller
                     foreach ($school->getErrors() as $error) { $message = $error[0]; }
                     Yii::$app->session->setFlash('danger', $message);
                 }
-                
+
                 Yii::$app->session->setFlash('success', 'Berhasil diperbarui'. $school->image);
             } else {
                 foreach ($model->getErrors() as $error) { $message = $error[0]; }
@@ -85,5 +85,30 @@ class ProfileController extends \yii\web\Controller
             'model' => $model,
         ]);
     }
+
+    public function actionChangePassword($id = null)
+    {
+        if ($id == null) {
+            $id = Yii::$app->user->identity->id;            
+        }
+        
+        $model = User::findOne($id);
+        $model->mode_change_password = true;
+        if ($model->load(Yii::$app->request->post())) {
+            $model->password_hash = Yii::$app->security->generatePasswordHash($model->password);
+            if ($model->save()) {
+                Yii::$app->session->setFlash('success', 'Password changed successfully');
+            } else {
+                Yii::$app->session->setFlash('danger', 'Password failed to change');
+            }
+
+            return $this->redirect(['view']);
+        }
+
+        return $this->render('change-password', [
+            'model' => $model,
+        ]);
+    }
+
 
 }
