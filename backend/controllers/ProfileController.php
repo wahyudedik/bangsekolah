@@ -70,6 +70,7 @@ class ProfileController extends \yii\web\Controller
                     foreach ($school->getErrors() as $error) { $message = $error[0]; }
                     Yii::$app->session->setFlash('danger', $message);
                 }
+                
                 Yii::$app->session->setFlash('success', 'Berhasil diperbarui'. $school->image);
             } else {
                 foreach ($model->getErrors() as $error) { $message = $error[0]; }

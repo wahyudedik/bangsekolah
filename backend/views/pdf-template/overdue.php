@@ -13,7 +13,7 @@ $baseUrl = Yii::$app->request->baseUrl;
                         <?php if ($school->image == null) { ?>
                             <img src="<?= $baseUrl ?>/images/banksekolah-logo.png" alt="BANKSEKOLAH" class="brand-image img-circle elevation-3" style="opacity: 0.8; width: 80px;" />
                         <?php } else { ?>
-                            <img src="<?= $baseUrl ?>/uploads/school/<?= $school->image ?>" alt="BANKSEKOLAH" class="brand-image img-circle elevation-3" style="opacity: 0.8;" />
+                            <img src="<?= $baseUrl ?>/uploads/school/<?= $school->image ?>" alt="BANKSEKOLAH" class="brand-image img-circle elevation-3" style="opacity: 0.8; width: 80px;" />
                         <?php } ?>
                     </td>
                     <td style="width:80%" align="center">
