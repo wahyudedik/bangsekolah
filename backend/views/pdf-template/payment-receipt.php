@@ -70,7 +70,9 @@ foreach($transactions as $trx) {
                         <?php $i=1; $total=0; foreach($transactions as $trx): $total+=$trx->amount; ?>
                         <tr>
                             <td><?= $i++ ?></td>
-                            <td><?= $trx->schoolPayment->name ?></td>
+                            <td>
+                                <?= $trx->schoolPayment->name == 'SPP' ? $trx->schoolPayment->name.' Bulan '.$trx->invoice->month : $trx->schoolPayment->name ?>
+                            </td>
                             <td><?= Strings::getRupiah($trx->amount) ?></td>
                         </tr>
                         <?php endforeach; ?>
