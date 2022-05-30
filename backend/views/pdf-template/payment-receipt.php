@@ -8,13 +8,20 @@ foreach($transactions as $trx) {
     $transactionDate = date('d/m/Y', strtotime($trx->date));
     break;
 }
+$baseUrl = Yii::$app->request->baseUrl;
 ?>
 <div style="color: #000000;">
     
     <!-- <watermarkimage src="images/watermark-sertifikat-provinsi.png" size="285, 200" alpha="1" /> -->
     <table cellpadding="5px" width="100%">
         <tr>
-            <td width="100px"><img src="images/banksekolah-logo.png" width="70px" height="70px"></td>
+            <td width="100px">
+                <?php if ($transaction->invoice->school->image == null) { ?>
+                    <img src="<?= $baseUrl ?>/images/banksekolah-logo.png" alt="BANKSEKOLAH" class="brand-image img-circle elevation-3" style="opacity: 0.8; width: 80px; height: 80px;" />
+                <?php } else { ?>
+                    <img src="<?= $baseUrl ?>/uploads/school/<?= $transaction->invoice->school->image ?>" alt="BANKSEKOLAH" class="brand-image img-circle elevation-3" style="opacity: 0.8; width: 80px; height: 80px;" />
+                <?php } ?>
+            </td>
             <td style="text-align: left; font-family: monospace;">
                 <span style="font-size: 20px;"><b><?= strtoupper($transaction->invoice->school->name) ?></b></span><br>
                 <?= $transaction->invoice->school->address.' '.$transaction->invoice->school->city ?><br>
