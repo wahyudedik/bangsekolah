@@ -160,4 +160,12 @@ class Invoice extends \yii\db\ActiveRecord
             }
         }
     }
+
+    public function getStatusBayar()
+    {
+        if ($this->status == 'PAID') {
+            $trx = Transaction::find()->where(['invoice_id' => $this->id])->one();
+            return '<span class="text-success">'.$trx->payment_method.'</span>';
+        }
+    }
 }
