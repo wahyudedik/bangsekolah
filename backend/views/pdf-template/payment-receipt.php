@@ -17,8 +17,8 @@ foreach($transactions as $trx) {
             <td width="100px"><img src="images/banksekolah-logo.png" width="70px" height="70px"></td>
             <td style="text-align: left; font-family: monospace;">
                 <span style="font-size: 20px;"><b><?= strtoupper($transaction->invoice->school->name) ?></b></span><br>
-                Jln. Soekarno Hatta 82 Ponorogo<br>
-                0352-364888<br>
+                <?= $transaction->invoice->school->address.' '.$transaction->invoice->school->city ?><br>
+                <?= $transaction->invoice->school->phone ?><br>
             </td>
         </tr>
     </table>
@@ -82,11 +82,38 @@ foreach($transactions as $trx) {
                         </tr>
                     </table>
                     <br>
+                    <?php if ($transaction->schoolPayment->paymentType->name !== 'MONTHLY') { ?>
+                    <table width="100%" style="font-family: monospace;">
+                        <tr>
+                            <td><strong>Sisa Pembayaran</strong></td>
+                        </tr>
+                    </table>
+                    <br>
+                    <table width="100%" cellspacing="0" cellpadding="5" class="table table-bordered" style="font-family: monospace;">
+                        <tr class="border-top">
+                            <th>No</th>
+                            <th>Sisa Pembayaran</th>
+                            <th>Nominal</th>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>
+                                <?= $transaction->schoolPayment->name ?>
+                            </td>
+                            <td><?= Strings::getRupiah($transaction->invoice->amount-$transaction->amount) ?></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" align="right"><strong>Total</strong></td>
+                            <td><?= Strings::getRupiah($transaction->invoice->amount-$transaction->amount) ?></td>
+                        </tr>
+                    </table>
+                    <br>
+                    <?php } ?>
                     <table width="100%" style="font-family: monospace;">
                         <tr>
                             <td width="50%"></td>
                             <td>
-                                Ponorogo, <?= date('d/m/Y', strtotime($transaction->date)) ?><br>
+                                <?= $transaction->invoice->school->city.', '.date('d/m/Y', strtotime($transaction->date)) ?><br>
                                 Petugas<br><br><br>
                                 <?= $transaction->user->name ?>
                             </td>
