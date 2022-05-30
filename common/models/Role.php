@@ -89,4 +89,10 @@ class Role extends \yii\db\ActiveRecord
         $arr = Role::find()->asArray()->all();
         return yii\helpers\ArrayHelper::map($arr, 'id', 'name');
     }
+
+    public static function getRoleSchool()
+    {
+        $arr = Role::find()->where(['NOT',['id' => 1]])->asArray()->all();
+        return yii\helpers\ArrayHelper::map($arr, 'id', 'name');
+    }
 }
