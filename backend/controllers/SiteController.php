@@ -108,6 +108,9 @@ class SiteController extends Controller
             if ($user_school) {
                 Yii::$app->session->set('school_id', $user_school->school_id);
                 Yii::$app->session->set('school_name', $user_school->school->name);
+            } else {
+                Yii::$app->session->set('school_id', '0');
+                Yii::$app->session->set('school_name', '0');
             }
             return $this->goBack();
         } else {
