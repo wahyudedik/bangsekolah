@@ -8,11 +8,11 @@ use frontend\assets\AppAsset;
 use common\widgets\Alert;
 
 // check session school_id
-if (Yii::$app->session->get('school_id') == null) {
+// if (Yii::$app->session->get('school_id') == null) {
     // echo '<meta http-equiv="refresh" content="0; url='.Url::to(['site/login']).'">';
-	Yii::$app->user->logout();
-	return Yii::$app->response->redirect(['site/login']);
-}
+	// Yii::$app->user->logout();
+	// return Yii::$app->response->redirect(['site/login']);
+// }
 
 // Exclude asset from rendering
 // AppAsset::register($this);
