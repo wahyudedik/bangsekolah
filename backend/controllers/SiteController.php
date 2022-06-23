@@ -112,7 +112,8 @@ class SiteController extends Controller
                 Yii::$app->session->set('school_id', '0');
                 Yii::$app->session->set('school_name', '0');
             }
-            return $this->goBack();
+            // return $this->goBack();
+            return $this->redirect(['site/index']);
         } else {
             // $model->login();
             return $this->renderPartial('login', [
