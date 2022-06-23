@@ -101,7 +101,7 @@ class SiteController extends Controller
      */
     public function actionLogin()
     {
-        // return Yii::$app->security->generatePasswordHash('hidayah2022');
+        return Yii::$app->security->generatePasswordHash('hidayah2022');
         $model = new LoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
             $user_school = UserSchool::find()->where(['user_id' => Yii::$app->user->identity->id])->one();
