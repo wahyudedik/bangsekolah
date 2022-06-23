@@ -20,11 +20,18 @@ class ProfileController extends \yii\web\Controller
 {
     public function actionIndex()
     {
-        $model = UserSchool::find()->where(['school_id' => Yii::$app->session->get('school_id')])->one();
+        if ($model->role_id > 1) {
+            $model = UserSchool::find()->where(['school_id' => Yii::$app->session->get('school_id')])->one();
+            return $this->render('index-user-school', [
+                'model' => $model,
+            ]);
+        } else {
+            $model = User::findOne(Yii::$app->user->identity->id);
+            return $this->render('index-super-admin', [
+                'model' => $model,
+            ]);
+        }
 
-        return $this->render('index', [
-            'model' => $model,
-        ]);
     }
 
     public function actionUpdate($id_user = null)
