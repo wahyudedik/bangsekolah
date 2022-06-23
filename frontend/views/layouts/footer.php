@@ -1,82 +1,65 @@
-<?php
-use yii\helpers\Html;
-use yii\helpers\Url;
-use common\helpers\Lang;
-use common\helpers\Visitor;
-
-// get choosen localization
-$cookies = Yii::$app->request->cookies;
-$lang = $cookies->getValue('language', 'id');
-
-$baseUrl = Yii::$app->request->baseUrl;
-?>
-
-<footer>
-    <div class="container hidden-mobile">
-        <!-- <center>
-            <h2 style="margin-bottom: 0px; font-size: 29px;">BANKSEKOLAH</h2>
-            <h4 style="font-size: 12.5px;">Connecting New Generation</h4>
-        </center> -->
-        <center>
-            <img src="<?= $baseUrl ?>/images/banksekolah.png" width="200px" alt="BANKSEKOLAH">
-        </center>
-        <!--
-        <div class="row">
-            <div class="col-md-12">
-                <center>
-                    <?= Html::a('ABOUT US', ['page/view', 'slug' => 'about'], ['class' => 'footer-link', 'style' => 'margin-right: 20px']) ?>
-                    <?= Html::a('ADVERTISING', ['page/view', 'slug' => 'advertising'], ['class' => 'footer-link', 'style' => 'margin-right: 20px']) ?>
-                    <?= Html::a('CONTACT US', ['page/view', 'slug' => 'contact'], ['class' => 'footer-link', 'style' => 'margin-right: 20px']) ?>
-                    <?= Html::a('SUBSCRIBE', ['subscribe/form'], ['class' => 'footer-link', 'style' => 'margin-right: 20px']) ?>
-                </center>
-            </div>
-        </div>
-        -->
-        <div class="row">
-            <div class="col-md-12">
-                <center>
-                    <a class="footer-link" href="#" style="font-size: 12px; color: #333;">&copy; 2022 BANKSEKOLAH. ALL RIGHTS RESERVED</a>
-                </center>
+<!-- ======= Footer ======= -->
+<footer id="footer" class="footer">
+    <div class="footer-top">
+        <div class="container">
+            <div class="row gy-4">
+                <div class="col-lg-5 col-md-12 footer-info">
+                    <a href="index.html" class="logo d-flex align-items-center">
+                    <img src="assets/img/logo.png" alt="">
+                    <span>BankSekolah</span>
+                    </a>
+                    <p>Bank Sekolah adalah aplikasi pembayaran sekolah berbasis web dan mobile</p>
+                    <div class="social-links mt-3">
+                        <a href="#" class="twitter"><i class="bi bi-twitter"></i></a>
+                        <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="instagram"><i class="bi bi-instagram bx bxl-instagram"></i></a>
+                        <a href="#" class="linkedin"><i class="bi bi-linkedin bx bxl-linkedin"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-6 footer-links">
+                    <h4>Useful Links</h4>
+                    <ul>
+                        <li><i class="bi bi-chevron-right"></i> <a href="#">Home</a></li>
+                        <li><i class="bi bi-chevron-right"></i> <a href="#">Tentang Kami</a></li>
+                        <li><i class="bi bi-chevron-right"></i> <a href="#">Fitur</a></li>
+                        <li><i class="bi bi-chevron-right"></i> <a href="#">Terms of service</a></li>
+                        <li><i class="bi bi-chevron-right"></i> <a href="#">Privacy policy</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-6 footer-links">
+                    <h4>Our Services</h4>
+                    <ul>
+                        <li><i class="bi bi-chevron-right"></i> <a href="#">Web Design</a></li>
+                        <li><i class="bi bi-chevron-right"></i> <a href="#">Web Development</a></li>
+                        <li><i class="bi bi-chevron-right"></i> <a href="#">Product Management</a></li>
+                        <li><i class="bi bi-chevron-right"></i> <a href="#">Marketing</a></li>
+                        <li><i class="bi bi-chevron-right"></i> <a href="#">Graphic Design</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-6 footer-links">
+                    <h4>Link Terkait</h4>
+                    <ul>
+                        <li><i class="bi bi-chevron-right"></i> <a href="#">GRAFIKAPRINTING.COM</a></li>
+                        <li><i class="bi bi-chevron-right"></i> <a href="#">FILEGRAFIS.COM</a></li>
+                        <li><i class="bi bi-chevron-right"></i> <a href="#">KONTESIANA</a></li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
-    <div class="container hidden-desktop">
-        <div class="row">
-            <div class="col-md-6" style="text-align: left;">
-                <img src="<?= $baseUrl ?>/images/banksekolah.png" width="200px" alt="BANKSEKOLAH">
-                <br><br>
-                <ul>
-                    <li><?= Html::a('ABOUT US', ['page/view', 'slug' => 'about'], ['class' => 'footer-link']) ?></li>
-                    <li><?= Html::a('ADVERTISING', ['page/view', 'slug' => 'advertising'], ['class' => 'footer-link']) ?></li>
-                    <li><?= Html::a('CONTACT US', ['page/view', 'slug' => 'contact'], ['class' => 'footer-link']) ?></li>
-                    <li><?= Html::a('SUBSCRIBE', ['subscribe/form'], ['class' => 'footer-link']) ?></li>
-                </ul>
-            </div>
-            <div class="col-md-6" style="text-align: left;">
-                <a href="https://www.facebook.com/ptpus" target="_blank">
-                    <img src="<?= $baseUrl ?>/images/icons8-facebook-48.png" width="30px">
-                </a>
-                <a href="https://instagram.com/pt-pus.com/?igshid=jqh4uawtqowc" target="_blank">
-                    <img src="<?= $baseUrl ?>/images/icons8-instagram-48.png" width="30px">
-                </a>
-                <a href="https://www.linkedin.com/company/ptpus" target="_blank">
-                    <img src="<?= $baseUrl ?>/images/icons8-linkedin-48.png" width="30px">
-                </a>
-                <a href="https://twitter.com/ptpus" target="_blank">
-                    <img src="<?= $baseUrl ?>/images/icons8-twitter-48.png" width="30px">
-                </a>
-                <br><br>
-                <ul>
-                    <li><a class="footer-link" href="#">&copy; 2022 BANKSEKOLAH</a></li>
-                    <li><a class="footer-link" href="#">ALL RIGHTS RESERVED</a></li>
-                </ul>
-            </div>
+    <div class="container">
+        <div class="copyright">
+            &copy; Copyright <strong><span>Banksekolah.com</span></strong>. All Rights Reserved
+        </div>
+        <div class="credits">
+            <!-- All the links in the footer should remain intact. -->
+            <!-- You can delete the links only if you purchased the pro version. -->
+            <!-- Licensing information: https://bootstrapmade.com/license/ -->
+            <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/flexstart-bootstrap-startup-template/ -->
+            Dev by <a href="https://#/">Grafika Digital Sulution</a>
         </div>
     </div>
 </footer>
+<!-- End Footer -->
 
-<style type="text/css">
-    a.footer-link:hover {
-        color: white;
-    }
-</style>
+<a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
