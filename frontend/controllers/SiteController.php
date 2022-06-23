@@ -10,8 +10,9 @@ class SiteController extends Controller
 {
     public function actionIndex()
     {
-        return $this->redirect(Yii::getAlias('@backurl'));
-        return 'WELCOME TO FOOD FACTORY';
+        // return $this->redirect(Yii::getAlias('@backurl'));
+        // return 'WELCOME TO BANKSEKOLAH';
+        return $this->render('index');
         
     }
 

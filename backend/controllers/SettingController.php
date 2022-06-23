@@ -37,7 +37,7 @@ class SettingController extends Controller
     {
         \common\helpers\Sidebar::setActiveMenu('setting', 'index');
 
-        $query = Setting::find()->orderBy(['key' => SORT_ASC]);
+        $query = Setting::find()->where(['status' => 1])->orderBy(['key' => SORT_ASC]);
         if ($q !== null) {
             $query->andFilterWhere([
                 'or',

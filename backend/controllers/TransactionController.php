@@ -157,6 +157,7 @@ class TransactionController extends Controller
         if (isset($_POST['submit'])) {
             $invoices = $_POST['invoice'];
             $amounts = $_POST['amount'];
+            $proofs = $_POST['proof'];
 
             // generate transaction number
             $school = School::findOne(Yii::$app->session->get('school_id'));
@@ -170,6 +171,7 @@ class TransactionController extends Controller
             $saved = 0;
             foreach ($invoices as $invoice_id) {
                 $amount = $amounts[$i];
+                $proof = $proofs[$i];
 
                 $invoice = Invoice::findOne($invoice_id);
                 if ($invoice) {
@@ -183,7 +185,7 @@ class TransactionController extends Controller
                     $transaction->amount = $amount;
                     $transaction->date = date('Y-m-d');
                     $transaction->note = '';
-                    $transaction->payment_method = 'CASH';
+                    $transaction->payment_method = $proof;
                     $transaction->user_id = Yii::$app->user->identity->id;
                     $transaction->save();
 

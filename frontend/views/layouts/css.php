@@ -2,11 +2,22 @@
 $baseUrl = Yii::$app->request->baseUrl;
 ?>
 <!-- Favicons -->
-<link rel="shortcut icon" href="<?= $baseUrl ?>/images/banksekolah-favicon.ico" />
-<link rel="apple-touch-icon" href="<?= $baseUrl ?>/images/banksekolah-favicon.ico" />
-<link rel="apple-touch-icon" sizes="72x72" href="<?= $baseUrl ?>/images/banksekolah-favicon.ico" />
-<link rel="apple-touch-icon" sizes="114x114" href="<?= $baseUrl ?>/images/banksekolah-favicon.ico" />
-
-<!-- Css -->
-<link href="<?= $baseUrl ?>/theme/css/base-a.css" rel="stylesheet">
-<link href="<?= $baseUrl ?>/css/custom-frontend-u.css" rel="stylesheet">
+<link href="<?= $baseUrl ?>/theme/assets/img/favicon.png" rel="icon">
+<link href="<?= $baseUrl ?>/theme/assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+<!-- Vendor CSS Files -->
+<link href="<?= $baseUrl ?>/theme/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+<link href="<?= $baseUrl ?>/theme/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+<link href="<?= $baseUrl ?>/theme/assets/vendor/aos/aos.css" rel="stylesheet">
+<link href="<?= $baseUrl ?>/theme/assets/vendor/remixicon/remixicon.css" rel="stylesheet">
+<link href="<?= $baseUrl ?>/theme/assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+<link href="<?= $baseUrl ?>/theme/assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+<!-- Template Main CSS File -->
+<link href="<?= $baseUrl ?>/theme/assets/css/style.css" rel="stylesheet">
+<!-- =======================================================
+    * Template Name: FlexStart - v1.4.0
+    * Template URL: https://bootstrapmade.com/flexstart-bootstrap-startup-template/
+    * Author: BootstrapMade.com
+    * License: https://bootstrapmade.com/license/
+    ======================================================== -->

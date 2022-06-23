@@ -74,6 +74,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <th>Bulan</th>
                         <th>Jumlah</th>
                         <th>Status Bayar</th>
+                        <th>Jenis Pembayaran</th>
                         <th>Bayar</th>
                     </tr>
                     <?php $i=1; foreach ($invoices as $invoice): ?>
@@ -83,6 +84,18 @@ $this->params['breadcrumbs'][] = $this->title;
                             <td><?= $invoice->month ?></td>
                             <td><?= Strings::getRupiah($invoice->amount) ?></td>
                             <td><?= $invoice->statusLabel ?></td>
+                            <td>
+                                <?php 
+                                    if ($invoice->status == 'UNPAID') {
+                                        echo '<select id="proof" name="proof[]">';
+                                        echo '    <option value="CASH">CASH</option>';
+                                        echo '    <option value="TRANSFER">TRANSFER</option>';
+                                        echo '</select>';
+                                    } else {
+                                        echo $invoice->statusBayar;
+                                    } 
+                                ?>
+                            </td>
                             <td>
                                 <?php if ($invoice->status == 'UNPAID'): ?>
                                     <input type="hidden" id="amount-max-<?= $invoice->id ?>" value="<?= $invoice->amount ?>">
