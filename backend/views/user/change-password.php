@@ -3,7 +3,7 @@
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
-$this->title = 'Change Password';
+$this->title = 'Ubah Password';
 if (Yii::$app->user->identity->id == $model->id) {
     $this->params['breadcrumbs'][] = ['label' => 'Profil', 'url' => ['user/view']];
 } else {
@@ -33,9 +33,9 @@ $baseUrl = Yii::$app->request->baseUrl;
                         <?php ActiveForm::end(); ?>
                     </div>
                     <div class="col-md-6">
-                        <h2>Note: </h2>
+                        <h2>Catatan: </h2>
                         <div class="alert alert-info">
-                            Use a password with a combination of letters, numbers, and symbols. The stronger the password the more secure your account. Do not share password information with anyone.
+                            Gunakan kombinasi angka, huruf, dan simbol. Semakin kompleks password, semakin aman akun Anda.
                         </div>
                     </div>
                 </div>

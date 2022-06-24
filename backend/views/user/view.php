@@ -23,7 +23,7 @@ if (Yii::$app->user->identity->id == $model->id && !Yii::$app->request->get('id'
     <div class="col-lg-9 col-md-8 col-sm-8">
         <div class="card">
             <header class="card-header">
-                <h2 class="filter-block float-left">Details</h2>
+                <h2 class="filter-block float-left">Detail</h2>
             </header>
             <div class="card-body">
             <?= DetailView::widget([

@@ -21,7 +21,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <div class="col-lg-6">
                         <?php $form = ActiveForm::begin(['method' => 'get', 'action' => Url::to(['index']), 'options' => ['class' => 'form-inline']]) ?>
                         <div class="input-group input-group-sm">
-                            <input type="text" name="q" class="form-control" placeholder="Search ..." value="<?=  $q ?>">
+                            <input type="text" name="q" class="form-control" placeholder="Cari nama pengguna ..." value="<?=  $q ?>">
                             <span class="input-group-append">
                                 <button type="button" class="btn btn-info btn-flat"><i class="fas fa-search search-icon"></i></button>
                             </span>
@@ -32,7 +32,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <div class="card-tools float-right">
                             <?php
                             if (User::can('role', 'create'))
-                                echo Html::a('<i class="fas fa-plus-circle fa-lg"></i> Create User', ['create'], ['class' => 'btn btn-success pull-right']);
+                                // echo Html::a('<i class="fas fa-plus-circle fa-lg"></i> Create User', ['create'], ['class' => 'btn btn-success pull-right']);
                             ?>
                             <?=  Html::a('<i class="fas fa-sync-alt fa-lg"></i>', ['index'], ['class' => 'btn btn-primary']) ?> 
                     <?= Html::a('<i class="fas fa-download fa-lg"></i> Download', ['index'], ['class' => 'btn btn-primary']) ?>
