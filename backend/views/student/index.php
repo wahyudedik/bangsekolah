@@ -5,9 +5,12 @@ use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\widgets\LinkPager;
 use yii\widgets\ActiveForm;
+use common\models\School;
 
 $this->title = 'Siswa';
 $this->params['breadcrumbs'][] = $this->title;
+
+$school = School::findOne(Yii::$app->session->get('school_id'));
 ?>
 <div class="card">
     <div class="card-header">
@@ -33,9 +36,11 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
             <div class="col-lg-6">
                 <div class="card-tools float-right">
-                    <?= Html::a('<i class="fas fa-plus fa-lg"></i> Tambah Siswa', ['create'], ['class' => 'btn btn-success']) ?>
-                    <?= Html::a('<i class="fas fa-chalkboard-teacher fa-lg"></i> Pindah Kelas', ['update-class/index'], ['class' => 'btn btn-primary']) ?>
-                    <?= Html::a('<i class="fas fa-upload fa-lg"></i> Import', ['import'], ['class' => 'btn btn-primary']) ?>
+                    <?php if (count($school->schoolPayments)>0 && count($school->schoolMonths)>0 && count($school->schoolClasses)>0): ?>
+                        <?= Html::a('<i class="fas fa-plus fa-lg"></i> Tambah Siswa', ['create'], ['class' => 'btn btn-success']) ?>
+                        <?= Html::a('<i class="fas fa-chalkboard-teacher fa-lg"></i> Pindah Kelas', ['update-class/index'], ['class' => 'btn btn-primary']) ?>
+                        <?= Html::a('<i class="fas fa-upload fa-lg"></i> Import', ['import'], ['class' => 'btn btn-primary']) ?>
+                    <?php endif; ?>
                     <?= Html::a('<i class="fas fa-sync-alt fa-lg"></i>', ['index'], ['class' => 'btn btn-primary']) ?>
                 </div>
             </div>

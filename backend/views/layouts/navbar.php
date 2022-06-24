@@ -8,14 +8,14 @@ use common\models\UserSchool;
 $user = Yii::$app->user->identity;
 $baseUrl = Yii::$app->request->baseUrl;
 $userSchool = UserSchool::find()->where(['user_id' => $user->id])->one();
-
+$school = $userSchool->school;
 ?>
 <nav class="main-header navbar navbar-expand navbar-white navbar-light">
 	<ul class="navbar-nav">
 		<li class="nav-item">
 			<a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
 		</li>
-		<?php if ($userSchool): ?>
+		<?php if ($userSchool && count($school->schoolStudents)>0): ?>
 			<li class="nav-item d-none d-sm-inline-block">
 				<a href="<?= Url::to(['transaction/create']) ?>" class="nav-link">Transaksi Pembayaran Baru</a>
 			</li>

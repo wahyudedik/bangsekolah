@@ -24,7 +24,7 @@ class SchoolMonthController extends Controller
         \common\helpers\Sidebar::setActiveMenu('school-month', 'index');
 
         $dataProvider = new ActiveDataProvider([
-            'query' => SchoolMonth::find()->where(['status' => 'ACTIVE']),
+            'query' => SchoolMonth::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'status' => 'ACTIVE']),
         ]);
 
         return $this->render('index', [

@@ -5,12 +5,12 @@ use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\widgets\LinkPager;
 use yii\widgets\ActiveForm;
-
-/* @var $this yii\web\View */
-/* @var $dataProvider yii\data\ActiveDataProvider */
+use common\models\School;
 
 $this->title = 'Tagihan';
 $this->params['breadcrumbs'][] = $this->title;
+
+$school = School::findOne(Yii::$app->session->get('school_id'));
 ?>
 <div class="card">
     <div class="card-header">
@@ -36,7 +36,9 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
             <div class="col-lg-6">
                 <div class="card-tools float-right">
-                    <?= Html::a('<i class="fas fa-plus fa-lg"></i> Buat Tagihan', ['create'], ['class' => 'btn btn-success']) ?>
+                    <?php if (count($school->schoolStudents)>0): ?>
+                        <?= Html::a('<i class="fas fa-plus fa-lg"></i> Buat Tagihan', ['create'], ['class' => 'btn btn-success']) ?>
+                    <?php endif; ?>
                     <?= Html::a('<i class="fas fa-sync-alt fa-lg"></i>', ['index'], ['class' => 'btn btn-primary']) ?>
                 </div>
             </div>

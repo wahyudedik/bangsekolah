@@ -24,7 +24,7 @@ class SchoolClassController extends Controller
         \common\helpers\Sidebar::setActiveMenu('school-class', 'index');
 
         $dataProvider = new ActiveDataProvider([
-            'query' => SchoolClass::find()->where(['status' => 'ACTIVE']),
+            'query' => SchoolClass::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'status' => 'ACTIVE']),
         ]);
 
         return $this->render('index', [
