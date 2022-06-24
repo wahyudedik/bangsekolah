@@ -7,7 +7,7 @@ use common\models\UserSchool;
 
 $user = Yii::$app->user->identity;
 $baseUrl = Yii::$app->request->baseUrl;
-$user_school = UserSchool::find()->where(['user_id' => $user->id])->one();
+$userSchool = UserSchool::find()->where(['user_id' => $user->id])->one();
 
 ?>
 <nav class="main-header navbar navbar-expand navbar-white navbar-light">
@@ -22,10 +22,10 @@ $user_school = UserSchool::find()->where(['user_id' => $user->id])->one();
 	<ul class="navbar-nav ml-auto">
 		<li class="nav-item">
 			<a class="nav-link" href="<?= Url::to(['profile/index']) ?>">
-				<?php if ($user_school) { ?>
-					<strong><?= Yii::$app->session->get('school_name') ?></strong> ( <?= $user->username ?> )
+				<?php if ($userSchool) { ?>
+					<strong><?= $userSchool->school->name ?></strong> ( <?= $user->username ?> )
 				<?php } else { ?>
-					<strong><?= $user->username ?></strong>
+					<strong><?= $user->name ?></strong> (<?= $user->username ?>)
 				<?php } ?>
 			</a>
 		</li>
