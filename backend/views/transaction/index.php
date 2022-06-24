@@ -3,9 +3,12 @@ use yii\helpers\Url;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\grid\GridView;
+use common\models\School;
 
 $this->title = 'Transaksi';
 $this->params['breadcrumbs'][] = $this->title;
+
+$school = School::findOne(Yii::$app->session->get('school_id'));
 ?>
 <div class="card">
     <!-- <div class="card-header">
@@ -72,7 +75,9 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
         <div class="card-header">
             <?= Html::submitButton('<i class="fas fa-search"></i> Terapkan', ['class' => 'btn btn-success']) ?>
-            <?= Html::a('<i class="fas fa-upload"></i> Import', ['import'], ['class' => 'btn btn-primary']) ?>
+            <?php if (count($school->students)>0): ?>
+                <?= Html::a('<i class="fas fa-upload"></i> Import', ['import'], ['class' => 'btn btn-primary']) ?>
+            <?php endif; ?>
             <?= Html::a('<i class="fas fa-sync-alt"></i> Reset', ['transaction/index'], ['class' => 'btn btn-primary']) ?>
         </div>        
     <?php ActiveForm::end() ?>
