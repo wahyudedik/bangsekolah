@@ -14,7 +14,7 @@ $baseUrl = Yii::$app->request->baseUrl;
 	<div class="col-lg-6">
 		<div class="card">
 			<header class="card-header">
-				<h2>User Detail</h2>
+				<h2>Informasi Pengguna</h2>
 			</header>
 			<div class="card-body">
 
@@ -34,7 +34,7 @@ $baseUrl = Yii::$app->request->baseUrl;
     <div class="col-lg-6">
         <div class="card">
             <header class="card-header">
-                <h2>Credential</h2>
+                <h2>Login</h2>
             </header>
             <div class="card-body">
                 <?= $form->field($model, 'username')->textInput(['maxlength' => true]) ?>
@@ -42,7 +42,7 @@ $baseUrl = Yii::$app->request->baseUrl;
             </div>
         </div>
         <div class="form-group">
-            <?= Html::submitButton($model->isNewRecord ? '<i class="fas fa-save"></i> Save' : '<i class="fas fa-save"></i> Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+            <?= Html::submitButton($model->isNewRecord ? '<i class="fas fa-save"></i> Simpan' : '<i class="fas fa-save"></i> Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
         </div>
     </div>
 </div>

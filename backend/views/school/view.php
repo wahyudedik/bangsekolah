@@ -38,7 +38,7 @@ $baseUrl = Yii::$app->request->baseUrl;
                 <div class="profile-body" style="text-align: center; padding-top: 10px;">
                     <?php if(!$user_school) {
                         echo '<div class="profile-message-btn center-block text-center" style="padding-top: 5px">';
-                        echo Html::a('Create User', ['user/create', 'school_id' => $model->id], ['class' => 'btn btn-success']);
+                        echo Html::a('Buat Admin', ['user/create', 'school_id' => $model->id], ['class' => 'btn btn-success']);
                         echo "</div>";
                     } else { ?>
                         <div class="profile-since">
@@ -62,7 +62,7 @@ $baseUrl = Yii::$app->request->baseUrl;
         <div class="card">
             <header class="card-header">
                 <div class="filter-block pull-right">
-                    <?= Html::a('<i class="fas fa-pen fa-lg"></i> Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+                    <?= Html::a('<i class="fas fa-pen fa-lg"></i> Edit Informasi Sekolah', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
                 </div>
             </header>
             

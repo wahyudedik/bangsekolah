@@ -102,7 +102,7 @@ class User extends ActiveRecord implements IdentityInterface
     public function attributeLabels()
     {
         return [
-            'name' => 'Full Name',
+            'name' => 'Nama Pengguna',
             'role_id' => 'Role',
 
             'confirmationStatus' => 'Confirm Status',
