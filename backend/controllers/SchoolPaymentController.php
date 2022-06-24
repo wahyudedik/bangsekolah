@@ -23,7 +23,7 @@ class SchoolPaymentController extends Controller
     {
         \common\helpers\Sidebar::setActiveMenu('school-payment', 'index');
 
-        $query = SchoolPayment::find()->where(['status' => 'ACTIVE']);
+        $query = SchoolPayment::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'status' => 'ACTIVE']);
         if ($search) {
             $query->andFilterWhere([
                 'or',
