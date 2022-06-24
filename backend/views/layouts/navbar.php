@@ -23,7 +23,7 @@ $userSchool = UserSchool::find()->where(['user_id' => $user->id])->one();
 		<li class="nav-item">
 			<a class="nav-link" href="<?= Url::to(['profile/index']) ?>">
 				<?php if ($userSchool) { ?>
-					<strong><?= $userSchool->school->name ?></strong> ( <?= $user->username ?> )
+					<strong><?= $user->name ?></strong> ( <?= $userSchool->school->name ?> )
 				<?php } else { ?>
 					<strong><?= $user->name ?></strong> (<?= $user->username ?>)
 				<?php } ?>
