@@ -43,7 +43,7 @@ $this->title = 'Register';
                                         <?= $form->field($model, 'password')->passwordInput(['maxlength' => true])->label(false) ?>
                                     </div>
                                     <div class="form-group captcha">
-                                        <div class="g-recaptcha" data-sitekey="6Lcm6MIZAAAAAAoOod0SEPUeynMfF9L9dashFW0G"></div>
+                                        <div class="g-recaptcha" data-sitekey="6Lffi5ggAAAAADmtZhsZf0ZmEtjRqMJBLlUaUNVq"></div>
                                     </div>
                                 </div>
                             </div>
