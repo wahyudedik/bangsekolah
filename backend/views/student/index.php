@@ -36,10 +36,12 @@ $school = School::findOne(Yii::$app->session->get('school_id'));
             </div>
             <div class="col-lg-6">
                 <div class="card-tools float-right">
-                    <?php if (count($school->schoolPayments)>0 && count($school->schoolMonths)>0 && count($school->schoolClasses)>0): ?>
-                        <?= Html::a('<i class="fas fa-plus fa-lg"></i> Tambah Siswa', ['create'], ['class' => 'btn btn-success']) ?>
-                        <?= Html::a('<i class="fas fa-chalkboard-teacher fa-lg"></i> Pindah Kelas', ['update-class/index'], ['class' => 'btn btn-primary']) ?>
-                        <?= Html::a('<i class="fas fa-upload fa-lg"></i> Import', ['import'], ['class' => 'btn btn-primary']) ?>
+                    <?php if ($school): ?>
+                        <?php if (count($school->schoolPayments)>0 && count($school->schoolMonths)>0 && count($school->schoolClasses)>0): ?>
+                            <?= Html::a('<i class="fas fa-plus fa-lg"></i> Tambah Siswa', ['create'], ['class' => 'btn btn-success']) ?>
+                            <?= Html::a('<i class="fas fa-chalkboard-teacher fa-lg"></i> Pindah Kelas', ['update-class/index'], ['class' => 'btn btn-primary']) ?>
+                            <?= Html::a('<i class="fas fa-upload fa-lg"></i> Import', ['import'], ['class' => 'btn btn-primary']) ?>
+                        <?php endif; ?>
                     <?php endif; ?>
                     <?= Html::a('<i class="fas fa-sync-alt fa-lg"></i>', ['index'], ['class' => 'btn btn-primary']) ?>
                 </div>
