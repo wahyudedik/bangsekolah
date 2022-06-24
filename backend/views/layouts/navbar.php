@@ -15,7 +15,7 @@ $school = $userSchool->school;
 		<li class="nav-item">
 			<a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
 		</li>
-		<?php if ($userSchool && count($school->schoolStudents)>0): ?>
+		<?php if ($userSchool && count($school->students)>0): ?>
 			<li class="nav-item d-none d-sm-inline-block">
 				<a href="<?= Url::to(['transaction/create']) ?>" class="nav-link">Transaksi Pembayaran Baru</a>
 			</li>
