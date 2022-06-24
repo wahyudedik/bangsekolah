@@ -17,7 +17,7 @@ use common\models\Role;
     <div class="col-lg-6">
         <div class="card">
             <header class="card-header">
-                <h2>User Detail</h2>
+                <h2>Detail User</h2>
             </header>
             <div class="card-body">
 
@@ -33,7 +33,7 @@ use common\models\Role;
     <div class="col-lg-6">
         <div class="card">
             <header class="card-header">
-                <h2>Credential</h2>
+                <h2>Login</h2>
             </header>
             <div class="card-body">
                 <?= $form->field($model, 'username')->textInput(['maxlength' => true]) ?>

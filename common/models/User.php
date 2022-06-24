@@ -104,6 +104,8 @@ class User extends ActiveRecord implements IdentityInterface
         return [
             'name' => 'Nama Pengguna',
             'role_id' => 'Role',
+            'created_at' => 'Dibuat Pada',
+            'updated_at' => 'Terakhir Diupdate',
 
             'confirmationStatus' => 'Confirm Status',
             'profileStatus' => 'Profile',
