@@ -33,6 +33,11 @@ class TransactionController extends Controller
     {
         \common\helpers\Sidebar::setActiveMenu('transaction', 'index');
 
+        if (!Yii::$app->session->get('school_id')) {
+            Yii::$app->user->logout();
+            return $this->goHome();
+        }
+
         $query = Transaction::find()
             ->joinWith(['student', 'schoolPayment'])
             ->where(['student.school_id' => Yii::$app->session->get('school_id')]);

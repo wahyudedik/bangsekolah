@@ -5,7 +5,7 @@ use yii\helpers\Html;
 $user = Yii::$app->user->identity;
 $baseUrl = Yii::$app->request->baseUrl;
 
-if (Yii::$app->user->isGuest) {
+if (!$user) {
     echo '<meta http-equiv="refresh" content="time; URL='.Url::to(['site/login']).'" />';
 } 
 ?>
