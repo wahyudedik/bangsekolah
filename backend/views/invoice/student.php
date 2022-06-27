@@ -11,6 +11,9 @@ $this->title = 'Tagihan';
 $this->params['breadcrumbs'][] = $this->title;
 
 $school = School::findOne(Yii::$app->session->get('school_id'));
+if (!$school) {
+    echo '<meta http-equiv="refresh" content="0; url='.Url::to(['site/login']).'">';
+}
 ?>
 <div class="card">
     <div class="card-header">
