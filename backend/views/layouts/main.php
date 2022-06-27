@@ -7,17 +7,6 @@ use yii\widgets\Breadcrumbs;
 use frontend\assets\AppAsset;
 use common\widgets\Alert;
 
-// check session school_id
-if (Yii::$app->user->isGuest) {
-	echo '<meta http-equiv="refresh" content="time; URL='.Url::to(['site/login']).'" />';
-} else {
-	if (Yii::$app->user->identity->role_id > 1) {
-		if (!Yii::$app->session->get('school_id')) {
-			echo '<meta http-equiv="refresh" content="time; URL='.Url::to(['site/login']).'" />';
-		}
-	}
-}
-
 // Exclude asset from rendering
 // AppAsset::register($this);
 unset($this->assetBundles['yii\bootstrap\BootstrapAsset']);
@@ -34,6 +23,18 @@ $baseUrl = Yii::$app->request->baseUrl;
 <head>
     <meta charset="<?= Yii::$app->charset ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <?php
+    // check session school_id
+	if (Yii::$app->user->isGuest) {
+		echo '<meta http-equiv="refresh" content="time; URL='.Url::to(['site/login']).'" />';
+	} else {
+		if (Yii::$app->user->identity->role_id > 1) {
+			if (!Yii::$app->session->get('school_id')) {
+				echo '<meta http-equiv="refresh" content="time; URL='.Url::to(['site/login']).'" />';
+			}
+		}
+	} 
+    ?>
     <?= Html::csrfMetaTags() ?>
     <title><?= $this->title ?></title>
     <?php $this->head() ?>
