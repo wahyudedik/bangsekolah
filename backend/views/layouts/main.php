@@ -26,11 +26,11 @@ $baseUrl = Yii::$app->request->baseUrl;
     <?php
     // check session school_id
 	if (Yii::$app->user->isGuest) {
-		echo '<meta http-equiv="refresh" content="time; URL='.Url::to(['site/login']).'" />';
+		echo '<meta http-equiv="refresh" content="0; url='.Url::to(['site/login']).'" />';
 	} else {
 		if (Yii::$app->user->identity->role_id > 1) {
 			if (!Yii::$app->session->get('school_id')) {
-				echo '<meta http-equiv="refresh" content="time; URL='.Url::to(['site/login']).'" />';
+				echo '<meta http-equiv="refresh" content="0; url='.Url::to(['site/login']).'" />';
 			}
 		}
 	} 

@@ -6,7 +6,7 @@ $user = Yii::$app->user->identity;
 $baseUrl = Yii::$app->request->baseUrl;
 
 if (!$user) {
-    echo '<meta http-equiv="refresh" content="time; URL='.Url::to(['site/login']).'" />';
+    echo '<meta http-equiv="refresh" content="0; url='.Url::to(['site/login']).'" />';
 } 
 ?>
 
