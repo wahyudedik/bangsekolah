@@ -60,7 +60,8 @@ $jsonTotal = '';
 $dateTime = new DateTime('-30 days');
 for ($i = 1; $i <= 31; $i++) {
     $transactions = Transaction::find()
-        ->where(['date' => $dateTime->format('Y-m-d')])
+        ->where(['school_id' => $schoolId])
+        ->andWhere(['date' => $dateTime->format('Y-m-d')])
         ->all();
     $totalInDay = 0;
     foreach ($transactions as $transaction) {
