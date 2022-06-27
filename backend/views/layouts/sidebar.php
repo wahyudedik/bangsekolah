@@ -34,49 +34,51 @@ if (Yii::$app->user->isGuest) {
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                 <?php
                 $activeMenu = Yii::$app->session->get('active_menu');
-                @foreach ($user->role->roleMenus as $roleMenu) {
-                    $menu = $roleMenu->menu;
-                    if ($menu->parent_id == null) {
-                        if ($menu->childs) {
-                            $parentClass = '';
-                            $parentStyle = 'display:none;';
-                            $subMenu = '';
-                            foreach ($menu->childs as $child) {
-                                if ($user->hasMenu($child->id) && $child->visibility == 1) {
-                                    foreach ($user->role->roleMenus as $rm) {
-                                        if($child->id == $rm->menu_id) {
-                                            if ($child->visibility == 1) {
-                                                if ($rm->id == $activeMenu) {
-                                                    $parentClass = 'menu-open';
-                                                    $parentStyle = 'display:block;';
-                                                    $childClass = 'active';
-                                                } else {
-                                                    $childClass = '';
+                if ($user) {
+                    foreach ($user->role->roleMenus as $roleMenu) {
+                        $menu = $roleMenu->menu;
+                        if ($menu->parent_id == null) {
+                            if ($menu->childs) {
+                                $parentClass = '';
+                                $parentStyle = 'display:none;';
+                                $subMenu = '';
+                                foreach ($menu->childs as $child) {
+                                    if ($user->hasMenu($child->id) && $child->visibility == 1) {
+                                        foreach ($user->role->roleMenus as $rm) {
+                                            if($child->id == $rm->menu_id) {
+                                                if ($child->visibility == 1) {
+                                                    if ($rm->id == $activeMenu) {
+                                                        $parentClass = 'menu-open';
+                                                        $parentStyle = 'display:block;';
+                                                        $childClass = 'active';
+                                                    } else {
+                                                        $childClass = '';
+                                                    }
+                                                    $subMenu.= '<li class="nav-item">
+                                                        <a href="'.Url::to([$child->controller.'/'.$child->default_action]).$rm->parameter.'" class="nav-link '.$childClass.'"><i class="'.$child->icon.'"></i><p> '.($rm->label ? $rm->label : $child->name).'</p></a>
+                                                    </li>';
                                                 }
-                                                $subMenu.= '<li class="nav-item">
-                                                    <a href="'.Url::to([$child->controller.'/'.$child->default_action]).$rm->parameter.'" class="nav-link '.$childClass.'"><i class="'.$child->icon.'"></i><p> '.($rm->label ? $rm->label : $child->name).'</p></a>
-                                                </li>';
                                             }
                                         }
                                     }
                                 }
-                            }
-                            if ($menu->visibility == 1) {
-                                echo '
-                                <li class="nav-item '.$parentClass.'">
-                                    <a class="nav-link" href="#">
-                                        <i class="'.$menu->icon.'"></i>
-                                        <p>'.($roleMenu->label ? $roleMenu->label : $menu->name).'<i class="fas fa-angle-left right"></i></p>
-                                    </a>';
+                                if ($menu->visibility == 1) {
                                     echo '
-                                    <ul class="nav nav-treeview" style="'.@$parentStyle.'">'.$subMenu.'</ul>
-                                </li>';
-                            }
-                        } else {
-                            if ($menu->visibility == 1) {
-                                echo '<li class="nav-item">
-                                    <a href="'.Url::to([$menu->controller.'/'.$menu->default_action]).$roleMenu->parameter.'" class="nav-link '.($roleMenu->id == $activeMenu ? 'active' : '').'"><i class="'.$menu->icon.'"></i><p> '.($roleMenu->label ? $roleMenu->label : $menu->name).' </p></a>
-                                </li>';
+                                    <li class="nav-item '.$parentClass.'">
+                                        <a class="nav-link" href="#">
+                                            <i class="'.$menu->icon.'"></i>
+                                            <p>'.($roleMenu->label ? $roleMenu->label : $menu->name).'<i class="fas fa-angle-left right"></i></p>
+                                        </a>';
+                                        echo '
+                                        <ul class="nav nav-treeview" style="'.@$parentStyle.'">'.$subMenu.'</ul>
+                                    </li>';
+                                }
+                            } else {
+                                if ($menu->visibility == 1) {
+                                    echo '<li class="nav-item">
+                                        <a href="'.Url::to([$menu->controller.'/'.$menu->default_action]).$roleMenu->parameter.'" class="nav-link '.($roleMenu->id == $activeMenu ? 'active' : '').'"><i class="'.$menu->icon.'"></i><p> '.($roleMenu->label ? $roleMenu->label : $menu->name).' </p></a>
+                                    </li>';
+                                }
                             }
                         }
                     }
