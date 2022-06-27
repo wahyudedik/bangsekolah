@@ -8,6 +8,9 @@ use frontend\assets\AppAsset;
 use common\widgets\Alert;
 
 // check session school_id
+if (!Yii::$app->user->identity) {
+    echo '<meta http-equiv="refresh" content="0; url='.Url::to(['site/login']).'">';
+}
 if (Yii::$app->user->identity->role_id > 1) {
 	if (Yii::$app->session->get('school_id') == null) {
 	    echo '<meta http-equiv="refresh" content="0; url='.Url::to(['site/login']).'">';
