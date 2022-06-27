@@ -112,7 +112,7 @@ class TransactionController extends Controller
             'mode' => Pdf::MODE_CORE,
             'filename' => 'receipt - '.$transaction->student->nisn.' - '.date('Ymd', strtotime($transaction->created_at)).'.pdf',
             // 'format' => [210, 330],
-            'format' => [148, 210],
+            'format' => [110, 215],
             'orientation' => Pdf::ORIENT_PORTRAIT,
             'destination' => Pdf::DEST_BROWSER,
             // 'marginTop' => '10',
@@ -124,7 +124,15 @@ class TransactionController extends Controller
             'content' => $content,
             // 'cssFile' => '@vendor/kartik-v/yii2-mpdf/assets/kv-mpdf-bootstrap.css',
             // 'cssFile' => '@app/web/css/surat-penawaran.css',
-            'cssInline' => '.border-top{border-top: 1px solid grey;}',
+            'cssInline' => '
+            
+            .border-top{border-top: 1px solid grey;}
+            .monospace{font-family: monospace;}
+            .small{font-size:9px;}
+            .medium{font-size:10px;}
+
+            ',
+            
             'options' => [
                 'showWatermarkText' => true,
                 'showWatermarkImage' => true,
