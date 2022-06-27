@@ -11,9 +11,6 @@ $this->title = 'Tagihan';
 $this->params['breadcrumbs'][] = $this->title;
 
 $school = School::findOne(Yii::$app->session->get('school_id'));
-if (!$school) {
-    Yii::$app->request->redirect(['site/login']);
-}
 ?>
 <div class="card">
     <div class="card-header">

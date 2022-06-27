@@ -45,6 +45,11 @@ class InvoiceController extends Controller
     {
         \common\helpers\Sidebar::setActiveMenu('invoice', 'index');
 
+        if (!isset(Yii::$app->session->get('school_id'))) {
+            Yii::$app->user->logout();
+            return $this->goHome();
+        }
+
         $query = Student::find()->where(['school_id' => Yii::$app->session->get('school_id')]);
         $classes = SchoolClass::find()->where(['school_id' => Yii::$app->session->get('school_id')])->all();
 
