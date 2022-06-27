@@ -9,11 +9,11 @@ use common\widgets\Alert;
 
 // check session school_id
 if (Yii::$app->user->isGuest) {
-	Yii::$app->response->redirect(['site/login']);
+	Yii::$app->request->redirect(['site/login']);
 } else {
 	if (Yii::$app->user->identity->role_id > 1) {
 		if (!isset(Yii::$app->session->get('school_id'))) {
-			Yii::$app->response->redirect(['site/login']);
+			Yii::$app->request->redirect(['site/login']);
 		}
 	}
 }
