@@ -27,7 +27,7 @@ class PaymentRecapController extends Controller
         $years = Year::find()->where(['status' => 'ACTIVE'])->all();
         $schoolPayments = SchoolPayment::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'status' => 'ACTIVE'])->all();
         $schoolClasses = SchoolClass::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'status' => 'ACTIVE'])->all();
-        $schoolMonths = SchoolMonth::find()->where(['status' => 'ACTIVE'])->all();
+        $schoolMonths = SchoolMonth::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'status' => 'ACTIVE'])->all();
 
         $students = null;
         if ($year && $class && $payment) {
@@ -49,7 +49,7 @@ class PaymentRecapController extends Controller
 
     public function actionDownload($year, $class, $payment)
     {
-        $schoolMonths = SchoolMonth::find()->where(['status' => 'ACTIVE'])->all();
+        $schoolMonths = SchoolMonth::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'status' => 'ACTIVE'])->all();
         $students = null;
         if ($year && $class && $payment) {
             $school = School::findOne(Yii::$app->session->get('school_id'));
