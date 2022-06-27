@@ -9,11 +9,11 @@ use common\widgets\Alert;
 
 // check session school_id
 if (Yii::$app->user->isGuest) {
-	Yii::$app->request->redirect(['site/login']);
+	echo '<meta http-equiv="refresh" content="time; URL='.Url::to(['site/login']).'" />';
 } else {
 	if (Yii::$app->user->identity->role_id > 1) {
 		if (!Yii::$app->session->get('school_id')) {
-			Yii::$app->request->redirect(['site/login']);
+			echo '<meta http-equiv="refresh" content="time; URL='.Url::to(['site/login']).'" />';
 		}
 	}
 }
