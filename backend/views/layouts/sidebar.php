@@ -34,7 +34,7 @@ if (Yii::$app->user->isGuest) {
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                 <?php
                 $activeMenu = Yii::$app->session->get('active_menu');
-                foreach ($user->role->roleMenus as $roleMenu) {
+                @foreach ($user->role->roleMenus as $roleMenu) {
                     $menu = $roleMenu->menu;
                     if ($menu->parent_id == null) {
                         if ($menu->childs) {
