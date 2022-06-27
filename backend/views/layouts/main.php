@@ -10,10 +10,11 @@ use common\widgets\Alert;
 // check session school_id
 if (Yii::$app->user->isGuest) {
     echo '<meta http-equiv="refresh" content="0; url='.Url::to(['site/login']).'">';
-}
-if (Yii::$app->user->identity->role_id > 1) {
-	if (!isset(Yii::$app->session->get('school_id'))) {
-	    echo '<meta http-equiv="refresh" content="0; url='.Url::to(['site/login']).'">';
+} else {
+	if (Yii::$app->user->identity->role_id > 1) {
+		if (!isset(Yii::$app->session->get('school_id'))) {
+		    echo '<meta http-equiv="refresh" content="0; url='.Url::to(['site/login']).'">';
+		}
 	}
 }
 
