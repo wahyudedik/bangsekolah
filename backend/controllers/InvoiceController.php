@@ -45,7 +45,7 @@ class InvoiceController extends Controller
     {
         \common\helpers\Sidebar::setActiveMenu('invoice', 'index');
 
-        if (!isset(Yii::$app->session->get('school_id'))) {
+        if (!Yii::$app->session->get('school_id')) {
             Yii::$app->user->logout();
             return $this->goHome();
         }
