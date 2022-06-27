@@ -100,14 +100,16 @@ $school = School::findOne(Yii::$app->session->get('school_id'));
                     ['attribute' => 'student.class', 'label' => 'Kelas'],
                     ['attribute' => 'invoice.description', 'label' => 'Nama Pembayaran'],
                     ['attribute' => 'amountRupiah', 'label' => 'Jumlah Bayar'],
+                    ['attribute' => 'user.name', 'label' => 'Petugas'],
                     
                     [
                         'class' => 'yii\grid\ActionColumn',
                         'header' => 'Detail',
-                        'template' => '{view}', 
-                        // 'contentOptions' => ['style' => 'width:150px;'],
+                        'template' => '{view}{print}', 
+                        'contentOptions' => ['style' => 'width:100px;'],
                         'buttons' => [
                             'view' => function ($url, $model) { return Html::a('<i class="fas fa-eye"></i>', $url, ['class' => 'btn btn-success']).' '; },
+                            'print' => function ($url, $model) { return Html::a('<i class="fas fa-print"></i>', ['transaction/print', 'id' => $model->id], ['class' => 'btn btn-info']).' '; },
                             'update' => function ($url, $model) { return Html::a('<i class="fas fa-pen"></i>', $url, ['class' => 'btn btn-primary']).' '; },
                             'delete' => function ($url, $model) {
                                 return Html::a('<i class="fas fa-trash"></i>', $url, ['class' => 'btn btn-danger', 'onclick' => 'return confirm("Are you sure?");']).' ';

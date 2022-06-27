@@ -34,45 +34,45 @@ $baseUrl = Yii::$app->request->baseUrl;
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-body">
-                    <p align="center" style="font-family: monospace;">
-                        <strong>BUKTI PEMBAYARAN</strong>
-                        <br><br>
-                    </p>
-                    <table width="100%" style="font-family: monospace;">
+                    <table width="100%">
                         <tr>
+                            <td><strong>NIS</strong></td>
+                            <td>:</td>
+                            <td style="font-family: monospace;"><?= $transaction->student->nisn ?></td>
+                            <td></td>
                             <td><strong>No Transaksi</strong></td>
                             <td>:</td>
-                            <td><?= $transactionNumber ?></td>
+                            <td style="font-family: monospace;"><?= $transactionNumber ?></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Nama</strong></td>
+                            <td>:</td>
+                            <td style="font-family: monospace;"><?= $transaction->student->name ?></td>
                             <td></td>
                             <td><strong>Tanggal</strong></td>
                             <td>:</td>
-                            <td><?= $transactionDate ?></td>
+                            <td style="font-family: monospace;"><?= $transactionDate ?></td>
                         </tr>
                         <tr>
-                            <td><strong>NISN</strong></td>
-                            <td>:</td>
-                            <td><?= $transaction->student->nisn ?></td>
-                            <td></td>
                             <td><strong>Kelas</strong></td>
                             <td>:</td>
-                            <td><?= $transaction->student->class ?></td>
-                        </tr>
-                        <tr>
-                            <td><strong>Nama Siswa</strong></td>
+                            <td style="font-family: monospace;"><?= $transaction->student->class ?></td>
+                            <td></td>
+                            <td><strong>Tahun Pelajaran</strong></td>
                             <td>:</td>
-                            <td><?= $transaction->student->name ?></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
+                            <td style="font-family: monospace;"><?= $transaction->student->year ?></td>
                         </tr>
                     </table>
+                    <br><br>
+                    Dengan rincian pembayaran sebagai berikut:                   
                     <br>
-                    <table width="100%" cellspacing="0" cellpadding="5" class="table table-bordered" style="font-family: monospace;">
+                    <table width="100%" cellspacing="0" cellpadding="5" class="table table-bordered">
                         <tr class="border-top">
-                            <th>No</th>
-                            <th>Nama Pembayaran</th>
-                            <th>Nominal</th>
+                            <th>NO</th>
+                            <th>NAMA PEMBAYARAN</th>
+                            <th>JENIS PEMBAYARAN</th>
+                            <th>TAGIHAN</th>
+                            <th>JUMLAH PEMBAYARAN</th>
                         </tr>
                         <?php $i=1; $total=0; foreach($transactions as $trx): $total+=$trx->amount; ?>
                         <tr>
@@ -80,7 +80,9 @@ $baseUrl = Yii::$app->request->baseUrl;
                             <td>
                                 <?= $trx->schoolPayment->name == 'SPP' ? $trx->schoolPayment->name.' Bulan '.$trx->invoice->month : $trx->schoolPayment->name ?>
                             </td>
-                            <td><?= Strings::getRupiah($trx->amount) ?></td>
+                            <td><?= $trx->payment_method ?></td>
+                            <td><?= Strings::getRupiah($trx->invoice->amount-$trx->invoice->paid_amount) ?></td>
+                            <td><?= $trx->amountRupiah ?></td>
                         </tr>
                         <?php endforeach; ?>
                         <tr>
