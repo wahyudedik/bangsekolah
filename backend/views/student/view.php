@@ -36,6 +36,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'nisn',
                     'name',
                     'class',
+                    'gender',
                     'year',
                     //'status',
                     'created_at',

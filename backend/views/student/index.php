@@ -63,6 +63,7 @@ $school = School::findOne(Yii::$app->session->get('school_id'));
                     'nisn',
                     'name',
                     'class',
+                    'gender',
                     'year',
 
                     [

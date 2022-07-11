@@ -56,7 +56,7 @@ class Student extends \yii\db\ActiveRecord
             [['school_id'], 'integer'],
             [['created_at', 'updated_at', 'file'], 'safe'],
             [['nisn'], 'unique'],
-            [['nis', 'nisn', 'name', 'class', 'year', 'status'], 'string', 'max' => 255],
+            [['nis', 'nisn', 'name', 'class', 'gender', 'year', 'status'], 'string', 'max' => 255],
             [['school_id'], 'exist', 'skipOnError' => true, 'targetClass' => School::className(), 'targetAttribute' => ['school_id' => 'id']],
         ];
     }
@@ -73,6 +73,7 @@ class Student extends \yii\db\ActiveRecord
             'nisn' => 'NISN',
             'name' => 'Nama',
             'class' => 'Kelas',
+            'gender' => 'Jenis Kelamin',
             'year' => 'Tahun Ajaran',
             'status' => 'Status',
             'created_at' => 'Terdaftar Pada',

@@ -19,20 +19,6 @@ use yii\web\UploadedFile;
  */
 class StudentController extends Controller
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function behaviors()
-    {
-        return [
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'delete' => ['POST'],
-                ],
-            ],
-        ];
-    }
 
     /**
      * Lists all Student models.
@@ -154,6 +140,7 @@ class StudentController extends Controller
                         $model->nis = $item['nis'];
                         $model->nisn = $item['nisn'];
                         $model->name = $item['name'];
+                        $model->gender = $item['gender'];
                         $model->class = $item['class'];
                         $model->year = $item['year'];
 
@@ -265,16 +252,24 @@ class StudentController extends Controller
                         break;
                     }
 
+                    // check gender student
+                    $gender = trim((string)$rowExcelData[3]);
+                    if ($gender !== 'L' && $gender !== 'P') {
+                        $error = 'Jenis kelamin siswa tidak valid. Gunakan L/P untuk jenis kelamin';
+                        break;
+                    }
+
                     // validasi data
-                    $class = trim((string)$rowExcelData[3]);
-                    $year = trim((string)$rowExcelData[4]);
+                    $class = trim((string)$rowExcelData[4]);
+                    $year = trim((string)$rowExcelData[5]);
                     if (in_array($class, $arrClass) && in_array($year, $arrYear)) {
                         $itemArray[] = [
                             'nis' => trim((string)$rowExcelData[0]),
                             'nisn' => trim((string)$rowExcelData[1]),
                             'name' => trim((string)$rowExcelData[2]),
-                            'class' => trim((string)$rowExcelData[3]),
-                            'year' => trim((string)$rowExcelData[4]),
+                            'gender' => trim((string)$rowExcelData[3]),
+                            'class' => trim((string)$rowExcelData[4]),
+                            'year' => trim((string)$rowExcelData[5]),
                         ];
                     } else {
                         $error = 'Data tidak valid pada baris ke '.$row_number;
