@@ -20,7 +20,7 @@ class ProfileController extends \yii\web\Controller
 {
     public function actionIndex()
     {
-        if ($model->role_id > 1) {
+        if (Yii::$app->user->identity->role_id > 1) {
             $model = UserSchool::find()->where(['school_id' => Yii::$app->session->get('school_id')])->one();
             return $this->render('index-user-school', [
                 'model' => $model,
