@@ -164,7 +164,7 @@ class TransactionController extends Controller
             $student = Student::find()->where(['like', 'name', $name, false])->one();
         }
         if ($student) {
-            $invoices = Invoice::find()->where(['student_id' => $student->id, 'year' => $student->year])->all();
+            $invoices = Invoice::find()->where(['student_id' => $student->id, 'school_id' => Yii::$app->session->get('school_id'), 'year' => $student->year])->all();
         }
 
         if (isset($_POST['submit'])) {
