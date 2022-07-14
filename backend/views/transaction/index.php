@@ -95,7 +95,7 @@ $school = School::findOne(Yii::$app->session->get('school_id'));
                         //'id',
                     ['attribute' => 'number', 'label' => 'Nomor Transaksi'],
                     ['attribute' => 'date', 'label' => 'Tanggal'],
-                    ['attribute' => 'student.nisn', 'label' => 'NISN'],
+                    ['attribute' => 'student.nis', 'label' => 'NIS'],
                     ['attribute' => 'student.name', 'label' => 'Nama Siswa'],
                     ['attribute' => 'student.class', 'label' => 'Kelas'],
                     ['attribute' => 'invoice.description', 'label' => 'Nama Pembayaran'],
@@ -109,7 +109,7 @@ $school = School::findOne(Yii::$app->session->get('school_id'));
                         'contentOptions' => ['style' => 'width:100px;'],
                         'buttons' => [
                             'view' => function ($url, $model) { return Html::a('<i class="fas fa-eye"></i>', $url, ['class' => 'btn btn-success']).' '; },
-                            'print' => function ($url, $model) { return Html::a('<i class="fas fa-print"></i>', ['transaction/print', 'id' => $model->id], ['class' => 'btn btn-info']).' '; },
+                            'print' => function ($url, $model) { return Html::a('<i class="fas fa-print"></i>', ['transaction/print', 'id' => $model->id], ['class' => 'btn btn-info', 'target' => '_blank']).' '; },
                             'update' => function ($url, $model) { return Html::a('<i class="fas fa-pen"></i>', $url, ['class' => 'btn btn-primary']).' '; },
                             'delete' => function ($url, $model) {
                                 return Html::a('<i class="fas fa-trash"></i>', $url, ['class' => 'btn btn-danger', 'onclick' => 'return confirm("Are you sure?");']).' ';

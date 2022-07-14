@@ -72,6 +72,7 @@ $baseUrl = Yii::$app->request->baseUrl;
                 'attributes' => [
                     // 'id',
                     'name',
+                    'number',
                     'address',
                     'city',
                     'phone',

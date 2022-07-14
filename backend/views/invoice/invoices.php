@@ -1,6 +1,7 @@
 <?php
 
 use yii\helpers\Html;
+use common\helpers\Strings;
 use yii\grid\GridView;
 
 $this->title = 'Tagihan '.$student->name;
@@ -38,6 +39,12 @@ $this->params['breadcrumbs'][] = $student->name;
                             // ['attribute' => 'year'],
                             ['attribute' => 'amountRupiah'],
                             ['attribute' => 'paidAmountRupiah'],
+                            [
+                                'label' => 'Sisa Bayar',
+                                'value' => function($model){
+                                    return Strings::getRupiah($model->amount - $model->paid_amount);
+                                }
+                            ],
                             [
                                 'label' => 'Jatuh Tempo',
                                 'value' => function($model){

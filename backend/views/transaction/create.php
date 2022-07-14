@@ -14,9 +14,9 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="row">
                 <div class="col-lg-3">
                     <div class="form-group row">
-                        <label class="col-sm-4 col-form-label" style="text-align: right;">NISN</label>
+                        <label class="col-sm-4 col-form-label" style="text-align: right;">NIS</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" name="nisn" value="<?= $nisn ?>">
+                            <input type="text" class="form-control" name="nis" value="<?= $nis ?>">
                         </div>
                     </div>
                 </div>
@@ -88,7 +88,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <?php 
                                     if ($invoice->status == 'UNPAID') {
                                         echo '<select id="proof" name="proof[]">';
-                                        echo '    <option value="CASH">CASH</option>';
+                                        echo '    <option value="CASH">TUNAI</option>';
                                         echo '    <option value="TRANSFER">TRANSFER</option>';
                                         echo '</select>';
                                     } else {

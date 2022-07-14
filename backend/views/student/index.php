@@ -27,7 +27,7 @@ $school = School::findOne(Yii::$app->session->get('school_id'));
                             }
                             ?>
                         </select>
-                        <input type="text" name="search" class="form-control" placeholder="Cari siswa ..." value="<?= $search ?>">
+                        <input type="text" name="search" class="form-control" placeholder="Cari NIS/NISN/Nama ..." value="<?= $search ?>">
                         <span class="input-group-append">
                             <button type="submit" class="btn btn-info btn-flat"><i class="fas fa-search search-icon"></i></button>
                         </span>
@@ -60,7 +60,6 @@ $school = School::findOne(Yii::$app->session->get('school_id'));
                     ['class' => 'yii\grid\SerialColumn'],
 
                     'nis',
-                    'nisn',
                     'name',
                     'class',
                     'gender',

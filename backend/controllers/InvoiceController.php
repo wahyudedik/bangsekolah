@@ -31,7 +31,7 @@ class InvoiceController extends Controller
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
-                    'delete' => ['POST'],
+                    // 'delete' => ['POST'],
                 ],
             ],
         ];
@@ -64,6 +64,7 @@ class InvoiceController extends Controller
         if ($search !== null) {
             $query->andFilterWhere([
                 'or',
+                ['like', 'nis', $search],
                 ['like', 'nisn', $search],
                 ['like', 'name', $search],
             ]);

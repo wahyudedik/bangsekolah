@@ -44,29 +44,29 @@ $baseUrl = Yii::$app->request->baseUrl;
                         <tr>
                             <td class="small"><strong>NIS</strong></td>
                             <td>:</td>
-                            <td class="small monospace"><?= $transaction->student->nisn ?></td>
+                            <td class="small monospacearial"><?= $transaction->student->nis ?></td>
                             <td></td>
                             <td class="small"><strong>No Transaksi</strong></td>
                             <td>:</td>
-                            <td class="small monospace"><?= $transactionNumber ?></td>
+                            <td class="small monospacearial"><?= $transactionNumber ?></td>
                         </tr>
                         <tr>
                             <td class="small"><strong>Nama</strong></td>
                             <td>:</td>
-                            <td class="small monospace"><?= $transaction->student->name ?></td>
+                            <td class="small monospacearial"><?= $transaction->student->name ?></td>
                             <td></td>
                             <td class="small"><strong>Tanggal</strong></td>
                             <td>:</td>
-                            <td class="small monospace"><?= $transactionDate ?></td>
+                            <td class="small monospacearial"><?= $transactionDate ?></td>
                         </tr>
                         <tr>
                             <td class="small"><strong>Kelas</strong></td>
                             <td>:</td>
-                            <td class="small monospace"><?= $transaction->student->class ?></td>
+                            <td class="small monospacearial"><?= $transaction->student->class ?></td>
                             <td></td>
                             <td class="small"><strong>Tahun Pelajaran</strong></td>
                             <td>:</td>
-                            <td class="small monospace"><?= $transaction->student->year ?></td>
+                            <td class="small monospacearial"><?= $transaction->student->year ?></td>
                         </tr>
                     </table>
                     
@@ -97,22 +97,29 @@ $baseUrl = Yii::$app->request->baseUrl;
                             }
                             ?>
                             <tr>
-                                <td class="small monospace"><?= $i++ ?></td>
-                                <td class="small monospace"><?= $trx->schoolPayment->name == 'SPP' ? $trx->schoolPayment->name.' Bulan '.$trx->invoice->month : $trx->schoolPayment->name ?></td>
-                                <td class="small monospace"><?= $trx->payment_method == 'CASH' ? 'TUNAI' : $trx->payment_method ?></td>
-                                <td class="small monospace"><?= Strings::getRupiah($trx->invoice->amount-$paidTotal) ?></td>
-                                <td class="small monospace"><?= $trx->amountRupiah ?></td>
+                                <td rowspan="2" class="small monospacearial"><?= $i++ ?></td>
+                                <td rowspan="2" class="small monospacearial"><?= $trx->schoolPayment->name == 'SPP' ? $trx->schoolPayment->name.' Bulan '.$trx->invoice->month : $trx->schoolPayment->name ?></td>
+                                <td rowspan="2" class="small monospacearial"><?= $trx->payment_method == 'CASH' ? 'TUNAI' : $trx->payment_method ?></td>
+                                <td class="small monospacearial">
+                                    <?= Strings::getRupiah($trx->invoice->amount-$paidTotal) ?>
+                                </td>
+                                <td rowspan="2" class="small monospacearial"><?= $trx->amountRupiah ?></td>
+                            </tr>
+                            <tr>
+                                <td class="small monospacearial">
+                                    <?= Strings::getRupiah(($trx->invoice->amount-$paidTotal)-$trx->amount) ?>
+                                </td>
                             </tr>
                         <?php endforeach; ?>
                         <tr>
                             <td colspan="4" align="right" class="small"><strong>Total</strong></td>
-                            <td class="small monospace"><?= Strings::getRupiah($total) ?></td>
+                            <td class="small monospacearial"><?= Strings::getRupiah($total) ?></td>
                         </tr>
                     </table>
-                    <br>
+                    <!-- <br> -->
                     <table width="100%">
                         <tr>
-                            <td width="50%"></td>
+                            <td width="70%"></td>
                             <td class="small">
                                 <?= $transaction->invoice->school->city.', '.date('d/m/Y', strtotime($transaction->date)) ?><br>
                                 Petugas<br><br><br>

@@ -14,6 +14,7 @@ use yii\widgets\ActiveForm;
                 <?php $form = ActiveForm::begin(); ?>
 
                 <?= $form->field($model, 'name')->textInput() ?>
+                <?= $form->field($model, 'number')->textInput() ?>
                 <?= $form->field($model, 'address')->textArea() ?>
                 <?= $form->field($model, 'city')->textInput() ?>
                 <?= $form->field($model, 'phone')->textInput() ?>

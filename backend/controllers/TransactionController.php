@@ -113,7 +113,7 @@ class TransactionController extends Controller
             'filename' => 'receipt - '.$transaction->student->nisn.' - '.date('Ymd', strtotime($transaction->created_at)).'.pdf',
             // 'format' => [210, 330],
             'format' => [110, 215],
-            'orientation' => Pdf::ORIENT_PORTRAIT,
+            'orientation' => Pdf::ORIENT_LANDSCAPE,
             'destination' => Pdf::DEST_BROWSER,
             // 'marginTop' => '10',
             // 'marginLeft' => '15',
@@ -153,13 +153,13 @@ class TransactionController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate($nisn = null, $name = null)
+    public function actionCreate($nis = null, $name = null)
     {
         $student = null;
         $invoices = null;
 
-        if ($nisn) {
-            $student = Student::find()->where(['nisn' => $nisn])->one();
+        if ($nis) {
+            $student = Student::find()->where(['nis' => $nis])->one();
         } else if ($name) {
             $student = Student::find()->where(['like', 'name', $name, false])->one();
         }
@@ -224,7 +224,7 @@ class TransactionController extends Controller
         }
 
         return $this->render('create', [
-            'nisn' => $nisn,
+            'nis' => $nis,
             'name' => $name,
             'student' => $student,
             'invoices' => $invoices,
