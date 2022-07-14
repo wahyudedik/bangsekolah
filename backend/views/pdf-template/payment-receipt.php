@@ -24,13 +24,13 @@ $baseUrl = Yii::$app->request->baseUrl;
                 <?php } ?>
             </td>
             <td style="text-align: left;">
-                <span style="font-size: 12px;"><b><?= strtoupper($transaction->invoice->school->name) ?></b></span><br>
+                <span style="font-size: 18px;"><b><?= strtoupper($transaction->invoice->school->name) ?></b></span><br>
                 <span class="small">
                 <?= $transaction->invoice->school->address.' '.$transaction->invoice->school->city ?><br>
                 <?= $transaction->invoice->school->phone ?>
                 </span>
             </td>
-            <td class="medium" style="text-align: left;">
+            <td class="large" style="text-align: left;">
                 BUKTI PEMBAYARAN
             </td>
         </tr>
@@ -70,7 +70,7 @@ $baseUrl = Yii::$app->request->baseUrl;
                         </tr>
                     </table>
                     
-                    <span class="small">Dengan rincian pembayaran sebagai berikut:</span>
+                    <span class="large">Dengan rincian pembayaran sebagai berikut:</span>
                     <br>
                     <table width="100%" cellspacing="0" cellpadding="5" class="table table-bordered">
                         <tr class="border-top">

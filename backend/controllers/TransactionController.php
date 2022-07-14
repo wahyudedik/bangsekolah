@@ -128,8 +128,9 @@ class TransactionController extends Controller
             
             .border-top{border-top: 1px solid grey;}
             .monospace{font-family: monospace;}
-            .small{font-size:9px;}
-            .medium{font-size:10px;}
+            .small{font-size:13px;}
+            .medium{font-size:14px;}
+            .large{font-size:16px;}
 
             ',
             
@@ -327,11 +328,22 @@ class TransactionController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionDelete($id)
+    public function actionDelete($number)
     {
-        $model = $this->findModel($id);
-        $model->status = 'NONACTIVE';
-        $model->save();
+        $transactions = Transaction::find()->where(['number' => $number])->all();
+        foreach ($transactions as $trans) {
+            $transAmount = $trans->amount;
+            if ($trans->delete()) {
+                $invoice = $trans->invoice;
+                $invoice->paid_amount = $invoice->paid_amount - $transAmount;
+                if ($invoice->paid_amount == $invoice->amount) {
+                    $invoice->status = 'PAID';
+                } else {
+                    $invoice->status = 'UNPAID';
+                }
+                $invoice->save();
+            }
+        }
 
         return $this->redirect(['index']);
     }

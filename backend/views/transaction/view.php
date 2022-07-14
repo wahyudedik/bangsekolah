@@ -14,6 +14,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <header class="card-header">
                 <?= Html::a('<i class="fas fa-chevron-left"></i> Kembali', ['transaction/index'], ['class' => 'btn btn-warning']) ?>
                 <div class="filter-block float-right">
+                    <?= Html::a('<i class="fas fa-times"></i> Batalkan', ['delete', 'number' => $model->number], ['class' => 'btn btn-danger', 'onclick' => 'return confirm("Yakin ingin hapus transaksi ini?");']) ?>
                     <?= Html::a('<i class="fas fa-print"></i> Bukti Pembayaran', ['print', 'id' => $model->id], ['class' => 'btn btn-info', 'target' => '_blank']) ?>
                 </div>
             </header>
@@ -38,7 +39,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 return date('d M Y', strtotime($model->date));
                             }
                         ],
-                        ['attribute' => 'student.nisn', 'label' => 'NISN'],
+                        ['attribute' => 'student.nis', 'label' => 'NIS'],
                         ['attribute' => 'student.name', 'label' => 'Nama Siswa'],
                         ['attribute' => 'invoice.description', 'label' => 'Nama Pembayaran'],
                         ['attribute' => 'amountRupiah', 'label' => 'Jumlah Bayar'],
