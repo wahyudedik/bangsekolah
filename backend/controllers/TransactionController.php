@@ -111,9 +111,9 @@ class TransactionController extends Controller
         $pdf = new Pdf([
             'mode' => Pdf::MODE_CORE,
             'filename' => 'receipt - '.$transaction->student->nisn.' - '.date('Ymd', strtotime($transaction->created_at)).'.pdf',
-            // 'format' => [210, 330],
-            'format' => [110, 215],
-            'orientation' => Pdf::ORIENT_LANDSCAPE,
+            'format' => [215, 330],
+            // 'format' => [330, 215],
+            'orientation' => Pdf::ORIENT_PORTRAIT,
             'destination' => Pdf::DEST_BROWSER,
             // 'marginTop' => '10',
             // 'marginLeft' => '15',
