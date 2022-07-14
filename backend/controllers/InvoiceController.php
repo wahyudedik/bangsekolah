@@ -54,12 +54,14 @@ class InvoiceController extends Controller
         $classes = SchoolClass::find()->where(['school_id' => Yii::$app->session->get('school_id')])->all();
 
         // force fill default class
+        /*
         if (!$class) {
             foreach ($classes as $cls) {
                 $class = $cls->name;
                 break;
             }
         }
+        */
 
         if ($search !== null) {
             $query->andFilterWhere([
