@@ -29,7 +29,7 @@ class TransactionController extends Controller
      * Lists all Transaction models.
      * @return mixed
      */
-    public function actionIndex($class = null, $nisn = null, $startdate = null, $enddate = null, $name = null, $payment = null)
+    public function actionIndex($class = null, $nis = null, $startdate = null, $enddate = null, $name = null, $payment = null)
     {
         \common\helpers\Sidebar::setActiveMenu('transaction', 'index');
 
@@ -50,7 +50,7 @@ class TransactionController extends Controller
         if ($startdate) { $query->andFilterWhere(['and', ['>=', 'DATE(transaction.date)', $startdate]]); }
         if ($enddate) { $query->andFilterWhere(['and', ['<=', 'DATE(transaction.date)', $enddate]]); }
         if($class) { $query->andFilterWhere(['student.class' => $class]); }
-        if($nisn) { $query->andFilterWhere(['student.nisn' => $nisn]); }
+        if($nis) { $query->andFilterWhere(['student.nis' => $nis]); }
         if($name) { $query->andFilterWhere(['or', ['like', 'student.name', $name]]); }
         if($payment) { $query->andFilterWhere(['or', ['like', 'school_payment.name', $payment]]); }
 
@@ -63,7 +63,7 @@ class TransactionController extends Controller
 
         return $this->render('index', [
             'dataProvider' => $dataProvider,
-            'nisn' => $nisn,
+            'nis' => $nis,
             'startdate' => $startdate,
             'enddate' => $enddate,
             'name' => $name,

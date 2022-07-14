@@ -47,9 +47,9 @@ $school = School::findOne(Yii::$app->session->get('school_id'));
                     </div>
                 </div>
                 <div class="col-lg-2">
-                    <label>NISN</label><br>
+                    <label>NIS</label><br>
                     <div class="input-group input-group-sm">
-                        <input type="text" name="nisn" class="form-control" value="<?= $nisn ?>">
+                        <input type="text" name="nis" class="form-control" value="<?= $nis ?>">
                     </div>
                 </div>
                 <div class="col-lg-2">
