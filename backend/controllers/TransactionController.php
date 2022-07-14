@@ -157,11 +157,12 @@ class TransactionController extends Controller
     {
         $student = null;
         $invoices = null;
+        $school_id = Yii::$app->session->get('school_id');
 
         if ($nis) {
-            $student = Student::find()->where(['nis' => $nis])->one();
+            $student = Student::find()->where(['nis' => $nis])->andWhere(['school_id' => $school_id])->one();
         } else if ($name) {
-            $student = Student::find()->where(['like', 'name', $name, false])->one();
+            $student = Student::find()->where(['like', 'name', $name, false])->andWhere(['school_id' => $school_id])->one();
         }
         if ($student) {
             $invoices = Invoice::find()->where(['student_id' => $student->id, 'school_id' => $student->school_id, 'year' => $student->year])->all();
@@ -173,7 +174,7 @@ class TransactionController extends Controller
             $proofs = $_POST['proof'];
 
             // generate transaction number
-            $school = School::findOne(Yii::$app->session->get('school_id'));
+            $school = School::findOne($school_id);
             $lastNumber = $school->transaction_number;
             $transactionNumber = str_pad($lastNumber+1, 5, '0', STR_PAD_LEFT).'/TRX/'.$school->number.'/'.date('m/Y');
             $lastNumber++;
