@@ -19,7 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="filter-block float-right">
                     <?= Html::a('<i class="nav-icon fas fa-hand-holding-usd"></i> Bayar Tagihan Ini', ['transaction/create', 'nisn' => $model->student->nisn], ['class' => 'btn btn-success']) ?>
                     <?php
-                    if (count($model->transactions)==0) {
+                    if (!$model->transactions) {
                         echo Html::a('<i class="nav-icon fas fa-trash"></i> Hapus', ['delete', 'id' => $model->id], [
                             'class' => 'btn btn-danger',
                             'onclick' => 'return confirm("Yakin hapus data ini?");',
