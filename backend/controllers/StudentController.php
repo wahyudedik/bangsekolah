@@ -42,6 +42,7 @@ class StudentController extends Controller
         if ($search !== null) {
             $query->andFilterWhere([
                 'or',
+                ['like', 'nis', $search],
                 ['like', 'nisn', $search],
                 ['like', 'name', $search],
             ]);
