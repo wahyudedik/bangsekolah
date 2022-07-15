@@ -103,10 +103,10 @@ $baseUrl = Yii::$app->request->baseUrl;
                                 <td class="small monospacearial">
                                     <?= Strings::getRupiah($trx->invoice->amount-$paidTotal) ?>
                                 </td>
-                                <td rowspan="2" class="small monospacearial"><?= $trx->amountRupiah ?></td>
+                                <td rowspan="2" class="small monospacearial" style="vertical-align: top;"><?= $trx->amountRupiah ?></td>
                             </tr>
                             <tr>
-                                <td class="small monospacearial" style="vertical-align: top;">
+                                <td class="small monospacearial">
                                     <?= Strings::getRupiah(($trx->invoice->amount-$paidTotal)-$trx->amount) ?>
                                 </td>
                             </tr>
