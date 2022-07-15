@@ -40,7 +40,7 @@ class TransactionController extends Controller
 
         $query = Transaction::find()
             ->joinWith(['student', 'schoolPayment'])
-            ->where(['school_id' => Yii::$app->session->get('school_id')]);
+            ->where(['student.school_id' => Yii::$app->session->get('school_id')]);
 
         if($startdate == null && $enddate == null){
             $startdate = date('Y-m-d', strtotime('-1 month'));
