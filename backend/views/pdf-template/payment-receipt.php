@@ -97,16 +97,16 @@ $baseUrl = Yii::$app->request->baseUrl;
                             }
                             ?>
                             <tr>
-                                <td rowspan="2" class="small monospacearial"><?= $i++ ?></td>
-                                <td rowspan="2" class="small monospacearial"><?= $trx->schoolPayment->name == 'SPP' ? $trx->schoolPayment->name.' Bulan '.$trx->invoice->month : $trx->schoolPayment->name ?></td>
-                                <td rowspan="2" class="small monospacearial"><?= $trx->payment_method == 'CASH' ? 'TUNAI' : $trx->payment_method ?></td>
+                                <td rowspan="2" class="small monospacearial" style="text-align: top;"><?= $i++ ?></td>
+                                <td rowspan="2" class="small monospacearial" style="text-align: top;"><?= $trx->schoolPayment->name == 'SPP' ? $trx->schoolPayment->name.' Bulan '.$trx->invoice->month : $trx->schoolPayment->name ?></td>
+                                <td rowspan="2" class="small monospacearial" style="text-align: top;"><?= $trx->payment_method == 'CASH' ? 'TUNAI' : $trx->payment_method ?></td>
                                 <td class="small monospacearial">
                                     <?= Strings::getRupiah($trx->invoice->amount-$paidTotal) ?>
                                 </td>
                                 <td rowspan="2" class="small monospacearial"><?= $trx->amountRupiah ?></td>
                             </tr>
                             <tr>
-                                <td class="small monospacearial">
+                                <td class="small monospacearial" style="text-align: top;">
                                     <?= Strings::getRupiah(($trx->invoice->amount-$paidTotal)-$trx->amount) ?>
                                 </td>
                             </tr>
