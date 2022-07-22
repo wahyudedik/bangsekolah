@@ -5,21 +5,22 @@ SET time_zone = '+00:00';
 SET foreign_key_checks = 0;
 SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
 
-DROP TABLE IF EXISTS `invoice`;
+SET NAMES utf8mb4;
+
 CREATE TABLE `invoice` (
   `id` int NOT NULL AUTO_INCREMENT,
   `school_id` int DEFAULT NULL,
   `student_id` int DEFAULT NULL,
   `school_payment_id` int DEFAULT NULL,
-  `number` varchar(255) DEFAULT NULL,
-  `year` varchar(255) DEFAULT NULL,
-  `month` varchar(255) DEFAULT NULL,
-  `description` text,
+  `number` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
+  `year` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
+  `month` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
+  `description` text CHARACTER SET latin1,
   `amount` int DEFAULT NULL,
   `paid_amount` int DEFAULT NULL,
   `date` date DEFAULT NULL,
   `due_date` date DEFAULT NULL,
-  `status` varchar(255) DEFAULT NULL COMMENT 'PAID, UNPAID',
+  `status` varchar(255) CHARACTER SET latin1 DEFAULT NULL COMMENT 'PAID, UNPAID',
   `user_id` int DEFAULT NULL,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
@@ -32,7 +33,7 @@ CREATE TABLE `invoice` (
   CONSTRAINT `invoice_ibfk_3` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`),
   CONSTRAINT `invoice_ibfk_4` FOREIGN KEY (`school_payment_id`) REFERENCES `school_payment` (`id`),
   CONSTRAINT `invoice_ibfk_5` FOREIGN KEY (`school_id`) REFERENCES `school` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 INSERT INTO `invoice` (`id`, `school_id`, `student_id`, `school_payment_id`, `number`, `year`, `month`, `description`, `amount`, `paid_amount`, `date`, `due_date`, `status`, `user_id`, `created_at`, `updated_at`) VALUES
 (571,	1,	1,	4,	'00538/INV/001/06/2021',	'2021/2022',	'Juni',	'SPP',	100000,	100000,	'2021-06-01',	'2021-06-30',	'PAID',	22,	'2022-05-18 12:01:59',	'2022-05-30 09:45:58'),
@@ -1368,22 +1369,21 @@ INSERT INTO `invoice` (`id`, `school_id`, `student_id`, `school_payment_id`, `nu
 (1901,	4,	393,	16,	'00752/INV/MAU-DU/04/2023',	'2022/2023',	NULL,	'Pembayaran PAS Genap',	810500,	0,	'2023-04-01',	'2023-07-31',	'UNPAID',	28,	'2022-07-15 22:58:32',	'2022-07-15 22:58:32'),
 (1902,	4,	394,	16,	'00753/INV/MAU-DU/04/2023',	'2022/2023',	NULL,	'Pembayaran PAS Genap',	810500,	0,	'2023-04-01',	'2023-07-31',	'UNPAID',	28,	'2022-07-15 22:58:32',	'2022-07-15 22:58:32');
 
-DROP TABLE IF EXISTS `menu`;
 CREATE TABLE `menu` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) DEFAULT NULL,
-  `description` text,
-  `controller` varchar(255) DEFAULT NULL,
-  `actions` text,
-  `default_action` varchar(255) DEFAULT NULL,
-  `icon` varchar(50) DEFAULT NULL,
+  `name` varchar(50) CHARACTER SET latin1 DEFAULT NULL,
+  `description` text CHARACTER SET latin1,
+  `controller` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
+  `actions` text CHARACTER SET latin1,
+  `default_action` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
+  `icon` varchar(50) CHARACTER SET latin1 DEFAULT NULL,
   `parent_id` int DEFAULT '0',
   `level` int DEFAULT '1',
   `visibility` int DEFAULT '1',
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AVG_ROW_LENGTH=744;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci AVG_ROW_LENGTH=744;
 
 INSERT INTO `menu` (`id`, `name`, `description`, `controller`, `actions`, `default_action`, `icon`, `parent_id`, `level`, `visibility`, `created_at`, `updated_at`) VALUES
 (1,	'Beranda',	'',	'site',	'[\"index\"]',	'index',	'nav-icon fas fa-home',	NULL,	1,	1,	'2018-12-18 16:12:35',	'2018-12-26 09:33:30'),
@@ -1408,29 +1408,25 @@ INSERT INTO `menu` (`id`, `name`, `description`, `controller`, `actions`, `defau
 (28,	'Tunggakan Bulanan',	NULL,	'overdue',	'[\"index\",\"create\",\"view\",\"update\",\"delete\"]',	'index',	'nav-icon fas fa-tags',	23,	2,	1,	'2022-05-17 15:29:21',	'2022-05-17 15:29:21'),
 (29,	'Daftar User',	NULL,	'user-school',	'[\"index\",\"create\",\"view\",\"update\",\"delete\",\"change-password\"]',	'index',	'nav-icon fas fa-users',	6,	2,	1,	'2022-05-31 09:10:13',	'2022-05-31 09:10:13');
 
-DROP TABLE IF EXISTS `payment_type`;
 CREATE TABLE `payment_type` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) DEFAULT NULL COMMENT 'MONTHLY, ONE PAYMENT, VOLUNTARY',
+  `name` varchar(255) CHARACTER SET latin1 DEFAULT NULL COMMENT 'MONTHLY, ONE PAYMENT, VOLUNTARY',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 INSERT INTO `payment_type` (`id`, `name`) VALUES
 (1,	'MONTHLY'),
 (2,	'ONE PAYMENT'),
 (3,	'VOLUNTARY');
 
-SET NAMES utf8mb4;
-
-DROP TABLE IF EXISTS `role`;
 CREATE TABLE `role` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) DEFAULT NULL,
-  `description` text,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 INSERT INTO `role` (`id`, `name`, `description`, `created_at`, `updated_at`) VALUES
 (1,	'Super Admin',	NULL,	'2022-01-13 09:13:15',	'2022-01-13 09:13:15'),
@@ -1438,21 +1434,20 @@ INSERT INTO `role` (`id`, `name`, `description`, `created_at`, `updated_at`) VAL
 (3,	'Staff Keuangan',	NULL,	'2022-05-30 10:05:18',	'2022-05-30 10:05:18'),
 (4,	'Kasir',	NULL,	'2022-05-30 10:05:45',	'2022-05-30 10:05:45');
 
-DROP TABLE IF EXISTS `role_menu`;
 CREATE TABLE `role_menu` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `role_id` int unsigned DEFAULT NULL,
   `menu_id` int unsigned DEFAULT NULL,
-  `parameter` varchar(255) DEFAULT NULL,
-  `label` varchar(255) DEFAULT NULL,
+  `parameter` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
+  `label` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
   `position` int unsigned DEFAULT NULL,
-  `privileges` varchar(255) DEFAULT NULL COMMENT 'misal: crud',
+  `privileges` varchar(255) CHARACTER SET latin1 DEFAULT NULL COMMENT 'misal: crud',
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `role_id` (`role_id`),
   KEY `menu_id` (`menu_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AVG_ROW_LENGTH=744;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci AVG_ROW_LENGTH=744;
 
 INSERT INTO `role_menu` (`id`, `role_id`, `menu_id`, `parameter`, `label`, `position`, `privileges`, `created_at`, `updated_at`) VALUES
 (4,	1,	4,	'',	'',	2,	'\"\"',	'2018-12-20 07:22:17',	'2020-02-28 09:59:50'),
@@ -1502,22 +1497,21 @@ INSERT INTO `role_menu` (`id`, `role_id`, `menu_id`, `parameter`, `label`, `posi
 (78,	4,	26,	'',	'',	11,	'[\"index\",\"create\",\"view\",\"update\",\"delete\"]',	'2022-06-02 10:03:03',	'2022-06-02 10:03:03'),
 (79,	4,	25,	'',	'',	12,	'[\"logout\"]',	'2022-06-02 10:03:09',	'2022-06-02 10:03:09');
 
-DROP TABLE IF EXISTS `school`;
 CREATE TABLE `school` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `number` varchar(255) DEFAULT NULL,
-  `name` varchar(255) DEFAULT NULL,
-  `address` varchar(255) DEFAULT NULL,
-  `city` varchar(255) DEFAULT NULL,
-  `phone` varchar(255) DEFAULT NULL,
-  `image` varchar(255) DEFAULT NULL,
+  `number` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
+  `name` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
+  `address` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
+  `city` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
+  `phone` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
+  `image` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
   `invoice_number` int DEFAULT NULL,
   `transaction_number` int DEFAULT NULL,
-  `status` varchar(255) DEFAULT NULL COMMENT 'ACTIVE, NONACTIVE',
+  `status` varchar(255) CHARACTER SET latin1 DEFAULT NULL COMMENT 'ACTIVE, NONACTIVE',
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 INSERT INTO `school` (`id`, `number`, `name`, `address`, `city`, `phone`, `image`, `invoice_number`, `transaction_number`, `status`, `created_at`, `updated_at`) VALUES
 (1,	'SDN1NBR',	'SDN 1 Nambangrejo',	'Jln. Semeru 23',	'Ponorogo',	'0352777333',	'large-ahqThxVDEZzEWtzHuL_yl1fP_VreHnsY.png',	1080,	47,	'ACTIVE',	'2022-05-11 15:36:39',	'2022-07-21 23:49:54'),
@@ -1525,18 +1519,17 @@ INSERT INTO `school` (`id`, `number`, `name`, `address`, `city`, `phone`, `image
 (3,	'MAN1-PO',	'MAN 1 Ponorogo',	'Jln. Jenderal Soedirman 34 Ponorogo',	'Ponorogo',	'0352888777',	'large-PsjVfz58gPTsfDx-SNrhfcfSAkVqkW6D.png',	36,	1,	NULL,	'2022-06-23 22:00:31',	'2022-07-14 00:14:18'),
 (4,	'MAU-DU',	'MA Unggulan Darul \'Ulum Rejoso',	'Jl. Rejoso Peterongan Jombang',	'Jombang',	'0321 868911',	'large-WZVXyN-epqTTskOkvjWBe5KPat6rQY5P.png',	753,	8,	NULL,	'2022-06-27 02:38:51',	'2022-07-15 22:58:32');
 
-DROP TABLE IF EXISTS `school_class`;
 CREATE TABLE `school_class` (
   `id` int NOT NULL AUTO_INCREMENT,
   `school_id` int DEFAULT NULL,
-  `name` varchar(255) DEFAULT NULL COMMENT 'I, II, III, IV, V, VI, VII DST',
-  `status` varchar(255) DEFAULT NULL COMMENT 'ACTIVE, NONACTIVE',
+  `name` varchar(255) CHARACTER SET latin1 DEFAULT NULL COMMENT 'I, II, III, IV, V, VI, VII DST',
+  `status` varchar(255) CHARACTER SET latin1 DEFAULT NULL COMMENT 'ACTIVE, NONACTIVE',
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `school_id` (`school_id`),
   CONSTRAINT `school_class_ibfk_1` FOREIGN KEY (`school_id`) REFERENCES `school` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 INSERT INTO `school_class` (`id`, `school_id`, `name`, `status`, `created_at`, `updated_at`) VALUES
 (1,	1,	'I',	'ACTIVE',	'2022-05-13 07:45:01',	'2022-07-12 04:05:07'),
@@ -1590,19 +1583,18 @@ INSERT INTO `school_class` (`id`, `school_id`, `name`, `status`, `created_at`, `
 (49,	4,	'XII AGT 1',	'ACTIVE',	'2022-07-11 20:38:30',	'2022-07-11 20:38:30'),
 (50,	4,	'XII AGT 2',	'ACTIVE',	'2022-07-11 20:38:38',	'2022-07-11 20:38:38');
 
-DROP TABLE IF EXISTS `school_month`;
 CREATE TABLE `school_month` (
   `id` int NOT NULL AUTO_INCREMENT,
   `school_id` int DEFAULT NULL,
-  `name` varchar(255) DEFAULT NULL,
-  `month` varchar(255) DEFAULT NULL,
-  `status` varchar(255) DEFAULT NULL COMMENT 'ACTIVE, NONACTIVE',
+  `name` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
+  `month` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
+  `status` varchar(255) CHARACTER SET latin1 DEFAULT NULL COMMENT 'ACTIVE, NONACTIVE',
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `school_id` (`school_id`),
   CONSTRAINT `school_month_ibfk_1` FOREIGN KEY (`school_id`) REFERENCES `school` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 INSERT INTO `school_month` (`id`, `school_id`, `name`, `month`, `status`, `created_at`, `updated_at`) VALUES
 (3,	1,	'Juni',	'06',	'ACTIVE',	'2022-05-13 07:49:49',	'2022-05-13 07:49:49'),
@@ -1642,15 +1634,14 @@ INSERT INTO `school_month` (`id`, `school_id`, `name`, `month`, `status`, `creat
 (37,	4,	'Mei',	'05',	'ACTIVE',	'2022-07-11 20:07:16',	'2022-07-11 20:07:16'),
 (38,	4,	'Juni',	'06',	'ACTIVE',	'2022-07-11 20:07:26',	'2022-07-11 20:07:26');
 
-DROP TABLE IF EXISTS `school_payment`;
 CREATE TABLE `school_payment` (
   `id` int NOT NULL AUTO_INCREMENT,
   `school_id` int DEFAULT NULL,
   `payment_type_id` int DEFAULT NULL,
-  `number` varchar(255) DEFAULT NULL,
-  `name` varchar(255) DEFAULT NULL,
-  `year` varchar(255) DEFAULT NULL,
-  `status` varchar(255) DEFAULT NULL COMMENT 'ACTIVE, NONACTIVE',
+  `number` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
+  `name` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
+  `year` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
+  `status` varchar(255) CHARACTER SET latin1 DEFAULT NULL COMMENT 'ACTIVE, NONACTIVE',
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -1658,7 +1649,7 @@ CREATE TABLE `school_payment` (
   KEY `payment_type_id` (`payment_type_id`),
   CONSTRAINT `school_payment_ibfk_2` FOREIGN KEY (`school_id`) REFERENCES `school` (`id`),
   CONSTRAINT `school_payment_ibfk_3` FOREIGN KEY (`payment_type_id`) REFERENCES `payment_type` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 INSERT INTO `school_payment` (`id`, `school_id`, `payment_type_id`, `number`, `name`, `year`, `status`, `created_at`, `updated_at`) VALUES
 (4,	1,	1,	'1001',	'SPP',	'2021/2022',	'ACTIVE',	'2022-05-13 11:04:54',	'2022-05-13 11:04:54'),
@@ -1675,7 +1666,6 @@ INSERT INTO `school_payment` (`id`, `school_id`, `payment_type_id`, `number`, `n
 (15,	4,	2,	'04',	'Pembayaran UTS Genap',	NULL,	'ACTIVE',	'2022-07-15 22:46:38',	'2022-07-15 22:46:38'),
 (16,	4,	2,	'05',	'Pembayaran PAS Genap',	NULL,	'ACTIVE',	'2022-07-15 22:46:55',	'2022-07-15 22:46:55');
 
-DROP TABLE IF EXISTS `setting`;
 CREATE TABLE `setting` (
   `id` int NOT NULL AUTO_INCREMENT,
   `key` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -1686,7 +1676,7 @@ CREATE TABLE `setting` (
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 INSERT INTO `setting` (`id`, `key`, `name`, `description`, `value`, `status`, `created_at`, `updated_at`) VALUES
 (3,	'whatsapp-number',	'Official whatsapp number',	'',	'+6285736775369',	1,	'2019-03-23 09:55:49',	'2020-06-20 20:25:28'),
@@ -1698,23 +1688,22 @@ INSERT INTO `setting` (`id`, `key`, `name`, `description`, `value`, `status`, `c
 (12,	'prod-number',	'Production Number',	'',	'2',	0,	'2022-02-04 14:48:06',	'2022-04-08 10:54:44'),
 (13,	'so-number',	'Stock Opname Number',	'',	'0',	0,	'2022-02-14 09:48:48',	'2022-04-06 10:53:45');
 
-DROP TABLE IF EXISTS `student`;
 CREATE TABLE `student` (
   `id` int NOT NULL AUTO_INCREMENT,
   `school_id` int DEFAULT NULL,
-  `nis` varchar(255) DEFAULT NULL,
-  `nisn` varchar(255) DEFAULT NULL,
-  `name` varchar(255) DEFAULT NULL,
+  `nis` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
+  `nisn` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
+  `name` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
   `gender` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
-  `class` varchar(255) DEFAULT NULL,
-  `year` varchar(255) DEFAULT NULL,
-  `status` varchar(255) DEFAULT NULL COMMENT 'ACTIVE, NONACTIVE',
+  `class` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
+  `year` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
+  `status` varchar(255) CHARACTER SET latin1 DEFAULT NULL COMMENT 'ACTIVE, NONACTIVE',
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `school_id` (`school_id`),
   CONSTRAINT `student_ibfk_1` FOREIGN KEY (`school_id`) REFERENCES `school` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 INSERT INTO `student` (`id`, `school_id`, `nis`, `nisn`, `name`, `gender`, `class`, `year`, `status`, `created_at`, `updated_at`) VALUES
 (1,	1,	'7411030041',	'7411030041',	'Cahyadi Nur Rahman',	NULL,	'I',	'2021/2022',	'ACTIVE',	'2022-05-12 11:17:41',	'2022-05-17 23:55:16'),
@@ -2382,18 +2371,17 @@ INSERT INTO `student` (`id`, `school_id`, `nis`, `nisn`, `name`, `gender`, `clas
 (663,	4,	'3684',	'987654935',	'Suci Alfiaturohma',	'P',	'XI AGT 2',	'2022/2023',	'ACTIVE',	'2022-07-12 00:16:26',	'2022-07-12 00:16:26'),
 (664,	4,	'3703',	'987654936',	'Yafi` Zubdatul Faiqah',	'P',	'XI AGT 2',	'2022/2023',	'ACTIVE',	'2022-07-12 00:16:26',	'2022-07-12 00:16:26');
 
-DROP TABLE IF EXISTS `transaction`;
 CREATE TABLE `transaction` (
   `id` int NOT NULL AUTO_INCREMENT,
   `invoice_id` int DEFAULT NULL,
   `school_id` int DEFAULT NULL,
   `student_id` int DEFAULT NULL,
   `school_payment_id` int DEFAULT NULL,
-  `number` varchar(255) DEFAULT NULL,
+  `number` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
   `amount` int DEFAULT NULL,
   `date` date DEFAULT NULL,
-  `note` text,
-  `payment_method` varchar(255) DEFAULT NULL,
+  `note` text CHARACTER SET latin1,
+  `payment_method` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
   `user_id` int DEFAULT NULL,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
@@ -2406,7 +2394,7 @@ CREATE TABLE `transaction` (
   CONSTRAINT `transaction_ibfk_3` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`),
   CONSTRAINT `transaction_ibfk_4` FOREIGN KEY (`school_payment_id`) REFERENCES `school_payment` (`id`),
   CONSTRAINT `transaction_ibfk_5` FOREIGN KEY (`school_id`) REFERENCES `school` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 INSERT INTO `transaction` (`id`, `invoice_id`, `school_id`, `student_id`, `school_payment_id`, `number`, `amount`, `date`, `note`, `payment_method`, `user_id`, `created_at`, `updated_at`) VALUES
 (90,	587,	1,	2,	4,	'00027/TRX/001/05/2022',	100000,	'2022-05-20',	'',	'CASH',	22,	'2022-05-20 09:20:58',	'2022-05-20 09:20:58'),
@@ -2441,24 +2429,23 @@ INSERT INTO `transaction` (`id`, `invoice_id`, `school_id`, `student_id`, `schoo
 (127,	1766,	4,	360,	12,	'00005/TRX/MAU-DU/07/2022',	4000000,	'2022-07-16',	'',	'CASH',	28,	'2022-07-15 21:49:31',	'2022-07-15 21:49:31'),
 (131,	720,	1,	14,	11,	'00047/TRX/SDN1NBR/07/2022',	3500000,	'2022-07-22',	'',	'CASH',	31,	'2022-07-21 23:49:54',	'2022-07-21 23:49:54');
 
-DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `username` varchar(255) DEFAULT NULL,
-  `auth_key` text,
-  `password_hash` text,
-  `email` varchar(255) DEFAULT NULL,
-  `name` varchar(255) DEFAULT NULL,
-  `phone` varchar(255) DEFAULT NULL,
-  `image` varchar(255) DEFAULT NULL,
-  `status` varchar(255) DEFAULT NULL COMMENT 'ACTIVE, NONACTIVE',
+  `username` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8_unicode_ci DEFAULT NULL,
+  `auth_key` text CHARACTER SET utf8mb3 COLLATE utf8_unicode_ci,
+  `password_hash` text CHARACTER SET utf8mb3 COLLATE utf8_unicode_ci,
+  `email` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8_unicode_ci DEFAULT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8_unicode_ci DEFAULT NULL,
+  `phone` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8_unicode_ci DEFAULT NULL,
+  `image` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8_unicode_ci DEFAULT NULL,
+  `status` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'ACTIVE, NONACTIVE',
   `role_id` int DEFAULT NULL,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `role_id` (`role_id`),
   CONSTRAINT `user_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `role` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 INSERT INTO `user` (`id`, `username`, `auth_key`, `password_hash`, `email`, `name`, `phone`, `image`, `status`, `role_id`, `created_at`, `updated_at`) VALUES
 (2,	'admin',	'',	'$2y$13$LziRMyDN.j0b6hlYJdiuHeLFCYiyknrdtU3bt8zJ09hj86K1DYMVC',	'infografikamedia@gmail.com',	'Grafika Digital Solution',	'085736775369',	NULL,	'ACTIVE',	1,	'2021-10-13 06:23:58',	'2022-06-28 00:03:06'),
@@ -2472,7 +2459,6 @@ INSERT INTO `user` (`id`, `username`, `auth_key`, `password_hash`, `email`, `nam
 (30,	'naila',	NULL,	'$2y$13$tvWqNpF2ETJymGcuaUdpfOZorWAi4CCZVSNBuq4ql841jhsN2PNDi',	'nailamuroda@gmail.com',	'Naila Muroda',	NULL,	NULL,	'ACTIVE',	4,	'2022-06-28 01:03:06',	'2022-06-28 01:03:06'),
 (31,	'demopakfikru',	NULL,	'$2y$13$xYtxwSJsDPar5P/JO.vGvOysJn9qfNE/0QUY7bziFfXLARDoSlKXa',	'fikru.khoiri@gmail.com',	'fikru',	NULL,	NULL,	'ACTIVE',	4,	'2022-07-12 04:15:13',	'2022-07-12 04:15:13');
 
-DROP TABLE IF EXISTS `user_school`;
 CREATE TABLE `user_school` (
   `id` int NOT NULL AUTO_INCREMENT,
   `user_id` int DEFAULT NULL,
@@ -2484,7 +2470,7 @@ CREATE TABLE `user_school` (
   KEY `school_id` (`school_id`),
   CONSTRAINT `user_school_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`),
   CONSTRAINT `user_school_ibfk_2` FOREIGN KEY (`school_id`) REFERENCES `school` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 INSERT INTO `user_school` (`id`, `user_id`, `school_id`, `created_at`, `updated_at`) VALUES
 (5,	22,	1,	'2022-05-12 08:20:21',	'2022-05-12 08:20:21'),
@@ -2497,13 +2483,12 @@ INSERT INTO `user_school` (`id`, `user_id`, `school_id`, `created_at`, `updated_
 (12,	30,	4,	'2022-06-28 01:03:06',	'2022-06-28 01:03:06'),
 (13,	31,	1,	'2022-07-12 04:15:13',	'2022-07-12 04:15:13');
 
-DROP TABLE IF EXISTS `year`;
 CREATE TABLE `year` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) DEFAULT NULL COMMENT '2021/2022, 2022/2023, DST',
-  `status` varchar(255) DEFAULT NULL COMMENT 'ACTIVE, NONACTIVE',
+  `name` varchar(255) CHARACTER SET latin1 DEFAULT NULL COMMENT '2021/2022, 2022/2023, DST',
+  `status` varchar(255) CHARACTER SET latin1 DEFAULT NULL COMMENT 'ACTIVE, NONACTIVE',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 INSERT INTO `year` (`id`, `name`, `status`) VALUES
 (1,	'2020/2021',	'NONACTIVE'),
@@ -2512,4 +2497,4 @@ INSERT INTO `year` (`id`, `name`, `status`) VALUES
 (4,	'2023/2024',	'NONACTIVE'),
 (5,	'2024/2025',	'NONACTIVE');
 
--- 2022-07-22 15:06:45
+-- 2022-07-22 15:23:31
