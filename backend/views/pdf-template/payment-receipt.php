@@ -6,7 +6,7 @@ $transactionNumber = '';
 $transactionDate = '';
 foreach($transactions as $trx) {
     $transactionNumber = $trx->number;
-    $transactionDate = Strings::getFullDate($trx->date)
+    $transactionDate = Strings::getFullDate($trx->date);
     break;
 }
 $baseUrl = Yii::$app->request->baseUrl;
