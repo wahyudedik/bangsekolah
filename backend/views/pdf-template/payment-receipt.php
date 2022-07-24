@@ -6,7 +6,7 @@ $transactionNumber = '';
 $transactionDate = '';
 foreach($transactions as $trx) {
     $transactionNumber = $trx->number;
-    $transactionDate = date('d M Y', strtotime($trx->date));
+    $transactionDate = Strings::getFullDate($trx->date)
     break;
 }
 $baseUrl = Yii::$app->request->baseUrl;
@@ -122,7 +122,7 @@ $baseUrl = Yii::$app->request->baseUrl;
                         <tr>
                             <td width="70%"></td>
                             <td class="small">
-                                <?= $transaction->invoice->school->city.', '.date('d M Y', strtotime($transaction->date)) ?><br>
+                                <?= $transaction->invoice->school->city.', '.Strings::getFullDate($transaction->date) ?><br>
                                 Petugas<br><br><br>
                                 <?= $transaction->user->name ?>
                             </td>
