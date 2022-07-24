@@ -100,16 +100,16 @@ $this->params['breadcrumbs'][] = $this->title;
                         <table class="table table-bordered">
                             <tr>
                                 <th>No</th>
-                                <th>Nama Pembayaran</th>
                                 <th>Tanggal</th>
+                                <th>Nama Pembayaran</th>
                                 <th>Jumlah Bayar</th>
                                 <th>Cetak</th>
                             </tr>
                             <?php $i=1; foreach ($histories as $history): ?>
                                 <tr>
                                     <td><?= $i++ ?></td>
-                                    <td><?= $history->schoolPayment->name ?></td>
                                     <td><?= Strings::getFullDate($history->date) ?></td>
+                                    <td><?= $history->schoolPayment->name ?></td>
                                     <td><?= Strings::getRupiah($history->amount) ?></td>
                                     <td><?= Html::a('<i class="fas fa-print"></i>', ['transaction/print', 'id' => $history->id], ['class' => 'btn btn-info', 'target' => '_blank']) ?></td>
                                 </tr>
@@ -222,7 +222,6 @@ input[type="number"] {
 
     var submitClicked = false;
     $("#btn-submit").click(function(e){
-        e.preventDefault();
         if (parseInt($('#total').val()) > 0) {
             if (submitClicked == false) {
                 if (confirm('Apakah data pembayaran di atas sudah benar?')) {
@@ -234,6 +233,7 @@ input[type="number"] {
             }
             submitClicked = true;
         } else {
+            e.preventDefault();
             alert('Pilih dahulu tagihan yang akan dibayarkan');
         }
     });
