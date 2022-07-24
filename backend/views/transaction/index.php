@@ -94,8 +94,12 @@ $school = School::findOne(Yii::$app->session->get('school_id'));
 
                         //'id',
                     ['attribute' => 'number', 'label' => 'Nomor Transaksi'],
-                    ['attribute' => 'date', 'label' => 'Tanggal'],
-                    ['attribute' => 'student.nis', 'label' => 'NIS'],
+                    [
+                        'label' => 'Tanggal',
+                        'value' => function($model) {
+                            return date('d/m/Y', strtotime($model->date))
+                        }
+                    ],
                     ['attribute' => 'student.name', 'label' => 'Nama Siswa'],
                     ['attribute' => 'student.class', 'label' => 'Kelas'],
                     ['attribute' => 'invoice.description', 'label' => 'Nama Pembayaran'],
