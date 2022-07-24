@@ -161,12 +161,14 @@ class TransactionController extends Controller
         $historys = null;
         $school_id = Yii::$app->session->get('school_id');
 
-        $student = Student::find()->where(['nis' => $search])->andWhere(['school_id' => $school_id])->one();
-        if (!$student) {
-            $student = Student::find()->where(['nisn' => $search])->andWhere(['school_id' => $school_id])->one();
-        }
-        if (!$student) {
-            $student = Student::find()->where(['like', 'name', $search, false])->andWhere(['school_id' => $school_id])->one();
+        if ($search) {
+            $student = Student::find()->where(['nis' => $search])->andWhere(['school_id' => $school_id])->one();
+            if (!$student) {
+                $student = Student::find()->where(['nisn' => $search])->andWhere(['school_id' => $school_id])->one();
+            }
+            if (!$student) {
+                $student = Student::find()->where(['like', 'name', $search, false])->andWhere(['school_id' => $school_id])->one();
+            }
         }
         if ($student) {
             $invoices = Invoice::find()->where(['student_id' => $student->id, 'school_id' => $student->school_id, 'year' => $student->year])->all();
