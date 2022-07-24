@@ -11,8 +11,19 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="card">
     <div class="card-body">
         <?php $form = ActiveForm::begin(['action' => ['transaction/create'], 'method' => 'get']) ?>
+            
             <div class="row">
                 <div class="col-lg-4">
+                    <div class="input-group input-group-sm">
+                        <label style="margin-right: 10px;">Cari siswa</label>
+                        <input type="text" name="search" class="form-control" placeholder="Ketik NIS/NISN/Nama ..." value="">
+                        <span class="input-group-append">
+                            <button type="submit" class="btn btn-info btn-flat"><i class="fas fa-search search-icon"></i></button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+                <!--
                     <div class="form-group row">
                         <label class="col-sm-4 col-form-label" style="text-align: right;">Cari Siswa</label>
                         <div class="col-sm-8">
@@ -23,7 +34,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="col-lg-4">
                     <button type="submit" class="btn btn-primary"><i class="nav-icon fas fa-search"></i></button>
                 </div>
-            </div>
+                -->
         <?php ActiveForm::end() ?>
     </div>
 </div>

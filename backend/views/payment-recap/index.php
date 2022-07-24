@@ -9,7 +9,6 @@ use common\helpers\Strings;
 
 $this->title = 'Rekapitulasi Pembayaran';
 $this->params['breadcrumbs'][] = $this->title;
-$schoolId = Yii::$app->session->get('school_id');
 ?>
 <div class="card">
     <div class="card-header">
@@ -22,6 +21,13 @@ $schoolId = Yii::$app->session->get('school_id');
     <div class="card-body">
         <?php $form = ActiveForm::begin(['method' => 'get', 'action' => Url::to(['index'])]) ?>
         <div class="row">
+            <div class="col-lg-3">
+                <label>Rentang Tanggal</label><br>
+                <div class="input-group input-group-sm">
+                    <input type="date" class="form-control" name="startdate" value="<?= $startdate ?>">
+                    <input type="date" class="form-control" name="enddate" value="<?= $enddate ?>">                    
+                </div>
+            </div>
             <div class="col-lg-2">
                 <label>Tahun Ajaran</label><br>
                 <div class="input-group input-group-sm">
@@ -55,35 +61,32 @@ $schoolId = Yii::$app->session->get('school_id');
                         <option value="">-- Semua --</option>
                         <?php 
                         foreach ($schoolPayments as $pymnt) {
-                            echo '<option '.($pymnt->number == ($payment ? $payment->number : '') ? 'selected' : '').' value="'.$pymnt->number.'">'.$pymnt->name.'</option>';
+                            echo '<option '.($pymnt->number == $payment ? 'selected' : '').' value="'.$pymnt->number.'">'.$pymnt->name.'</option>';
                         }
                         ?>
                     </select>
                 </div>
             </div>
             <div class="col-lg-2">
-                <label>Jenis Transaksi</label><br>
+                <label>Metode Pembayaran</label><br>
                 <div class="input-group input-group-sm">
                     <select class="form-control" name="method">
                         <option value="">-- Semua --</option>
-                        <option value="CASH">Tunai</option>
-                        <option value="TRANSFER">Transfer</option>
+                        <option value="CASH" <?= $method == 'CASH' ? 'selected' : '' ?>>Tunai</option>
+                        <option value="TRANSFER" <?= $method == 'TRANSFER' ? 'selected' : '' ?>>Transfer</option>
                     </select>
                 </div>
             </div>
-            <div class="col-lg-3">
-                <div style="margin-top: 30px;">
-                    <?php
-                    echo Html::submitButton('<i class="fas fa-search"></i> Tampilkan', ['class' => 'btn btn-success']).' ';
-                    if ($year && $class && $payment) {
-                        echo Html::a('<i class="fas fa-sync-alt"></i> Reset', ['payment-recap/index'], ['class' => 'btn btn-primary']).' ';
-                        echo Html::a('<i class="fas fa-print"></i> Cetak', ['payment-recap/download', 'year' => $year, 'class' => $class, 'payment' => $payment->number], ['class' => 'btn btn-info', 'download' => 'payment-recap-'.$year.'-'.$class.'-'.$payment->number.'.pdf']).' ';
-                        echo Html::a('<i class="fas fa-excel"></i> Export', ['payment-recap/export', 'year' => $year, 'class' => $class, 'payment' => $payment->number], ['class' => 'btn btn-info', 'download' => 'payment-recap-'.$year.'-'.$class.'-'.$payment->number.'.pdf']).' ';
-                    }
-                    ?>
-                </div>
-            </div>
         </div>
+        <br>
+        <?php
+        echo Html::submitButton('<i class="fas fa-search"></i> Tampilkan', ['class' => 'btn btn-success']).' ';
+        // if ($class && $payment) {
+            echo Html::a('<i class="fas fa-sync-alt"></i> Reset', ['payment-recap/index'], ['class' => 'btn btn-primary']).' ';
+            echo Html::a('<i class="fas fa-print"></i> Cetak', ['payment-recap/download', 'startdate' => $startdate, 'enddate' => $enddate, 'year' => $year, 'class' => $class, 'payment' => $payment, 'method' => $method], ['class' => 'btn btn-info', 'download' => 'payment-recap-'.$startdate.'-'.$enddate.'.pdf']).' ';
+            echo Html::a('<i class="fas fa-file-excel"></i> Export Excel', ['payment-recap/export', 'startdate' => $startdate, 'enddate' => $enddate, 'year' => $year, 'class' => $class, 'payment' => $payment, 'method' => $method], ['class' => 'btn btn-info', 'download' => 'payment-recap-'.$startdate.'-'.$enddate.'.xls']).' ';
+        // }
+        ?>
         <?php ActiveForm::end() ?>
     </div>
 </div>
@@ -94,8 +97,9 @@ $schoolId = Yii::$app->session->get('school_id');
     </div>
     <div class="card-body p-0">
         <table class="table table-bordered">
-            <tr>
+            <tr style="background: #efefef;">
                 <th rowspan="2">NO</th>
+                <th rowspan="2">TANGGAL</th>
                 <th rowspan="2">NIS</th>
                 <th rowspan="2">NAMA SISWA</th>
                 <th rowspan="2">NAMA PEMBAYARAN</th>
@@ -103,31 +107,38 @@ $schoolId = Yii::$app->session->get('school_id');
                 <th colspan="2">JENIS TRANSAKSI</th>
                 <th rowspan="2">JUMLAH</th>
             </tr>
-            <tr>
+            <tr style="background: #efefef;">
                 <th>Tunai</th>
                 <th>Transfer</th>
             </tr>
             <?php
             $i=1;
-            $transactions = Transaction::find()->where(['school_id' => $schoolId])
-            ->orderBy(['id' => SORT_DESC])
-            ->all();
-            foreach ($transactions as $trans):
+            $totalCash = 0;
+            $totalTransfer = 0;
+            foreach ($dataProvider->models as $trans):
+                if ($trans->payment_method == 'CASH') {
+                    $totalCash += $trans->amount;
+                } else {
+                    $totalTransfer += $trans->amount;
+                }
                 ?>
                 <tr>
                     <td><?= $i++; ?></td>
+                    <td><?= Strings::getFullDate($trans->date) ?></td>
                     <td><?= $trans->student->nis ?></td>
                     <td><?= $trans->student->name ?></td>
                     <td><?= $trans->invoice->description ?></td>
                     <td><?= $trans->student->class ?></td>
-                    <td><?= $trans->payment_method == 'CASH' ? $trans->amountRupiah : '' ?></td>
-                    <td><?= $trans->payment_method == 'TRANSFER' ? $trans->amountRupiah : '' ?></td>
-                    <td><?= $trans->amountRupiah ?></td>
+                    <td style="text-align: right;"><?= $trans->payment_method == 'CASH' ? $trans->amountRupiah : '' ?></td>
+                    <td style="text-align: right;"><?= $trans->payment_method == 'TRANSFER' ? $trans->amountRupiah : '' ?></td>
+                    <td style="text-align: right;"><?= $trans->amountRupiah ?></td>
                 </tr>
             <?php endforeach; ?>
             <tr>
-                <td colspan="5">TOTAL</td>
-
+                <th colspan="6">TOTAL</th>
+                <th style="text-align: right;"><?= Strings::getRupiah($totalCash) ?></th>
+                <th style="text-align: right;"><?= Strings::getRupiah($totalTransfer) ?></th>
+                <th style="text-align: right;"><?= Strings::getRupiah($totalCash + $totalTransfer) ?></th>
             </tr>
         </table>
     </div>

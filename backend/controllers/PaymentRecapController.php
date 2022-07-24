@@ -10,7 +10,9 @@ use common\models\SchoolMonth;
 use common\models\Year;
 use common\models\Student;
 use common\models\School;
+use common\models\Transaction;
 
+use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use kartik\mpdf\Pdf;
 
@@ -20,57 +22,86 @@ use kartik\mpdf\Pdf;
 class PaymentRecapController extends Controller
 {
 
-    public function actionIndex($year = null, $class = null, $payment = null)
+    public function actionIndex($startdate = null, $enddate = null, $year = null, $class = null, $payment = null, $method = null)
     {
         \common\helpers\Sidebar::setActiveMenu('payment-recap', 'index');
 
+        $school_id = Yii::$app->session->get('school_id');
         $years = Year::find()->where(['status' => 'ACTIVE'])->all();
         $schoolPayments = SchoolPayment::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'status' => 'ACTIVE'])->all();
         $schoolClasses = SchoolClass::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'status' => 'ACTIVE'])->all();
         $schoolMonths = SchoolMonth::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'status' => 'ACTIVE'])->all();
 
-        $students = null;
-        if ($year && $class && $payment) {
-            $payment = SchoolPayment::find()->where(['number' => $payment])->one();
-            $students = Student::find()->where(['year' => $year, 'class' => $class, 'school_id' => Yii::$app->session->get('school_id')])->all();
+        if($startdate == null && $enddate == null){
+            $startdate = date('Y-m-d', strtotime('-1 month'));
+            $enddate = date('Y-m-d');
         }
 
+        $query = Transaction::find()
+            ->joinWith(['student', 'schoolPayment'])
+            ->where(['student.school_id' => Yii::$app->session->get('school_id')]);
+
+        if ($startdate) { $query->andFilterWhere(['and', ['>=', 'DATE(transaction.date)', $startdate]]); }
+        if ($enddate) { $query->andFilterWhere(['and', ['<=', 'DATE(transaction.date)', $enddate]]); }
+        if($year) { $query->andFilterWhere(['student.year' => $year]); }
+        if($class) { $query->andFilterWhere(['student.class' => $class]); }
+        if($payment) { $query->andFilterWhere(['or', ['like', 'school_payment.number', $payment]]); }
+        if($method) { $query->andFilterWhere(['or', ['like', 'payment_method', $method]]); }
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query->orderBy(['id' => SORT_DESC]),
+        ]);
+
         return $this->render('index', [
-            'class' => $class,
+            'startdate' => $startdate,
+            'enddate' => $enddate,
             'year' => $year,
+            'class' => $class,
             'payment' => $payment,
+            'method' => $method,
             'years' => $years,
             'schoolPayments' => $schoolPayments,
             'schoolClasses' => $schoolClasses,
             'schoolMonths' => $schoolMonths,
-            'students' => $students,
+            // 'students' => $students,
+            'dataProvider' => $dataProvider,
         ]);
     }
 
-    public function actionDownload($year, $class, $payment)
+    public function actionDownload($startdate, $enddate, $year, $class, $payment, $method)
     {
-        $schoolMonths = SchoolMonth::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'status' => 'ACTIVE'])->all();
-        $students = null;
-        if ($year && $class && $payment) {
-            $school = School::findOne(Yii::$app->session->get('school_id'));
-            $payment = SchoolPayment::find()->where(['number' => $payment])->one();
-            $students = Student::find()->where(['year' => $year, 'class' => $class, 'school_id' => Yii::$app->session->get('school_id')])->all();
-        }
+        $school_id = Yii::$app->session->get('school_id');
+        $school = School::findOne($school_id);
+
+        $query = Transaction::find()
+            ->joinWith(['student', 'schoolPayment'])
+            ->where(['student.school_id' => $school_id]);
+
+        if ($startdate) { $query->andFilterWhere(['and', ['>=', 'DATE(transaction.date)', $startdate]]); }
+        if ($enddate) { $query->andFilterWhere(['and', ['<=', 'DATE(transaction.date)', $enddate]]); }
+        if($year) { $query->andFilterWhere(['student.year' => $year]); }
+        if($class) { $query->andFilterWhere(['student.class' => $class]); }
+        if($payment) { $query->andFilterWhere(['or', ['like', 'school_payment.number', $payment]]); }
+        if($method) { $query->andFilterWhere(['or', ['like', 'payment_method', $method]]); }
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query->orderBy(['id' => SORT_DESC]),
+        ]);
 
         $content = $this->renderPartial('@app/views/pdf-template/payment-recap', [
-            'year' => $year,
-            'class' => $class,
+            'dataProvider' => $dataProvider,
             'school' => $school,
-            'payment' => $payment,
-            'students' => $students,
-            'schoolMonths' => $schoolMonths,
+            'startdate' => $startdate,
+            'enddate' => $enddate,
+            'class' => $class,
+            'year' => $year,
         ]);
 
         // return $content;
 
         $pdf = new Pdf([
             'mode' => Pdf::MODE_CORE,
-            'filename' => 'payment-recap-'.$year.'-'.$class.'-'.$payment->number.'.pdf',
+            'filename' => 'payment-recap-'.$startdate.'-'.$enddate.'-'.$class.'-'.$payment.'-'.$method.'.pdf',
             'format' => [210, 330],
             // 'format' => [148, 210],
             'orientation' => Pdf::ORIENT_LANDSCAPE,
@@ -90,7 +121,7 @@ class PaymentRecapController extends Controller
                 'showWatermarkImage' => true,
             ],
             'methods' => [
-                'SetTitle' => 'payment-recap-'.$year.'-'.$class.'-'.$payment->number.'.pdf',
+                'SetTitle' => 'payment-recap-'.$startdate.'-'.$enddate.'-'.$class.'-'.$payment.'-'.$method.'.pdf',
             ]
         ]);
 

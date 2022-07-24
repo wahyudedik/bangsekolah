@@ -172,7 +172,7 @@ class TransactionController extends Controller
         }
         if ($student) {
             $invoices = Invoice::find()->where(['student_id' => $student->id, 'school_id' => $student->school_id, 'year' => $student->year])->all();
-            $histories = Transaction::find()->where(['student_id' => $student->id, 'school_id' => $student->school_id])->orderBy(['id' => SORT_DESC])->all();
+            $histories = Transaction::find()->where(['student_id' => $student->id, 'school_id' => $student->school_id])->orderBy(['id' => SORT_DESC])->limit(5)->all();
         }
 
         if (isset($_POST['submit'])) {
