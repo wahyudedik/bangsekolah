@@ -104,7 +104,6 @@ $school = School::findOne(Yii::$app->session->get('school_id'));
                     ['attribute' => 'student.class', 'label' => 'Kelas'],
                     ['attribute' => 'invoice.description', 'label' => 'Nama Pembayaran'],
                     ['attribute' => 'amountRupiah', 'label' => 'Jumlah Bayar'],
-                    ['attribute' => 'user.name', 'label' => 'Petugas'],
                     
                     [
                         'class' => 'yii\grid\ActionColumn',
