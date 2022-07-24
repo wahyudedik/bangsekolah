@@ -154,16 +154,18 @@ class TransactionController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate($nis = null, $name = null)
+    public function actionCreate($search = null)
     {
         $student = null;
         $invoices = null;
         $historys = null;
         $school_id = Yii::$app->session->get('school_id');
 
-        if ($nis) {
-            $student = Student::find()->where(['nis' => $nis])->andWhere(['school_id' => $school_id])->one();
-        } else if ($name) {
+        $student = Student::find()->where(['nis' => $search])->andWhere(['school_id' => $school_id])->one();
+        if (!$student) {
+            $student = Student::find()->where(['nisn' => $search])->andWhere(['school_id' => $school_id])->one();
+        }
+        if (!$student) {
             $student = Student::find()->where(['like', 'name', $name, false])->andWhere(['school_id' => $school_id])->one();
         }
         if ($student) {

@@ -12,24 +12,16 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="card-body">
         <?php $form = ActiveForm::begin(['action' => ['transaction/create'], 'method' => 'get']) ?>
             <div class="row">
-                <div class="col-lg-3">
+                <div class="col-lg-4">
                     <div class="form-group row">
-                        <label class="col-sm-4 col-form-label" style="text-align: right;">NIS</label>
+                        <label class="col-sm-4 col-form-label" style="text-align: right;">Cari Siswa</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" name="nis" value="<?= $nis ?>">
+                            <input type="text" class="form-control" name="search" value="<?= $search ?>" placeholder="Ketik NIS/NISN/Nama">
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-4">
-                    <div class="form-group row">
-                        <label class="col-sm-4 col-form-label" style="text-align: right;">NAMA SISWA</label>
-                        <div class="col-sm-8">
-                            <input type="text" class="form-control" name="name" value="<?= $name ?>">
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4">
-                    <button type="submit" class="btn btn-primary"><i class="nav-icon fas fa-search"></i> Lihat Tagihan</button>
+                    <button type="submit" class="btn btn-primary"><i class="nav-icon fas fa-search"></i></button>
                 </div>
             </div>
         <?php ActiveForm::end() ?>

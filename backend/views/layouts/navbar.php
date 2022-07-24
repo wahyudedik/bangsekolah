@@ -17,7 +17,7 @@ $school = $userSchool->school;
 		</li>
 		<?php if ($userSchool && count($school->students)>0): ?>
 			<li class="nav-item d-none d-sm-inline-block">
-				<a href="<?= Url::to(['transaction/create']) ?>" class="nav-link">Transaksi Pembayaran Baru</a>
+				<a href="<?= Url::to(['transaction/create']) ?>" class="nav-link">Pembayaran Siswa</a>
 			</li>
 		<?php endif; ?>
 	</ul>
