@@ -2,6 +2,7 @@
 use common\helpers\Strings;
 use common\models\Invoice;
 use common\models\Transaction;
+use common\models\Student;
 
 $this->title = 'Laporan 30 Hari Terakhir';
 
@@ -28,15 +29,6 @@ $transactionCount = Transaction::find()
 $totalPayment = 0;
 
 // CARD 3
-$last7Day = new DateTime('+7 days');
-$almostOverdueCount = Invoice::find()
-    ->select('number')
-    ->where(['school_id' => $schoolId])
-    ->andWhere(['between', 'due_date', date('Y-m-d'), $last7Day->format('Y-m-d')])
-    ->distinct()
-    ->count();
-
-// CARD 4
 $last30Day = new DateTime('-30 days');
 $overdueCount = Invoice::find()
     ->select('number')
@@ -44,6 +36,12 @@ $overdueCount = Invoice::find()
     ->andWhere(['between', 'due_date', $last30Day->format('Y-m-d'), date('Y-m-d')])
     ->andWhere('paid_amount < amount')
     ->distinct()
+    ->count();
+
+// CARD 4
+$studentCount = Student::find()
+    ->where(['school_id' => $schoolId])
+    ->andWhere(['status' => 'ACTIVE'])
     ->count();
 
 /**
@@ -105,18 +103,6 @@ for ($i = 1; $i <= 31; $i++) {
         </div>
     </div>
     <div class="col-lg-3 col-6">
-        <div class="small-box bg-warning">
-            <div class="inner">
-                <h3><?= $almostOverdueCount ?></h3>
-                <p>Tagihan Akan Jatuh Tempo</p>
-            </div>
-            <div class="icon">
-                <i class="ion ion-person-add"></i>
-            </div>
-            <!-- <a href="#" class="small-box-footer">Lihat detail <i class="fas fa-arrow-circle-right"></i></a> -->
-        </div>
-    </div>
-    <div class="col-lg-3 col-6">
         <div class="small-box bg-danger">
             <div class="inner">
                 <h3><?= $overdueCount ?></h3>
@@ -124,6 +110,18 @@ for ($i = 1; $i <= 31; $i++) {
             </div>
             <div class="icon">
                 <i class="ion ion-pie-graph"></i>
+            </div>
+            <!-- <a href="#" class="small-box-footer">Lihat detail <i class="fas fa-arrow-circle-right"></i></a> -->
+        </div>
+    </div>
+    <div class="col-lg-3 col-6">
+        <div class="small-box bg-warning">
+            <div class="inner">
+                <h3><?= $studentCount ?></h3>
+                <p>Siswa Aktif</p>
+            </div>
+            <div class="icon">
+                <i class="ion ion-person-add"></i>
             </div>
             <!-- <a href="#" class="small-box-footer">Lihat detail <i class="fas fa-arrow-circle-right"></i></a> -->
         </div>
