@@ -221,6 +221,7 @@ input[type="number"] {
 
     var submitClicked = false;
     $("#btn-submit").click(function(e){
+        e.preventDefault();
         if (parseInt($('#total').val()) > 0) {
             if (submitClicked == false) {
                 if (confirm('Apakah data pembayaran di atas sudah benar?')) {
