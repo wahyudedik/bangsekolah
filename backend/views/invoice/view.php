@@ -17,7 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <header class="card-header">
                 <?= Html::a('<i class="fas fa-chevron-left"></i> Kembali', ['invoice/invoices', 'student' => $model->student->id], ['class' => 'btn btn-warning']) ?>
                 <div class="filter-block float-right">
-                    <?= Html::a('<i class="nav-icon fas fa-hand-holding-usd"></i> Bayar Tagihan Ini', ['transaction/create', 'nis' => $model->student->nis], ['class' => 'btn btn-success']) ?>
+                    <?= Html::a('<i class="nav-icon fas fa-hand-holding-usd"></i> Bayar Tagihan Ini', ['transaction/create', 'search' => $model->student->nis], ['class' => 'btn btn-success']) ?>
                     <?php
                     if (!$model->transactions) {
                         echo Html::a('<i class="nav-icon fas fa-trash"></i> Hapus', ['delete', 'id' => $model->id], [
