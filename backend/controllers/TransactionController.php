@@ -139,7 +139,7 @@ class TransactionController extends Controller
                 'showWatermarkImage' => true,
             ],
             'methods' => [
-                'SetTitle' => 'Receipt - '.$transaction->student->nisn,
+                'SetTitle' => 'Receipt - '.$transaction->number,
             ]
         ]);
 
