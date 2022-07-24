@@ -166,7 +166,7 @@ class TransactionController extends Controller
             $student = Student::find()->where(['nisn' => $search])->andWhere(['school_id' => $school_id])->one();
         }
         if (!$student) {
-            $student = Student::find()->where(['like', 'name', $name, false])->andWhere(['school_id' => $school_id])->one();
+            $student = Student::find()->where(['like', 'name', $search, false])->andWhere(['school_id' => $school_id])->one();
         }
         if ($student) {
             $invoices = Invoice::find()->where(['student_id' => $student->id, 'school_id' => $student->school_id, 'year' => $student->year])->all();
