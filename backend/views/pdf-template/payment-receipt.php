@@ -69,7 +69,6 @@ $baseUrl = Yii::$app->request->baseUrl;
                             <td class="small monospacearial"><?= $transaction->student->year ?></td>
                         </tr>
                     </table>
-                    <br>
                     <span class="large">Dengan rincian pembayaran sebagai berikut:</span>
                     <br>
                     <table width="100%" cellspacing="0" cellpadding="5" class="table table-bordered">
