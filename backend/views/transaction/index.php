@@ -97,7 +97,7 @@ $school = School::findOne(Yii::$app->session->get('school_id'));
                     [
                         'label' => 'Tanggal',
                         'value' => function($model) {
-                            return date('d/m/Y', strtotime($model->date))
+                            return date('d/m/Y', strtotime($model->date));
                         }
                     ],
                     ['attribute' => 'student.name', 'label' => 'Nama Siswa'],
