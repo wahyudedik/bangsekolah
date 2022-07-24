@@ -110,7 +110,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     <td><?= $history->schoolPayment->name ?></td>
                                     <td><?= Strings::getFullDate($history->date) ?></td>
                                     <td><?= Strings::getRupiah($history->amount) ?></td>
-                                    <td><?= Html::a('<i class="fas fa-print"></i>', ['transaction/print', 'id' => $model->id], ['class' => 'btn btn-info', 'target' => '_blank']) ?></td>
+                                    <td><?= Html::a('<i class="fas fa-print"></i>', ['transaction/print', 'id' => $history->id], ['class' => 'btn btn-info', 'target' => '_blank']) ?></td>
                                 </tr>
                             <?php endforeach; ?>
                         </table>
