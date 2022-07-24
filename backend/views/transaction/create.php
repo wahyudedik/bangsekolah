@@ -64,11 +64,11 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="col-lg-8">
                 <div class="callout callout-info">
                     <h5>Panduan transaksi</h5>
-                    <span>1. Periksa Detail NIS / NISN / NAMA SISWA dan Riwayat Pembayaran</span></br >
-                    <span>2. Periksa Daftar Tagihan</span></br >
-                    <span>3. Pilih Jenis Pembayaran: Tunai atau Transfer</span></br >
-                    <span>4. Klik Centang di menu Bayar dan inputkan jumlah yang akan dibayarkan</span></br >
-                    <span>5. Jika sudah benar, Pilih Simpan transaksi</span>
+                    <span>1. Periksa Detail NIS / NISN / NAMA SISWA dan Riwayat Pembayaran</span><br>
+                    <span>2. Periksa Daftar Tagihan</span><br>
+                    <span>3. Pilih Jenis Pembayaran: Tunai atau Transfer</span><br>
+                    <span>4. Klik Centang di menu Bayar dan inputkan jumlah yang akan dibayarkan</span><br>
+                    <span>5. Jika sudah benar, Pilih Simpan transaksi</span><br>
                     <span>6. Pilih OK</span>
                 </div>
             </div>
