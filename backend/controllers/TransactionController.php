@@ -158,6 +158,7 @@ class TransactionController extends Controller
     {
         $student = null;
         $invoices = null;
+        $historys = null;
         $school_id = Yii::$app->session->get('school_id');
 
         if ($nis) {
@@ -167,12 +168,14 @@ class TransactionController extends Controller
         }
         if ($student) {
             $invoices = Invoice::find()->where(['student_id' => $student->id, 'school_id' => $student->school_id, 'year' => $student->year])->all();
+            $historys = Transaction::find()->where(['student_id' => $student->id, 'school_id' => $student->school_id])->orderBy(['id' => SORT_DESC])->all();
         }
 
         if (isset($_POST['submit'])) {
             $invoices = $_POST['invoice'];
             $amounts = $_POST['amount'];
             $proofs = $_POST['proof'];
+            $note = $_POST['note'];
 
             // generate transaction number
             $school = School::findOne($school_id);
@@ -199,7 +202,7 @@ class TransactionController extends Controller
                     $transaction->number = $transactionNumber;
                     $transaction->amount = $amount;
                     $transaction->date = date('Y-m-d');
-                    $transaction->note = '';
+                    $transaction->note = $note;
                     $transaction->payment_method = $proof;
                     $transaction->user_id = Yii::$app->user->identity->id;
                     $transaction->save();
@@ -230,6 +233,7 @@ class TransactionController extends Controller
             'name' => $name,
             'student' => $student,
             'invoices' => $invoices,
+            'historys' => $historys,
         ]);
     }
 

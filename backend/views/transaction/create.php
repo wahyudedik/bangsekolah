@@ -4,7 +4,7 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use common\helpers\Strings;
 
-$this->title = 'Transaksi Baru';
+$this->title = 'Transaksi Pembayaran';
 $this->params['breadcrumbs'][] = ['label' => 'Transaksi', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
@@ -39,32 +39,95 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php $form = ActiveForm::begin(['action' => ['transaction/create'], 'method' => 'post']) ?>
         <div class="card">
             <div class="card-header">
-                <h5>Detail Pembayaran</h5>
+                <h5>Informasi Siswa</h5>
             </div>
             <div class="card-body">
                 <div class="row">
                     <div class="col-lg-4">
-                        <label>Total Bayar</label>
-                        <input type="text" id="label-total" class="form-control" name="total" value="0" readonly style="font-size: 25px; height: 60px;">
-                        <input type="hidden" id="total" class="form-control" name="total" value="0">
-                        <br>
-                        <button name="submit" class="btn btn-success" id="btn-submit">
-                            <i class="nav-icon fas fa-save"></i> Simpan Transaksi
-                        </button>
+                        <table>
+                            <tr>
+                                <th>NIS / NISN</th>
+                                <td>:</td>
+                                <td><?= $student->nis.' / '.$student->nisn ?></td>
+                            </tr>
+                            <tr>
+                                <th>Nama</th>
+                                <td>:</td>
+                                <td><?= $student->name ?></td>
+                            </tr>
+                            <tr>
+                                <th>Kelas</th>
+                                <td>:</td>
+                                <td><?= $student->class ?></td>
+                            </tr>
+                            <tr>
+                                <th>Tahun Ajaran</th>
+                                <td>:</td>
+                                <td><?= $student->year ?></td>
+                            </tr>
+                        </table>
                     </div>
                     <div class="col-lg-8">
                         <div class="callout callout-info">
                             <h5>Panduan transaksi</h5>
-                            <p>There is a problem that we need to fix. A wonderful serenity has taken possession of my entire soul, like these sweet mornings of spring which I enjoy with my whole heart. There is a problem that we need to fix. A wonderful serenity has taken possession of my entire soul, like these sweet mornings of spring which I enjoy with my whole heart.</p>
+                            <span>1. Periksa Detail NIS / NISN / NAMA SISWA dan Riwayat Pembayaran.</span></br >
+                            <span>2. Periksa Daftar Tagihan.</span></br >
+                            <span>3. Pilih Jenis Pembayaran : Cash atau Transfer.</span></br >
+                            <span>4. Klik Centang di menu Bayar dan inputkan jumlah yang akan dibayarkan.</span></br >
+                            <span>5. Jika sudah benar, Pilih Simpan transaksi kemudian pilih Ok.</span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Detail Pembayaran</h5>
+                    </div>
+                    <div class="card-body">
+                        <label>Total Bayar</label>
+                        <input type="text" id="label-total" class="form-control" name="total" value="0" readonly style="font-size: 25px; height: 60px;">
+                        <input type="hidden" id="total" class="form-control" name="total" value="0">
+                        <input type="text" id="label-note" class="form-control" name="note" style="margin-top: 10px" placeholder="Catatan Pembayaran">
+                        <br>
+                        <button name="submit" class="btn btn-success" id="btn-submit">
+                            <i class="nav-icon fas fa-save"></i> Simpan Transaksi
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Riwayat Pembayaran</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-bordered">
+                            <tr>
+                                <th>No</th>
+                                <th>Nama Pembayaran</th>
+                                <th>Tanggal</th>
+                                <th>Jumlah Bayar</th>
+                            </tr>
+                            <?php $i=1; foreach ($historys as $history): ?>
+                                <tr>
+                                    <td><?= $i++ ?></td>
+                                    <td><?= $history->schoolPayment->name ?></td>
+                                    <td><?= $history->date ?></td>
+                                    <td><?= Strings::getRupiah($history->amount) ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <div class="card">
             <div class="card-header">
                 <h5>Daftar Tagihan Untuk <?= $student->name ?></h5>
-                NIS = <?= $student->nis ?>, NISN = <?= $student->nisn ?>, Kelas = <?= $student->class ?>, Tahun Ajaran = <?= $student->year ?>
             </div>
             <div class="card-body">
                 <table class="table table-bordered">
