@@ -126,7 +126,7 @@ class TransactionController extends Controller
             // 'cssFile' => '@app/web/css/surat-penawaran.css',
             'cssInline' => '
             
-            .border-top{border-top: 1px solid grey;}
+            .border-top{border-top: 1px solid grey !important;}
             .monospace{font-family: monospace;}
             .small{font-size:13px;}
             .medium{font-size:14px;}

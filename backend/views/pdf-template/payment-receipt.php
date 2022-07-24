@@ -98,7 +98,7 @@ $baseUrl = Yii::$app->request->baseUrl;
                             <tr style="border: 1px solid black;">
                                 <td rowspan="2" class="small monospacearial" style="vertical-align: top; border: 1px solid black;"><?= $i++ ?></td>
                                 <td rowspan="2" class="small monospacearial" style="vertical-align: top; border: 1px solid black;"><?= $trx->schoolPayment->name == 'SPP' ? $trx->schoolPayment->name.' Bulan '.$trx->invoice->month : $trx->schoolPayment->name ?></td>
-                                <td rowspan="2" class="small monospacearial" style="vertical-align: middle; text-align: center; border: 1px solid black;"><?= $trx->payment_method == 'CASH' ? 'TUNAI' : $trx->payment_method ?></td>
+                                <td rowspan="2" class="small monospacearial" style="vertical-align: top; text-align: center; border: 1px solid black;"><?= $trx->payment_method == 'CASH' ? 'TUNAI' : $trx->payment_method ?></td>
                                 <td class="small monospacearial">
                                     <?= Strings::getRupiah($trx->invoice->amount-$paidTotal) ?>
                                 </td>

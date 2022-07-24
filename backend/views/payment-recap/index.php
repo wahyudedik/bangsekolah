@@ -4,16 +4,18 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
 use common\models\Invoice;
+use common\models\Transaction;
 use common\helpers\Strings;
 
 $this->title = 'Rekapitulasi Pembayaran';
 $this->params['breadcrumbs'][] = $this->title;
+$schoolId = Yii::$app->session->get('school_id');
 ?>
 <div class="card">
     <div class="card-header">
         <div class="row">
             <div class="col-lg-6">
-                <h5>Pilih siswa dan jenis pembayaran</h5>
+                <h5>Filter Data</h5>
             </div>
         </div>
     </div>
@@ -24,7 +26,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <label>Tahun Ajaran</label><br>
                 <div class="input-group input-group-sm">
                     <select class="form-control" name="year">
-                        <option value="">-- Pilih tahun --</option>
+                        <option value="">-- Semua --</option>
                         <?php 
                         foreach ($years as $yr) {
                             echo '<option '.($yr->name == $year ? 'selected' : '').' value="'.$yr->name.'">'.$yr->name.'</option>';
@@ -37,7 +39,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <label>Kelas</label><br>
                 <div class="input-group input-group-sm">
                     <select class="form-control" name="class">
-                        <option value="">-- Pilih kelas --</option>
+                        <option value="">-- Semua --</option>
                         <?php 
                         foreach ($schoolClasses as $cls) {
                             echo '<option '.($cls->name == $class ? 'selected' : '').' value="'.$cls->name.'">'.$cls->name.'</option>';
@@ -47,10 +49,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 </div>
             </div>
             <div class="col-lg-3">
-                <label>Pembayaran</label><br>
+                <label>Nama Pembayaran</label><br>
                 <div class="input-group input-group-sm">
                     <select class="form-control" name="payment">
-                        <option value="">-- Pilih pembayaran --</option>
+                        <option value="">-- Semua --</option>
                         <?php 
                         foreach ($schoolPayments as $pymnt) {
                             echo '<option '.($pymnt->number == ($payment ? $payment->number : '') ? 'selected' : '').' value="'.$pymnt->number.'">'.$pymnt->name.'</option>';
@@ -59,13 +61,24 @@ $this->params['breadcrumbs'][] = $this->title;
                     </select>
                 </div>
             </div>
-            <div class="col-lg-5">
+            <div class="col-lg-2">
+                <label>Jenis Transaksi</label><br>
+                <div class="input-group input-group-sm">
+                    <select class="form-control" name="method">
+                        <option value="">-- Semua --</option>
+                        <option value="CASH">Tunai</option>
+                        <option value="TRANSFER">Transfer</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-lg-3">
                 <div style="margin-top: 30px;">
                     <?php
                     echo Html::submitButton('<i class="fas fa-search"></i> Tampilkan', ['class' => 'btn btn-success']).' ';
                     if ($year && $class && $payment) {
                         echo Html::a('<i class="fas fa-sync-alt"></i> Reset', ['payment-recap/index'], ['class' => 'btn btn-primary']).' ';
-                        echo Html::a('<i class="fas fa-download"></i> Download', ['payment-recap/download', 'year' => $year, 'class' => $class, 'payment' => $payment->number], ['class' => 'btn btn-info', 'download' => 'payment-recap-'.$year.'-'.$class.'-'.$payment->number.'.pdf']).' ';
+                        echo Html::a('<i class="fas fa-print"></i> Cetak', ['payment-recap/download', 'year' => $year, 'class' => $class, 'payment' => $payment->number], ['class' => 'btn btn-info', 'download' => 'payment-recap-'.$year.'-'.$class.'-'.$payment->number.'.pdf']).' ';
+                        echo Html::a('<i class="fas fa-excel"></i> Export', ['payment-recap/export', 'year' => $year, 'class' => $class, 'payment' => $payment->number], ['class' => 'btn btn-info', 'download' => 'payment-recap-'.$year.'-'.$class.'-'.$payment->number.'.pdf']).' ';
                     }
                     ?>
                 </div>
@@ -75,98 +88,50 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 </div>
 
-<?php if ($students): ?>
-    <div class="card">
-        <div class="card-header">
-            <h5>Rekapitulasi pembayaran</h5>
-        </div>
-        <?php if ($payment->paymentType->name !== 'MONTHLY'): ?>
-            <div class="card-body p-0">
-                <table class="table table-bordered">
-                    <tr>
-                        <th>No</th>
-                        <th>NISN</th>
-                        <th>Nama Siswa</th>
-                        <th>Total Bayar</th>
-                        <th>Sudah Bayar</th>
-                        <th>Sisa</th>
-                    </tr>
-                    <?php
-                    $i=1;
-                    foreach ($students as $student):
-                        // get invoices
-                        $invoice = Invoice::find()->where(['student_id' => $student->id, 'school_payment_id' => $payment->id])->one();
-                        if ($invoice) :
-                            ?>
-                            <tr>
-                                <td><?= $i++; ?></td>
-                                <td><?= $student->nisn ?></td>
-                                <td><?= $student->name ?></td>
-                                <td><?= $invoice->amountRupiah ?></td>
-                                <td><?= $invoice->paidAmountRupiah ?></td>
-                                <td><?= Strings::getRupiah($invoice->amount - $invoice->paid_amount) ?></td>
-                            </tr>
-                        <?php endif; ?>
-                    <?php endforeach; ?>
-                </table>
-            </div>
-        <?php else: ?>
-            <div class="card-body p-0">
-                <table class="table table-bordered table-responsive">
-                    <tr>
-                        <th>No</th>
-                        <th>NISN</th>
-                        <th>Nama Siswa</th>
-                        <?php
-                        foreach ($schoolMonths as $month) {
-                            echo '<th style="min-width: 80px;">'.$month->name.'</th>';
-                        }
-                        ?>
-                        <th>Total Bayar</th>
-                        <th>Sudah Bayar</th>
-                        <th>Sisa</th>
-                    </tr>
-                    <?php
-                    $i=1;
-                    foreach ($students as $student):
-                        $total = 0;
-                        $totalPaid = 0;
-                        $remaining = 0;
-                        ?>
-                        <tr>
-                            <td><?= $i++; ?></td>
-                            <td><?= $student->nisn ?></td>
-                            <td><?= $student->name ?></td>
-                            <?php
-                            foreach ($schoolMonths as $month) {
-                                $invoice = Invoice::find()->where(['student_id' => $student->id, 'school_payment_id' => $payment->id, 'month' => $month->name])->one();
-                                if ($invoice) {
-                                    $total += $invoice->amount;
-                                    $totalPaid += $invoice->paid_amount;
-                                    if ($invoice->paid_amount > 0) {
-                                        echo '<td class="text-success">'.$invoice->paidAmountRupiah.'</td>';
-                                    } else {
-                                        echo '<td class="text-default">'.$invoice->paidAmountRupiah.'</td>';
-                                    }
-                                } else {
-                                    echo '<td>NO INVOICE</td>';
-                                }
-                            }
-                            ?>
-                            <td><?= Strings::getRupiah($total) ?></td>
-                            <td><?= Strings::getRupiah($totalPaid) ?></td>
-                            <td><?= Strings::getRupiah($total-$totalPaid) ?></td>
-                        </tr>
-                    <?php endforeach; ?>
-                </table>
-            </div>
-        <?php endif; ?>
+<div class="card">
+    <div class="card-header">
+        <h5>Rekapitulasi pembayaran</h5>
     </div>
-<?php else: ?>
-    <div class="callout callout-info">
-        Pilih tahun ajaran, kelas, dan jenis pembayaran
+    <div class="card-body p-0">
+        <table class="table table-bordered">
+            <tr>
+                <th rowspan="2">NO</th>
+                <th rowspan="2">NIS</th>
+                <th rowspan="2">NAMA SISWA</th>
+                <th rowspan="2">NAMA PEMBAYARAN</th>
+                <th rowspan="2">KELAS</th>
+                <th colspan="2">JENIS TRANSAKSI</th>
+                <th rowspan="2">JUMLAH</th>
+            </tr>
+            <tr>
+                <th>Tunai</th>
+                <th>Transfer</th>
+            </tr>
+            <?php
+            $i=1;
+            $transactions = Transaction::find()->where(['school_id' => $schoolId])
+            ->orderBy(['id' => SORT_DESC])
+            ->all();
+            foreach ($transactions as $trans):
+                ?>
+                <tr>
+                    <td><?= $i++; ?></td>
+                    <td><?= $trans->student->nis ?></td>
+                    <td><?= $trans->student->name ?></td>
+                    <td><?= $trans->invoice->description ?></td>
+                    <td><?= $trans->student->class ?></td>
+                    <td><?= $trans->payment_method == 'CASH' ? $trans->amountRupiah : '' ?></td>
+                    <td><?= $trans->payment_method == 'TRANSFER' ? $trans->amountRupiah : '' ?></td>
+                    <td><?= $trans->amountRupiah ?></td>
+                </tr>
+            <?php endforeach; ?>
+            <tr>
+                <td colspan="5">TOTAL</td>
+
+            </tr>
+        </table>
     </div>
-<?php endif; ?>
+</div>
 
 <style>
 th, td {
