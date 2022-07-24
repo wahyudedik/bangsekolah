@@ -6,7 +6,7 @@ $transactionNumber = '';
 $transactionDate = '';
 foreach($transactions as $trx) {
     $transactionNumber = $trx->number;
-    $transactionDate = date('d/m/Y', strtotime($trx->date));
+    $transactionDate = date('d M Y', strtotime($trx->date));
     break;
 }
 $baseUrl = Yii::$app->request->baseUrl;
@@ -99,7 +99,7 @@ $baseUrl = Yii::$app->request->baseUrl;
                             <tr>
                                 <td rowspan="2" class="small monospacearial" style="vertical-align: top;"><?= $i++ ?></td>
                                 <td rowspan="2" class="small monospacearial" style="vertical-align: top;"><?= $trx->schoolPayment->name == 'SPP' ? $trx->schoolPayment->name.' Bulan '.$trx->invoice->month : $trx->schoolPayment->name ?></td>
-                                <td rowspan="2" class="small monospacearial" style="vertical-align: top;"><?= $trx->payment_method == 'CASH' ? 'TUNAI' : $trx->payment_method ?></td>
+                                <td rowspan="2" class="small monospacearial" style="vertical-align: middle; text-align: center;"><?= $trx->payment_method == 'CASH' ? 'TUNAI' : $trx->payment_method ?></td>
                                 <td class="small monospacearial">
                                     <?= Strings::getRupiah($trx->invoice->amount-$paidTotal) ?>
                                 </td>
@@ -112,7 +112,8 @@ $baseUrl = Yii::$app->request->baseUrl;
                             </tr>
                         <?php endforeach; ?>
                         <tr>
-                            <td colspan="4" align="right" class="small"><strong>Total</strong></td>
+                            <td colspan="3"><strong>Catatan: </strong><?= $transaction->note ?></td>
+                            <td align="right" class="small"><strong>Total</strong></td>
                             <td class="small monospacearial"><?= Strings::getRupiah($total) ?></td>
                         </tr>
                     </table>
@@ -121,7 +122,7 @@ $baseUrl = Yii::$app->request->baseUrl;
                         <tr>
                             <td width="70%"></td>
                             <td class="small">
-                                <?= $transaction->invoice->school->city.', '.date('d/m/Y', strtotime($transaction->date)) ?><br>
+                                <?= $transaction->invoice->school->city.', '.date('d M Y', strtotime($transaction->date)) ?><br>
                                 Petugas<br><br><br>
                                 <?= $transaction->user->name ?>
                             </td>
