@@ -158,7 +158,7 @@ class TransactionController extends Controller
     {
         $student = null;
         $invoices = null;
-        $historys = null;
+        $histories = null;
         $school_id = Yii::$app->session->get('school_id');
 
         if ($search) {
@@ -172,7 +172,7 @@ class TransactionController extends Controller
         }
         if ($student) {
             $invoices = Invoice::find()->where(['student_id' => $student->id, 'school_id' => $student->school_id, 'year' => $student->year])->all();
-            $historys = Transaction::find()->where(['student_id' => $student->id, 'school_id' => $student->school_id])->orderBy(['id' => SORT_DESC])->all();
+            $histories = Transaction::find()->where(['student_id' => $student->id, 'school_id' => $student->school_id])->orderBy(['id' => SORT_DESC])->all();
         }
 
         if (isset($_POST['submit'])) {
@@ -237,7 +237,7 @@ class TransactionController extends Controller
             'name' => $name,
             'student' => $student,
             'invoices' => $invoices,
-            'historys' => $historys,
+            'histories' => $histories,
         ]);
     }
 

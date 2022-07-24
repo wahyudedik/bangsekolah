@@ -95,20 +95,22 @@ $this->params['breadcrumbs'][] = $this->title;
                     <div class="card-header">
                         <h5>Riwayat Pembayaran</h5>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body p-0">
                         <table class="table table-bordered">
                             <tr>
                                 <th>No</th>
                                 <th>Nama Pembayaran</th>
                                 <th>Tanggal</th>
                                 <th>Jumlah Bayar</th>
+                                <th>Cetak</th>
                             </tr>
-                            <?php $i=1; foreach ($historys as $history): ?>
+                            <?php $i=1; foreach ($histories as $history): ?>
                                 <tr>
                                     <td><?= $i++ ?></td>
                                     <td><?= $history->schoolPayment->name ?></td>
-                                    <td><?= $history->date ?></td>
+                                    <td><?= Strings::getFullDate($history->date) ?></td>
                                     <td><?= Strings::getRupiah($history->amount) ?></td>
+                                    <td><?= Html::a('<i class="fas fa-print"></i>', ['transaction/print', 'id' => $model->id], ['class' => 'btn btn-info', 'target' => '_blank']) ?></td>
                                 </tr>
                             <?php endforeach; ?>
                         </table>
@@ -121,7 +123,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="card-header">
                 <h5>Daftar Tagihan Untuk <?= $student->name ?></h5>
             </div>
-            <div class="card-body">
+            <div class="card-body p-0">
                 <table class="table table-bordered">
                     <tr>
                         <th>No</th>
