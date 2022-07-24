@@ -233,8 +233,7 @@ class TransactionController extends Controller
         }
 
         return $this->render('create', [
-            'nis' => $nis,
-            'name' => $name,
+            'search' => $search,
             'student' => $student,
             'invoices' => $invoices,
             'histories' => $histories,
