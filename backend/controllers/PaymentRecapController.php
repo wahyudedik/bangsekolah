@@ -154,17 +154,33 @@ class PaymentRecapController extends Controller
         if($method) { $query->andFilterWhere(['or', ['like', 'payment_method', $method]]); }
 
         $transaction = $query->orderBy(['id' => SORT_DESC])->all();
+        // set main title
+        $sheet->setCellValue('A1', 'DAFTAR PENERIMAAN PEMBAYARAN SISWA');
+        $sheet->mergeCells('A1:I1');
+        $sheet->setCellValue('A2', strtoupper($school->name));
+        $sheet->mergeCells('A2:I2');
+        $sheet->setCellValue('A3', 'TAHUN '.$year);
+        $sheet->mergeCells('A3:I3');
+        $sheet->getStyle('A1')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A2')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A3')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A1')->getFont()->setBold(TRUE);
+        $sheet->getStyle('A2')->getFont()->setBold(TRUE);
+        $sheet->getStyle('A3')->getFont()->setBold(TRUE);
+        $sheet->setCellValue('A4', 'Periode : '.Strings::getFullDate($startdate).' s/d '. Strings::getFullDate($enddate));
+        $sheet->mergeCells('A4:I4');
+        $sheet->getStyle('A4')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
 
         // set title
-        $sheet->setCellValue('A1', 'NOMOR');
-        $sheet->setCellValue('B1', 'TANGGAL');
-        $sheet->setCellValue('C1', 'NIS');
-        $sheet->setCellValue('D1', 'NAMA SISWA');
-        $sheet->setCellValue('E1', 'NAMA PEMBAYARAN');
-        $sheet->setCellValue('F1', 'KELAS');
-        $sheet->setCellValue('G1', 'TUNAI');
-        $sheet->setCellValue('H1', 'TRANSFER');
-        $sheet->setCellValue('I1', 'JUMLAH');
+        $sheet->setCellValue('A5', 'NOMOR');
+        $sheet->setCellValue('B5', 'TANGGAL');
+        $sheet->setCellValue('C5', 'NIS');
+        $sheet->setCellValue('D5', 'NAMA SISWA');
+        $sheet->setCellValue('E5', 'NAMA PEMBAYARAN');
+        $sheet->setCellValue('F5', 'KELAS');
+        $sheet->setCellValue('G5', 'TUNAI');
+        $sheet->setCellValue('H5', 'TRANSFER');
+        $sheet->setCellValue('I5', 'JUMLAH');
         $sheet->getColumnDimension('A')->setAutoSize(true);
         $sheet->getColumnDimension('B')->setAutoSize(true);
         $sheet->getColumnDimension('C')->setAutoSize(true);
@@ -174,10 +190,10 @@ class PaymentRecapController extends Controller
         $sheet->getColumnDimension('G')->setAutoSize(true);
         $sheet->getColumnDimension('H')->setAutoSize(true);
         $sheet->getColumnDimension('I')->setAutoSize(true);
-        $sheet->getRowDimension('1')->setRowHeight(30);
+        $sheet->getRowDimension('5')->setRowHeight(30);
 
         $column = 9;
-        $row = 1;
+        $row = 5;
         // foreach ($event->parentQuestions as $question) {
         //     $sheet->getColumnDimension(chr(65+($column)))->setWidth(30);
         //     $sheet->setCellValueByColumnAndRow($column++, $row, $question->title);
@@ -195,7 +211,7 @@ class PaymentRecapController extends Controller
             ->setFillType(\PHPExcel_Style_Fill::FILL_SOLID)
             ->getStartColor()
             ->setRGB('154360');
-        $sheet->getStyleByColumnAndRow(0, $row, 9, $row)
+        $sheet->getStyleByColumnAndRow(0, $row, ($column-1), $row)
             ->getFill()
             ->setFillType(\PHPExcel_Style_Fill::FILL_SOLID)
             ->getStartColor()
@@ -209,10 +225,12 @@ class PaymentRecapController extends Controller
         $sheet->getStyleByColumnAndRow(0, $row, ($column-1), $row)->applyFromArray($arrStyle);
 
 // populate records data
-        $row = 1;
+        $row = 5;
+        $no = 0;
         foreach ($transaction as $trans) {
             $column = 9;
             $row++;
+            $no++;
             $sheet->getStyle('A', $row)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
             $sheet->getStyle('B', $row)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
             $sheet->getStyle('C', $row)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
@@ -222,7 +240,7 @@ class PaymentRecapController extends Controller
             $sheet->getStyle('G', $row)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
             $sheet->getStyle('H', $row)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
             $sheet->getStyle('I', $row)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
-            $sheet->setCellValue('A' . $row, ($row - 1));
+            $sheet->setCellValue('A' . $row, ($no));
             $sheet->setCellValue('B' . $row, Strings::getFullDate($trans->date));
             $sheet->setCellValue('C' . $row, $trans->student->nis);
             $sheet->setCellValue('D' . $row, $trans->student->name);
@@ -231,7 +249,7 @@ class PaymentRecapController extends Controller
             $sheet->setCellValue('G' . $row, $trans->payment_method == 'CASH' ? $trans->amountRupiah : '');
             $sheet->setCellValue('H' . $row, $trans->payment_method == 'TRANSFER' ? $trans->amountRupiah : '');
             $sheet->setCellValue('I' . $row, $trans->amountRupiah);
-            $sheet->getStyleByColumnAndRow(0, $row, 9, $row)
+            $sheet->getStyleByColumnAndRow(0, $row, ($column-1), $row)
                 ->getFill()
                 ->setFillType(\PHPExcel_Style_Fill::FILL_SOLID)
                 ->getStartColor()
