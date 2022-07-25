@@ -83,7 +83,7 @@ $this->params['breadcrumbs'][] = $this->title;
         echo Html::submitButton('<i class="fas fa-search"></i> Tampilkan', ['class' => 'btn btn-success']).' ';
         // if ($class && $payment) {
             echo Html::a('<i class="fas fa-sync-alt"></i> Reset', ['payment-recap/index'], ['class' => 'btn btn-primary']).' ';
-            echo Html::a('<i class="fas fa-print"></i> Cetak', ['payment-recap/download', 'startdate' => $startdate, 'enddate' => $enddate, 'year' => $year, 'class' => $class, 'payment' => $payment, 'method' => $method], ['class' => 'btn btn-info', 'download' => 'payment-recap-'.$startdate.'-'.$enddate.'.pdf']).' ';
+            echo Html::a('<i class="fas fa-print"></i> Download PDF', ['payment-recap/download', 'startdate' => $startdate, 'enddate' => $enddate, 'year' => $year, 'class' => $class, 'payment' => $payment, 'method' => $method], ['class' => 'btn btn-info', 'download' => 'payment-recap-'.$startdate.'-'.$enddate.'.pdf']).' ';
             echo Html::a('<i class="fas fa-file-excel"></i> Export Excel', ['payment-recap/export', 'startdate' => $startdate, 'enddate' => $enddate, 'year' => $year, 'class' => $class, 'payment' => $payment, 'method' => $method], ['class' => 'btn btn-info', 'download' => 'payment-recap-'.$startdate.'-'.$enddate.'.xls']).' ';
         // }
         ?>
