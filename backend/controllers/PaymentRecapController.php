@@ -172,7 +172,7 @@ class PaymentRecapController extends Controller
         $sheet->getStyle('A4')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
 
         // set title
-        $sheet->setCellValue('A5', 'NOMOR');
+        $sheet->setCellValue('A5', 'NO');
         $sheet->setCellValue('B5', 'TANGGAL');
         $sheet->setCellValue('C5', 'NIS');
         $sheet->setCellValue('D5', 'NAMA SISWA');
@@ -224,13 +224,30 @@ class PaymentRecapController extends Controller
         ];
         $sheet->getStyleByColumnAndRow(0, $row, ($column-1), $row)->applyFromArray($arrStyle);
 
-// populate records data
+        // style for body
+        $style_row = array(
+            'borders' => array(
+                'top' => array('style'  => \PHPExcel_Style_Border::BORDER_THIN),
+                'right' => array('style'  => \PHPExcel_Style_Border::BORDER_THIN),
+                'bottom' => array('style'  => \PHPExcel_Style_Border::BORDER_THIN),
+                'left' => array('style'  => \PHPExcel_Style_Border::BORDER_THIN) 
+            )
+        );
+        // populate records data
         $row = 5;
         $no = 0;
+        $totalCash = 0;
+        $totalTransfer = 0;
         foreach ($transaction as $trans) {
             $column = 9;
             $row++;
             $no++;
+            // count cash and transfer
+            if ($trans->payment_method == 'CASH') {
+                $totalCash += $trans->amount;
+            } else {
+                $totalTransfer += $trans->amount;
+            }
             $sheet->getStyle('A', $row)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
             $sheet->getStyle('B', $row)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
             $sheet->getStyle('C', $row)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
@@ -250,12 +267,25 @@ class PaymentRecapController extends Controller
             $sheet->setCellValue('H' . $row, $trans->payment_method == 'TRANSFER' ? $trans->amountRupiah : '');
             $sheet->setCellValue('I' . $row, $trans->amountRupiah);
             $sheet->getStyleByColumnAndRow(0, $row, ($column-1), $row)
-                ->getFill()
-                ->setFillType(\PHPExcel_Style_Fill::FILL_SOLID)
-                ->getStartColor()
-                ->setRGB('FFFFFF');
+                ->applyFromArray($style_row);
 
         }
+        $row++;
+        $sheet->getStyle('A', $row)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('G', $row)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
+        $sheet->getStyle('H', $row)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
+        $sheet->getStyle('I', $row)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
+        $sheet->getStyle('A', $row)->getFont()->setBold(TRUE);
+        $sheet->getStyle('G', $row)->getFont()->setBold(TRUE);
+        $sheet->getStyle('H', $row)->getFont()->setBold(TRUE);
+        $sheet->getStyle('I', $row)->getFont()->setBold(TRUE);
+        $sheet->setCellValue('A'.$row, 'TOTAL');
+        $sheet->setCellValue('G'.$row, Strings::getRupiah($totalCash));
+        $sheet->setCellValue('H'.$row, Strings::getRupiah($totalTransfer));
+        $sheet->setCellValue('I'.$row, Strings::getRupiah($totalCash + $totalTransfer));
+        $sheet->mergeCells('A'.$row.':'.'F'.$row);
+        $sheet->getStyleByColumnAndRow(0, $row, ($column-1), $row)
+                ->applyFromArray($style_row);
 
         $filename = 'payment-recap-'.$startdate.'-'. $enddate . '.xlsx';
         // header('Content-Type: application/vnd.ms-excel');
