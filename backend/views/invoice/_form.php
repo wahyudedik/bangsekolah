@@ -3,7 +3,9 @@
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
+use common\models\PaymentType;
 
+$paymentTypes = PaymentType::find()->all();
 ?>
 <div class="row">
     <div class="col-lg-12">
@@ -23,9 +25,11 @@ use yii\widgets\ActiveForm;
                         <div class="callout callout-info" id="payment-type-div" style="display: none;">
                             <h5 id="payment-type-name"></h5>
                             <ul>
-                                <li>MONTHLY: pembayaran bulanan</li>
-                                <li>ONE TIME PAYMENT: satu kali pembayaran (bisa dicicil)</li>
-                                <li>VOLUNTARILY: iuran sukarela</li>
+                                <?php
+                                foreach ($paymentTypes as $type) {
+                                    echo '<li>'.$type->label.': '.$type->description.'</li>';
+                                }
+                                ?>
                             </ul>
                         </div>
                         <div id="invoice-date" style="display: none;">
@@ -94,7 +98,7 @@ use yii\widgets\ActiveForm;
                     $('#payment-type-div').hide();
                 }
 
-                if (data == 'MONTHLY') {
+                if (data == 'MONTHLY' || data == 'BULANAN') {
                     $('#invoice-date').hide();
                 } else {
                     $('#invoice-date').show();

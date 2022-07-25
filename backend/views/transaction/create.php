@@ -16,7 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="col-lg-4">
                     <div class="input-group input-group-sm">
                         <label style="margin-right: 10px;">Cari siswa</label>
-                        <input type="text" name="search" class="form-control" placeholder="Ketik NIS/NISN/Nama ..." value="">
+                        <input type="text" name="search" class="form-control" placeholder="Ketik NIS/NISN/Nama ..." value="<?= $search ?>">
                         <span class="input-group-append">
                             <button type="submit" class="btn btn-info btn-flat"><i class="fas fa-search search-icon"></i></button>
                         </span>

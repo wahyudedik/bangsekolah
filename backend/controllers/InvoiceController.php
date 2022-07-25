@@ -315,7 +315,7 @@ class InvoiceController extends Controller
     {
         $schoolPayment = SchoolPayment::findOne($payment);
         if ($schoolPayment) {
-            return $schoolPayment->paymentType->name;
+            return $schoolPayment->paymentType->label;
         } else {
             return '';
         }

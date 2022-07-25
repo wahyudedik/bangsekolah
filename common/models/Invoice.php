@@ -169,7 +169,12 @@ class Invoice extends \yii\db\ActiveRecord
     {
         if ($this->status == 'PAID') {
             $trx = Transaction::find()->where(['invoice_id' => $this->id])->one();
-            return '<span class="text-success">'.$trx->payment_method.'</span>';
+            if ($trx->payment_method == 'CASH') {
+                $method = 'TUNAI';
+            } else {
+                $method = 'TRANSFER';
+            }
+            return '<span class="text-success">'.$method.'</span>';
         }
     }
 }

@@ -27,12 +27,11 @@ $this->params['breadcrumbs'][] = $this->title;
                         'class' => 'table table-striped table-bordered detail-view'
                     ],
                     'attributes' => [
-                    // 'id',
                     'name',
                     'number',
-                    // 'year',
                     ['attribute' => 'paymentType.name', 'label' => 'Jenis Pembayaran'],
-                    // ['attribute' => 'school.name', 'label' => 'Sekolah'],
+                    ['attribute' => 'paymentType.label', 'label' => 'Label'],
+                    ['attribute' => 'paymentType.description', 'label' => 'Deskripsi'],
                     ],
                 ]) ?>
             </div>

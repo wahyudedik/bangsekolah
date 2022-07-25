@@ -9,6 +9,8 @@ use Yii;
  *
  * @property int $id
  * @property string $name
+ * @property string $label
+ * @property string $description
  *
  */
 class PaymentType extends \yii\db\ActiveRecord
@@ -41,7 +43,8 @@ class PaymentType extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name'], 'string', 'max' => 255],
+            [['name', 'label'], 'string', 'max' => 255],
+            [['description'], 'string'],
         ];
     }
 
@@ -53,6 +56,8 @@ class PaymentType extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'name' => 'Jenis Pembayaran',
+            'label' => 'Label',
+            'description' => 'Deskripsi',
         ];
     }
 
@@ -60,7 +65,7 @@ class PaymentType extends \yii\db\ActiveRecord
     {
         return \yii\helpers\ArrayHelper::map(
             PaymentType::find()->asArray()->all(),
-            'id', 'name'
+            'id', 'label'
         );
     }
 }
