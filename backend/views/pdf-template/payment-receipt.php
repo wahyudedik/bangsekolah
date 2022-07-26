@@ -35,7 +35,7 @@ $baseUrl = Yii::$app->request->baseUrl;
             </td>
         </tr>
     </table>
-    <hr style="height: 1px; color: black; margin-top: 0px; margin-bottom: 0px;">
+    <hr style="height: 2px; color: black; margin-top: 0px; margin-bottom: 0px;">
     <div class="row">
         <div class="col-lg-12">
             <div class="card">
@@ -72,12 +72,12 @@ $baseUrl = Yii::$app->request->baseUrl;
                     <span class="large">Dengan rincian pembayaran sebagai berikut:</span>
                     <!-- <br> -->
                     <table width="100%" cellspacing="0" cellpadding="5" class="table table-bordered">
-                        <tr class="border-top" style="border: 1px solid black;">
-                            <th class="small" style="border: 1px solid black;">NO</th>
-                            <th class="small" style="border: 1px solid black;">NAMA PEMBAYARAN</th>
-                            <th class="small" style="border: 1px solid black;">JENIS PEMBAYARAN</th>
-                            <th class="small" style="border: 1px solid black;">TAGIHAN</th>
-                            <th class="small" style="border: 1px solid black;">JUMLAH PEMBAYARAN</th>
+                        <tr class="border-top" style="border: 2px solid black;">
+                            <th class="small" style="border: 2px solid black;">NO</th>
+                            <th class="small" style="border: 2px solid black;">NAMA PEMBAYARAN</th>
+                            <th class="small" style="border: 2px solid black;">JENIS PEMBAYARAN</th>
+                            <th class="small" style="border: 2px solid black;">TAGIHAN</th>
+                            <th class="small" style="border: 2px solid black;">JUMLAH PEMBAYARAN</th>
                         </tr>
                         <?php
                         $i=1;
@@ -95,24 +95,24 @@ $baseUrl = Yii::$app->request->baseUrl;
                                 $paidTotal += $oldTrx->amount;
                             }
                             ?>
-                            <tr style="border: 1px solid black;">
-                                <td rowspan="2" class="small monospacearial" style="vertical-align: top; border: 1px solid black;"><?= $i++ ?></td>
-                                <td rowspan="2" class="small monospacearial" style="vertical-align: top; border: 1px solid black;"><?= $trx->schoolPayment->name == 'SPP' ? $trx->schoolPayment->name.' Bulan '.$trx->invoice->month : $trx->schoolPayment->name ?></td>
-                                <td rowspan="2" class="small monospacearial" style="vertical-align: top; text-align: center; border: 1px solid black;"><?= $trx->payment_method == 'CASH' ? 'TUNAI' : $trx->payment_method ?></td>
+                            <tr style="border: 2px solid black;">
+                                <td rowspan="2" class="small monospacearial" style="vertical-align: top; border: 2px solid black;"><?= $i++ ?></td>
+                                <td rowspan="2" class="small monospacearial" style="vertical-align: top; border: 2px solid black;"><?= $trx->schoolPayment->name == 'SPP' ? $trx->schoolPayment->name.' Bulan '.$trx->invoice->month : $trx->schoolPayment->name ?></td>
+                                <td rowspan="2" class="small monospacearial" style="vertical-align: top; text-align: center; border: 2px solid black;"><?= $trx->payment_method == 'CASH' ? 'TUNAI' : $trx->payment_method ?></td>
                                 <td class="small monospacearial">
                                     <?= Strings::getRupiah($trx->invoice->amount-$paidTotal) ?>
                                 </td>
-                                <td rowspan="2" class="small monospacearial" style="vertical-align: top; border: 1px solid black;"><?= $trx->amountRupiah ?></td>
+                                <td rowspan="2" class="small monospacearial" style="vertical-align: top; border: 2px solid black;"><?= $trx->amountRupiah ?></td>
                             </tr>
-                            <tr style="border: 1px solid black;">
+                            <tr style="border: 2px solid black;">
                                 <td class="small monospacearial">
                                     <?= Strings::getRupiah(($trx->invoice->amount-$paidTotal)-$trx->amount) ?>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
-                        <tr style="border: 1px solid black;">
-                            <td colspan="3" style="border: 1px solid black;"><strong>Catatan: </strong><?= $transaction->note ?></td>
-                            <td align="right" class="small" style="border: 1px solid black;"><strong>Total</strong></td>
+                        <tr style="border: 2px solid black;">
+                            <td colspan="3" style="border: 2px solid black;"><strong>Catatan: </strong><?= $transaction->note ?></td>
+                            <td align="right" class="small" style="border: 2px solid black;"><strong>Total</strong></td>
                             <td class="small monospacearial"><?= Strings::getRupiah($total) ?></td>
                         </tr>
                     </table>
