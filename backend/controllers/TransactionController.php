@@ -128,9 +128,9 @@ class TransactionController extends Controller
             
             .border-top{border-top: 1px solid grey !important;}
             .monospace{font-family: monospace;}
-            .small{font-size:13px;}
-            .medium{font-size:14px;}
-            .large{font-size:16px;}
+            .small{font-size:14px;}
+            .medium{font-size:15px;}
+            .large{font-size:17px;}
 
             ',
             
