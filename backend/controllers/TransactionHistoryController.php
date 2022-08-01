@@ -25,7 +25,7 @@ class TransactionHistoryController extends Controller
 
     public function actionIndex($startdate = null, $enddate = null, $year = null, $class = null, $payment = null, $method = null)
     {
-        \common\helpers\Sidebar::setActiveMenu('payment-recap', 'index');
+        \common\helpers\Sidebar::setActiveMenu('transaction-history', 'index');
 
         $school_id = Yii::$app->session->get('school_id');
         $years = Year::find()->where(['status' => 'ACTIVE'])->all();
@@ -89,7 +89,7 @@ class TransactionHistoryController extends Controller
             'query' => $query->orderBy(['id' => SORT_DESC]),
         ]);
 
-        $content = $this->renderPartial('@app/views/pdf-template/payment-recap', [
+        $content = $this->renderPartial('@app/views/pdf-template/transaction-history', [
             'dataProvider' => $dataProvider,
             'school' => $school,
             'startdate' => $startdate,
@@ -102,7 +102,7 @@ class TransactionHistoryController extends Controller
 
         $pdf = new Pdf([
             'mode' => Pdf::MODE_CORE,
-            'filename' => 'payment-recap-'.$startdate.'-'.$enddate.'-'.$class.'-'.$payment.'-'.$method.'.pdf',
+            'filename' => 'transaction-history-'.$startdate.'-'.$enddate.'-'.$class.'-'.$payment.'-'.$method.'.pdf',
             'format' => [210, 330],
             // 'format' => [148, 210],
             'orientation' => Pdf::ORIENT_LANDSCAPE,
@@ -122,7 +122,7 @@ class TransactionHistoryController extends Controller
                 'showWatermarkImage' => true,
             ],
             'methods' => [
-                'SetTitle' => 'payment-recap-'.$startdate.'-'.$enddate.'-'.$class.'-'.$payment.'-'.$method.'.pdf',
+                'SetTitle' => 'transaction-history-'.$startdate.'-'.$enddate.'-'.$class.'-'.$payment.'-'.$method.'.pdf',
             ]
         ]);
 
@@ -287,7 +287,7 @@ class TransactionHistoryController extends Controller
         $sheet->getStyleByColumnAndRow(0, $row, ($column-1), $row)
                 ->applyFromArray($style_row);
 
-        $filename = 'payment-recap-'.$startdate.'-'. $enddate . '.xlsx';
+        $filename = 'transaction-history-'.$startdate.'-'. $enddate . '.xlsx';
         // header('Content-Type: application/vnd.ms-excel');
         header('Content-Type: application/openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename=' . $filename . ' ');
