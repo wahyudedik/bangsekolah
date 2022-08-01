@@ -82,7 +82,7 @@ $baseUrl = Yii::$app->request->baseUrl;
                 <table class="table table-bordered table-responsive" style="font-size: 12px">
                     <tr>
                         <th>No</th>
-                        <th>NISN</th>
+                        <th>NIS</th>
                         <th>Nama Siswa</th>
                         <?php
                         foreach ($schoolMonths as $month) {
@@ -102,7 +102,7 @@ $baseUrl = Yii::$app->request->baseUrl;
                         ?>
                         <tr>
                             <td><?= $i++; ?></td>
-                            <td><?= $student->nisn ?></td>
+                            <td><?= $student->nis ?></td>
                             <td><?= $student->name ?></td>
                             <?php
                             foreach ($schoolMonths as $month) {
@@ -133,7 +133,7 @@ $baseUrl = Yii::$app->request->baseUrl;
                 <tr>
                     <td style="width: 70%"></td>
                     <td style="width: 30%" align="center">
-                        <span><?= $school->city.', '.date('d M Y') ?></span><br />
+                        <span><?= $school->city.', '.Strings::getFullDate(date('Y-m-d')) ?></span><br />
                         <span>Mengetahui</span><br /><br /><br />
                         <span>(...............)</span>
                     </td>
