@@ -48,7 +48,7 @@ class SchoolPayment extends \yii\db\ActiveRecord
             [['school_id', 'payment_type_id'], 'integer'],
             [['name', 'number', 'status'], 'string', 'max' => 255],
             [['name', 'number', 'payment_type_id'], 'required'],
-            [['number'], 'unique'],
+            // [['number'], 'unique'],
         ];
     }
 
