@@ -7,7 +7,7 @@ use common\models\Invoice;
 use common\models\Transaction;
 use common\helpers\Strings;
 
-$this->title = 'Rekapitulasi Pembayaran';
+$this->title = 'Riwayat Transaksi';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="card">
@@ -93,7 +93,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 <div class="card">
     <div class="card-header">
-        <h5>Rekapitulasi pembayaran</h5>
+        <h5>Riwayat Transaksi</h5>
     </div>
     <div class="card-body p-0">
         <table class="table table-bordered">
