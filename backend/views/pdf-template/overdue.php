@@ -109,7 +109,7 @@ $baseUrl = Yii::$app->request->baseUrl;
                     <tr>
                         <td style="width: 70%"></td>
                         <td style="width: 30%" align="center">
-                            <span><?= $school->city.', '.date('d M Y') ?></span><br />
+                            <span><?= $school->city.', '.Strings::getFullDate(date('Y-m-d')) ?></span><br />
                             <span>Mengetahui</span><br /><br /><br />
                             <span>(...............)</span>
                         </td>
