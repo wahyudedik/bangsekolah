@@ -179,6 +179,7 @@ class TransactionController extends Controller
             $invoices = $_POST['invoice'];
             $amounts = $_POST['amount'];
             $proofs = $_POST['proof'];
+            $date = $_POST['date'];
             $note = $_POST['note'];
 
             // generate transaction number
@@ -205,7 +206,7 @@ class TransactionController extends Controller
                     $transaction->school_payment_id = $invoice->school_payment_id;
                     $transaction->number = $transactionNumber;
                     $transaction->amount = $amount;
-                    $transaction->date = date('Y-m-d');
+                    $transaction->date = $date;
                     $transaction->note = $note;
                     $transaction->payment_method = $proof;
                     $transaction->user_id = Yii::$app->user->identity->id;

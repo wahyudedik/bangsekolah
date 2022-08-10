@@ -94,6 +94,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <label>Total Bayar</label>
                         <input type="text" id="label-total" class="form-control" name="total" value="0" readonly style="font-size: 25px; height: 60px;">
                         <input type="hidden" id="total" class="form-control" name="total" value="0">
+                        <input type="date" id="label-date" class="form-control" name="date" style="margin-top: 10px" value="<?= date('Y-m-d') ?>">
                         <input type="text" id="label-note" class="form-control" name="note" style="margin-top: 10px" placeholder="Catatan Pembayaran">
                         <br>
                         <button name="submit" class="btn btn-success" id="btn-submit">
