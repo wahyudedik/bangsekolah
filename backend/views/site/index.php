@@ -93,7 +93,7 @@ for ($i = 1; $i <= 31; $i++) {
     <div class="col-lg-3 col-6">
         <div class="small-box bg-success">
             <div class="inner">
-                <h3><?= Strings::getRupiah($totalPayment) ?><sup style="font-size: 20px;"></sup></h3>
+                <h3><?= Strings::getRupiah($totalPayment) ?><sup style="font-size: 16px;"></sup></h3>
                 <p>Total Pembayaran</p>
             </div>
             <div class="icon">
