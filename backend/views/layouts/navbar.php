@@ -8,7 +8,10 @@ use common\models\UserSchool;
 $user = Yii::$app->user->identity;
 $baseUrl = Yii::$app->request->baseUrl;
 $userSchool = UserSchool::find()->where(['user_id' => $user->id])->one();
-$school = $userSchool->school;
+$schoo = null;
+if ($userSchool) {
+	$school = $userSchool->school;
+}
 ?>
 <nav class="main-header navbar navbar-expand navbar-white navbar-light">
 	<ul class="navbar-nav">
