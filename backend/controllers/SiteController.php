@@ -109,10 +109,10 @@ class SiteController extends Controller
                 Yii::$app->session->set('school_id', $user_school->school_id);
                 Yii::$app->session->set('school_name', $user_school->school->name);
             } else {
-                // Yii::$app->session->set('school_id', '0');
-                // Yii::$app->session->set('school_name', '0');
-                @Yii::$app->session->remove('school_id');
-                @Yii::$app->session->remove('school_name');
+                Yii::$app->session->set('school_id', '');
+                Yii::$app->session->set('school_name', '');
+                // @Yii::$app->session->remove('school_id');
+                // @Yii::$app->session->remove('school_name');
             }
             return $this->goBack();
             // return 'masuk';
