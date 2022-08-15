@@ -38,7 +38,7 @@ class SchoolController extends Controller
     {
         \common\helpers\Sidebar::setActiveMenu('school', 'index');
 
-        $query = School::find();
+        $query = School::find()->where(['status' => 'ACTIVE']);
 
         if ($q !== null) {
             $query->andFilterWhere([
