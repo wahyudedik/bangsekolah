@@ -280,9 +280,9 @@ class TransactionHistoryController extends Controller
         $sheet->getStyle('H', $row)->getFont()->setBold(TRUE);
         $sheet->getStyle('I', $row)->getFont()->setBold(TRUE);
         $sheet->setCellValue('A'.$row, 'TOTAL');
-        $sheet->setCellValue('G'.$row, Strings::getRupiah($totalCash));
-        $sheet->setCellValue('H'.$row, Strings::getRupiah($totalTransfer));
-        $sheet->setCellValue('I'.$row, Strings::getRupiah($totalCash + $totalTransfer));
+        $sheet->setCellValue('G'.$row, $totalCash);
+        $sheet->setCellValue('H'.$row, $totalTransfer);
+        $sheet->setCellValue('I'.$row, $totalCash + $totalTransfer);
         $sheet->mergeCells('A'.$row.':'.'F'.$row);
         $sheet->getStyleByColumnAndRow(0, $row, ($column-1), $row)
                 ->applyFromArray($style_row);
