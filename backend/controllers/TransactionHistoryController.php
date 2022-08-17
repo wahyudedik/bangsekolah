@@ -263,9 +263,9 @@ class TransactionHistoryController extends Controller
             $sheet->setCellValue('D' . $row, $trans->student->name);
             $sheet->setCellValue('E' . $row, $trans->invoice->description);
             $sheet->setCellValue('F' . $row, $trans->student->class);
-            $sheet->setCellValue('G' . $row, $trans->payment_method == 'CASH' ? $trans->amountRupiah : '');
-            $sheet->setCellValue('H' . $row, $trans->payment_method == 'TRANSFER' ? $trans->amountRupiah : '');
-            $sheet->setCellValue('I' . $row, $trans->amountRupiah);
+            $sheet->setCellValue('G' . $row, $trans->payment_method == 'CASH' ? $trans->amount : '');
+            $sheet->setCellValue('H' . $row, $trans->payment_method == 'TRANSFER' ? $trans->amount : '');
+            $sheet->setCellValue('I' . $row, $trans->amount);
             $sheet->getStyleByColumnAndRow(0, $row, ($column-1), $row)
                 ->applyFromArray($style_row);
 
@@ -288,6 +288,8 @@ class TransactionHistoryController extends Controller
                 ->applyFromArray($style_row);
 
         $filename = 'transaction-history-'.$startdate.'-'. $enddate . '.xlsx';
+
+        ob_clean(); //Emptying the cache
         // header('Content-Type: application/vnd.ms-excel');
         header('Content-Type: application/openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename=' . $filename . ' ');
