@@ -288,15 +288,15 @@ class TransactionHistoryController extends Controller
                 ->applyFromArray($style_row);
 
         $filename = 'transaction-history-'.$startdate.'-'. $enddate . '.xlsx';
-        header('Content-Type: application/vnd.ms-excel');
-        // header('Content-Type: application/openxmlformats-officedocument.spreadsheetml.sheet');
+        // header('Content-Type: application/vnd.ms-excel');
+        header('Content-Type: application/openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename=' . $filename . ' ');
         header('Cache-Control: max-age=0');
         $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-        // $objWriter->save('php://output');
+        $objWriter->save('php://output');
         unset($objPHPExcel);
         // most important code (exit)
-        exit;
+        exit();
     }
 
 }
