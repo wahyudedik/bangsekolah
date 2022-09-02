@@ -58,15 +58,13 @@ class BackupController extends Controller
         fclose($handle);
 
         // send to telegram
-        /*
-        https://api.telegram.org/bot<TOKEN>/sendMessage?chat_id=<CHAT_ID>&text=Hello%20World
+        // https://api.telegram.org/bot<TOKEN>/sendMessage?chat_id=<CHAT_ID>&text=Hello%20World
         $apiToken = "5615766880:AAGI79f6ZU0kCAeOyCdzaCZoWdFOnA8Nocw";
         $data = [
-            'chat_id' => '085736775369',
+            'chat_id' => '108583973',
             'text' => 'Hello from PHP!'
         ];
         $response = file_get_contents("https://api.telegram.org/bot$apiToken/sendMessage?".http_build_query($data));
-        */
 
         return 'Database backup success<br>Filename: banksekolah '.date('Y-m-d').'.sql';
     }
