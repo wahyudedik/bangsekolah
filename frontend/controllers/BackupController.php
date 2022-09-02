@@ -53,7 +53,7 @@ class BackupController extends Controller
         }
         
         // save file
-        $handle = fopen(Yii::getAlias('@uploads').'/database/banksekolah '.date('Y-m-d').'.sql', 'w+');
+        $handle = fopen(Yii::getAlias("@uploads/database/banksekolah".date("Y-m-d").".sql"), 'w+');
         fwrite($handle,$sql);
         fclose($handle);
 
