@@ -9,18 +9,19 @@ use Yii;
  */
 class Slack {
 
-    public static function notify($message)
+    public static function notify($message, $filename)
     {
         $room = "random"; 
         $icon = ":smile:"; 
         $data = "payload=" . json_encode(array(         
             "channel"       =>  "#{$room}",
             "text"          =>  $message,
-            "icon_emoji"    =>  $icon
+            "icon_emoji"    =>  $icon,
+            "file"    =>  Yii::getAlias('@uploads/database/'.$filename),
         ));
 
         // PT. PUS
-        $url = 'https://hooks.slack.com/services/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';
+        $url = 'https://hooks.slack.com/services/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';
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");

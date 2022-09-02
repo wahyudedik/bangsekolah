@@ -4,6 +4,7 @@ namespace frontend\controllers;
 use Yii;
 use yii\web\Controller;
 use yii\base\ViewNotFoundException;
+use common\helpers\Slack;
 
 class BackupController extends Controller
 {
@@ -53,19 +54,15 @@ class BackupController extends Controller
         }
         
         // save file
-        $handle = fopen(Yii::getAlias("@uploads/database/banksekolah".date("Y-m-d").".sql"), 'w+');
+        $filename = "banksekolah_".date("Y-m-d").".sql";
+        $handle = fopen(Yii::getAlias("@uploads/database/".$filename), 'w+');
         fwrite($handle,$sql);
         fclose($handle);
 
         // send to telegram
-        // https://api.telegram.org/bot<TOKEN>/sendMessage?chat_id=<CHAT_ID>&text=Hello%20World
-        $apiToken = "5615766880:AAGI79f6ZU0kCAeOyCdzaCZoWdFOnA8Nocw";
-        $data = [
-            'chat_id' => '108583973',
-            'text' => 'Hello from PHP!'
-        ];
-        $response = file_get_contents("https://api.telegram.org/bot$apiToken/sendMessage?".http_build_query($data));
+        $message = "Backup database success. Download here: <a href='https://banksekolah.com/backend/web/database/".$filename."'>".$filename."</a>";
+        Slack::notify($message, $filename);
 
-        return 'Database backup success<br>Filename: banksekolah '.date('Y-m-d').'.sql';
+        return 'Database backup success<br>Filename: '.$filename;
     }
 }
