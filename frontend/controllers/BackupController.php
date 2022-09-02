@@ -9,8 +9,8 @@ class BackupController extends Controller
 {
     public function actionDatabase()
     {
-        // $db = new \mysqli('localhost', 'banksekolah', 'BanksekolahDB123', 'banksekolah');
-        $db = new \mysqli('localhost', 'root', 'root', 'banksekolah');
+        $db = new \mysqli('localhost', 'banksekolah', 'BanksekolahDB123', 'banksekolah');
+        // $db = new \mysqli('localhost', 'root', 'root', 'banksekolah');
         $sql = "";
 
         // get tables
