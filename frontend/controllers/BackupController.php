@@ -60,7 +60,7 @@ class BackupController extends Controller
         fclose($handle);
 
         // send to telegram
-        $message = "Backup database success. Download here: <a href='https://banksekolah.com/backend/web/database/".$filename."'>".$filename."</a>";
+        $message = "Backup database success.\nDownload here: https://banksekolah.com/backend/web/uploads/database/".$filename;
         Slack::notify($message, $filename);
 
         return 'Database backup success<br>Filename: '.$filename;
