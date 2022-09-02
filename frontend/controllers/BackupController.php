@@ -68,6 +68,6 @@ class BackupController extends Controller
         $response = file_get_contents("https://api.telegram.org/bot$apiToken/sendMessage?".http_build_query($data));
         */
 
-        return 'Database backup success<br>Filename: banksekolah '.date('Y-m-d');
+        return 'Database backup success<br>Filename: banksekolah '.date('Y-m-d').'.sql';
     }
 }
