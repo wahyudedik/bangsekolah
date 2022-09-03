@@ -19,7 +19,7 @@ class DatabaseController extends Controller
         $filename = $database."_".date("Y-m-d-His").".sql.gzip";
 
         // mysqldump
-        $cmd = "mysqldump -h {$db_host} -u {$db_username} --password={$db_password} {$db_database} | gzip > {$dir}{$filename}";
+        $cmd = "mysqldump -h {$host} -u {$username} --password={$password} {$database} | gzip > {$dir}{$filename}";
         exec($cmd);
 
         // send to telegram
