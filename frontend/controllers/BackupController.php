@@ -69,7 +69,7 @@ class BackupController extends Controller
     public function actionMysqldump()
     {
         $dir = Yii::getAlias("@uploads/database/");
-        $filename = "banksekolah_".date("Y-m-d").".sql.gzip";
+        $filename = "banksekolah_".date("Y-m-d-His").".sql.gzip";
 
         $db_host = "localhost";
         $db_username = "banksekolah";
