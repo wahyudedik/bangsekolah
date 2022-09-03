@@ -17,13 +17,14 @@ class DatabaseController extends Controller
         $database = "banksekolah";
         $dir = Yii::getAlias("@uploads/database/");
         $filename = $database."_".date("Y-m-d-His").".sql.gzip";
+        $downloadUrl = "https://banksekolah.com/backend/web/uploads/database/$filename";
 
         // mysqldump
         $cmd = "mysqldump -h {$host} -u {$username} --password={$password} {$database} | gzip > {$dir}{$filename}";
         exec($cmd);
 
         // send to telegram
-        $message = "Backup database success.\nDownload here: <https://banksekolah.com/backend/web/uploads/database/$filename|$filename>";
+        $message = "Backup database success.\nDownload here: <$downloadUrl|$filename>";
         Slack::notify($message, $filename);
 
         return 'Database backup success<br>Filename: '.$filename;
