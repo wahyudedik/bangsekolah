@@ -72,8 +72,8 @@ class BackupController extends Controller
         $filename = "banksekolah_".date("Y-m-d").".sql.gzip";
 
         $db_host = "localhost";
-        $db_username = "root";
-        $db_password = "root";
+        $db_username = "banksekolah";
+        $db_password = "BanksekolahDB123";
         $db_database = "banksekolah";
 
         $cmd = "mysqldump -h {$db_host} -u {$db_username} --password={$db_password} {$db_database} | gzip > {$dir}{$filename}";
