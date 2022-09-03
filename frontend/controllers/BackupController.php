@@ -79,6 +79,10 @@ class BackupController extends Controller
         $cmd = "mysqldump -h {$db_host} -u {$db_username} --password={$db_password} {$db_database} | gzip > {$dir}{$filename}";
         exec($cmd);
 
-        return "OK";
+        // send to telegram
+        $message = "Backup database success.\nDownload here: <https://banksekolah.com/backend/web/uploads/database/$filename|$filename>";
+        Slack::notify($message, $filename);
+
+        return 'Database backup success<br>Filename: '.$filename;
     }
 }
