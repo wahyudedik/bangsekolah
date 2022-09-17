@@ -189,7 +189,6 @@ class PaymentRecapController extends Controller
             // get invoices
             $invoice = Invoice::find()->where(['student_id' => $student->id, 'school_payment_id' => $payment->id])->one();
             if ($invoice) {
-                $column = 9;
                 $row++;
                 $no++;
                 // count cash and transfer
