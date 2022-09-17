@@ -84,7 +84,7 @@ $this->params['breadcrumbs'][] = $this->title;
         // if ($class && $payment) {
             echo Html::a('<i class="fas fa-sync-alt"></i> Reset', ['transaction-history/index'], ['class' => 'btn btn-primary']).' ';
             echo Html::a('<i class="fas fa-print"></i> Download PDF', ['transaction-history/download', 'startdate' => $startdate, 'enddate' => $enddate, 'year' => $year, 'class' => $class, 'payment' => $payment, 'method' => $method], ['class' => 'btn btn-info', 'download' => 'payment-recap-'.$startdate.'-'.$enddate.'.pdf']).' ';
-            echo Html::a('<i class="fas fa-file-excel"></i> Export Excel', ['transaction-history/export', 'startdate' => $startdate, 'enddate' => $enddate, 'year' => $year, 'class' => $class, 'payment' => $payment, 'method' => $method], ['class' => 'btn btn-info']).' ';
+            echo Html::a('<i class="fas fa-file-excel"></i> Download Excel', ['transaction-history/export', 'startdate' => $startdate, 'enddate' => $enddate, 'year' => $year, 'class' => $class, 'payment' => $payment, 'method' => $method], ['class' => 'btn btn-info']).' ';
         // }
         ?>
         <?php ActiveForm::end() ?>
