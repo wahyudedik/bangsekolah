@@ -86,7 +86,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <table class="table table-bordered">
                     <tr>
                         <th>No</th>
-                        <th>NISN</th>
+                        <th>NIS</th>
                         <th>Nama Siswa</th>
                         <th>Total Bayar</th>
                         <th>Sudah Bayar</th>
@@ -101,7 +101,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             ?>
                             <tr>
                                 <td><?= $i++; ?></td>
-                                <td><?= $student->nisn ?></td>
+                                <td><?= $student->nis ?></td>
                                 <td><?= $student->name ?></td>
                                 <td><?= $invoice->amountRupiah ?></td>
                                 <td><?= $invoice->paidAmountRupiah ?></td>
