@@ -71,7 +71,7 @@ class PaymentRecapController extends Controller
 
         $pdf = new Pdf([
             'mode' => Pdf::MODE_CORE,
-            'filename' => 'payment-recap-'.$year.'-'.$class.'-'.$payment->number.'.pdf',
+            'filename' => 'rekapitulasi-pembayaran-'.$year.'-'.$class.'-'.$payment->number.'.pdf',
             'format' => [210, 330],
             // 'format' => [148, 210],
             'orientation' => Pdf::ORIENT_LANDSCAPE,
@@ -91,7 +91,7 @@ class PaymentRecapController extends Controller
                 'showWatermarkImage' => true,
             ],
             'methods' => [
-                'SetTitle' => 'payment-recap-'.$year.'-'.$class.'-'.$payment->number.'.pdf',
+                'SetTitle' => 'rekapitulasi-pembayaran-'.$year.'-'.$class.'-'.$payment->number.'.pdf',
             ]
         ]);
 
@@ -145,7 +145,7 @@ class PaymentRecapController extends Controller
         $sheet->getColumnDimension('D')->setAutoSize(true);
         $sheet->getColumnDimension('E')->setAutoSize(true);
         $sheet->getColumnDimension('F')->setAutoSize(true);
-        $sheet->getRowDimension('5')->setRowHeight(30);
+        $sheet->getRowDimension('7')->setRowHeight(30);
 
         $column = 6;
         $row = 7;
@@ -185,8 +185,6 @@ class PaymentRecapController extends Controller
         $totalSisa = 0;
 
         foreach ($students as $student) {
-            $totalBayar = 0;
-            $totalSisa = 0;
 
             // get invoices
             $invoice = Invoice::find()->where(['student_id' => $student->id, 'school_payment_id' => $payment->id])->one();
@@ -196,16 +194,16 @@ class PaymentRecapController extends Controller
                 $no++;
                 // count cash and transfer
                 $totalBayar += $invoice->amount;
-                $totalSisa += $invoice->paid;
+                $totalSisa += $invoice->paid_amount;
                 $sheet->getStyle('D', $row)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
                 $sheet->getStyle('E', $row)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
                 $sheet->getStyle('F', $row)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
                 $sheet->setCellValue('A' . $row, ($no));
                 $sheet->setCellValue('B' . $row, $student->nisn);
                 $sheet->setCellValue('C' . $row, $student->name);
-                $sheet->setCellValue('D' . $row, $invoice->amountRupiah);
-                $sheet->setCellValue('E' . $row, $invoice->paidAmountRupiah);
-                $sheet->setCellValue('F' . $row, Strings::getRupiah($invoice->amount - $invoice->paid_amount));
+                $sheet->setCellValue('D' . $row, $invoice->amount);
+                $sheet->setCellValue('E' . $row, $invoice->paid_amount);
+                $sheet->setCellValue('F' . $row, ($invoice->amount - $invoice->paid_amount));
 
             }
         }
@@ -219,8 +217,13 @@ class PaymentRecapController extends Controller
         $sheet->setCellValue('E'.$row, $totalBayar);
         $sheet->setCellValue('F'.$row, $totalSisa);
         $sheet->mergeCells('A'.$row.':'.'D'.$row);
+        $sheet->getStyleByColumnAndRow(0, $row, ($column-1), $row)
+            ->getFill()
+            ->setFillType(\PHPExcel_Style_Fill::FILL_SOLID)
+            ->getStartColor()
+            ->setRGB('DDDDDD');
 
-        $filename = 'payment-recap-'.$year.'-'.$class.'-'.$payment->number. '.xlsx';
+        $filename = 'rekapitulasi-pembayaran-'.$year.'-'.$class.'-'.$payment->number. '.xlsx';
 
         ob_clean(); //Emptying the cache
         // header('Content-Type: application/vnd.ms-excel');

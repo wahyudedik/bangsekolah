@@ -102,7 +102,7 @@ class TransactionHistoryController extends Controller
 
         $pdf = new Pdf([
             'mode' => Pdf::MODE_CORE,
-            'filename' => 'transaction-history-'.$startdate.'-'.$enddate.'-'.$class.'-'.$payment.'-'.$method.'.pdf',
+            'filename' => 'riwayat-transaksi-'.$startdate.'-'.$enddate.'-'.$class.'-'.$payment.'-'.$method.'.pdf',
             'format' => [210, 330],
             // 'format' => [148, 210],
             'orientation' => Pdf::ORIENT_LANDSCAPE,
@@ -122,7 +122,7 @@ class TransactionHistoryController extends Controller
                 'showWatermarkImage' => true,
             ],
             'methods' => [
-                'SetTitle' => 'transaction-history-'.$startdate.'-'.$enddate.'-'.$class.'-'.$payment.'-'.$method.'.pdf',
+                'SetTitle' => 'riwayat-transaksi-'.$startdate.'-'.$enddate.'-'.$class.'-'.$payment.'-'.$method.'.pdf',
             ]
         ]);
 
@@ -287,7 +287,7 @@ class TransactionHistoryController extends Controller
         $sheet->getStyleByColumnAndRow(0, $row, ($column-1), $row)
                 ->applyFromArray($style_row);
 
-        $filename = 'transaction-history-'.$startdate.'-'. $enddate . '.xlsx';
+        $filename = 'riwayat-transaksi-'.$startdate.'-'. $enddate . '.xlsx';
 
         ob_clean(); //Emptying the cache
         // header('Content-Type: application/vnd.ms-excel');
