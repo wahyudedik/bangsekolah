@@ -198,7 +198,7 @@ class PaymentRecapController extends Controller
                 $sheet->getStyle('E', $row)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
                 $sheet->getStyle('F', $row)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
                 $sheet->setCellValue('A' . $row, ($no));
-                $sheet->setCellValue('B' . $row, $student->nisn);
+                $sheet->setCellValue('B' . $row, $student->nis);
                 $sheet->setCellValue('C' . $row, $student->name);
                 $sheet->setCellValue('D' . $row, $invoice->amount);
                 $sheet->setCellValue('E' . $row, $invoice->paid_amount);
