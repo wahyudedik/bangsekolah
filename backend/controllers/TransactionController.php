@@ -110,7 +110,7 @@ class TransactionController extends Controller
 
         $pdf = new Pdf([
             'mode' => Pdf::MODE_CORE,
-            'filename' => 'receipt - '.$transaction->student->nisn.' - '.date('Ymd', strtotime($transaction->created_at)).'.pdf',
+            'filename' => 'receipt - '.$transaction->student->nis.' - '.$transaction->student->name.'.pdf',
             'format' => [215, 330],
             // 'format' => [330, 215],
             'orientation' => Pdf::ORIENT_PORTRAIT,
@@ -139,7 +139,7 @@ class TransactionController extends Controller
                 'showWatermarkImage' => true,
             ],
             'methods' => [
-                'SetTitle' => 'Receipt - '.$transaction->number,
+                'SetTitle' => 'receipt - '.$transaction->student->nis.' - '.$transaction->student->name,
             ]
         ]);
 
