@@ -18,6 +18,7 @@ use yii\widgets\ActiveForm;
                 <?= $form->field($model, 'address')->textArea() ?>
                 <?= $form->field($model, 'city')->textInput() ?>
                 <?= $form->field($model, 'phone')->textInput() ?>
+                <?= $form->field($model, 'expired_date')->textInput() ?>
 
                 <div class="form-group">
                     <?php

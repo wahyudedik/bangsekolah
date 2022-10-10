@@ -46,10 +46,11 @@ $this->params['breadcrumbs'][] = $this->title;
 
                     'number',
                     'name',
-                    'address',
+                    // 'address',
                     'city',
                     'phone',
-                    // 'status',
+                    'expired_date',
+                    'status',
                     // 'created_at',
                     // 'updated_at',
 
