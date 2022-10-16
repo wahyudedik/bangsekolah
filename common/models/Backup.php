@@ -27,6 +27,21 @@ class Backup extends \yii\db\ActiveRecord
         return 'backup';
     }
 
+    public function behaviors()
+    {
+        return [
+            // TimestampBehavior::className(),
+            'timestamp' => [
+                 'class' => 'yii\behaviors\TimestampBehavior',
+                 'attributes' => [
+                     \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => ['created_at', 'updated_at'],
+                     \yii\db\ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_at'],
+                 ],
+                 'value' => new \yii\db\Expression('NOW()'),
+             ],
+        ];
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -53,6 +68,8 @@ class Backup extends \yii\db\ActiveRecord
             'filename' => 'Filename',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
+
+            'createdAt' => 'Tanggal',
         ];
     }
 
@@ -70,5 +87,16 @@ class Backup extends \yii\db\ActiveRecord
     public function getSchool()
     {
         return $this->hasOne(School::className(), ['id' => 'school_id']);
+    }
+
+    public function getCreatedAt()
+    {
+        return date('d M Y', strtotime($this->created_at));
+    }
+
+    public function getDownload()
+    {
+        $downloadUrl = "https://banksekolah.com/backend/web/uploads/database/$this->filename";
+        return Html::a($this->filename, $downloadUrl, ['class' => 'btn btn-primary btn-xs', 'download' => $this->filename]);
     }
 }

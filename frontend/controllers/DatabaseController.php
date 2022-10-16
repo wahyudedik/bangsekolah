@@ -5,6 +5,7 @@ use Yii;
 use yii\web\Controller;
 use yii\base\ViewNotFoundException;
 use common\helpers\Slack;
+use common\models\Backup;
 
 class DatabaseController extends Controller
 {
@@ -22,6 +23,11 @@ class DatabaseController extends Controller
         // mysqldump
         $cmd = "mysqldump -h {$host} -u {$username} --password={$password} {$database} | gzip > {$dir}{$filename}";
         exec($cmd);
+
+        // save to database
+        $backup = new Backup();
+        $backup->filename = $filename;
+        $backup->save();
 
         // send to telegram
         $message = "Backup database success.\nDownload here: <$downloadUrl|$filename>";

@@ -12,17 +12,18 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="row">
             <div class="col-lg-6">
                 <?php $form = ActiveForm::begin(['method' => 'get', 'action' => Url::to(['index']), 'options' => ['class' => 'form-inline']]) ?>
+                <!--
                 <div class="input-group input-group-sm">
                     <input type="text" name="q" class="form-control" placeholder="Search ..." value="<?=   $q ?>">
                     <span class="input-group-append">
                         <button type="button" class="btn btn-info btn-flat"><i class="fas fa-search search-icon"></i></button>
                     </span>
                 </div>
+                -->
                 <?php ActiveForm::end() ?>
             </div>
             <div class="col-lg-6">
                 <div class="card-tools float-right">
-                    <?= Html::a('<i class="fas fa-plus fa-lg"></i> Create Backup', ['create'], ['class' => 'btn btn-success']) ?>
                     <?= Html::a('<i class="fas fa-sync-alt fa-lg"></i>', ['index'], ['class' => 'btn btn-primary']) ?> 
                 </div>
             </div>
@@ -39,25 +40,22 @@ $this->params['breadcrumbs'][] = $this->title;
                 'columns' => [
                     ['class' => 'yii\grid\SerialColumn'],
 
-                        'id',
-            'user_id',
-            'school_id',
-            'filename',
-            'created_at',
-            //'updated_at',
+                    'createdAt',
+                    ['attribute' => 'download', 'format' => 'raw'],
+                    //'updated_at',
 
-                        [
-                            'class' => 'yii\grid\ActionColumn',
-                            'header' => 'Action',
-                            'template' => '{view}{update}{delete}', 
-                            'contentOptions' => ['style' => 'width:150px;'],
-                            'buttons' => [
-                                'view' => function ($url, $model) { return Html::a('<i class="fas fa-eye"></i>', $url, ['class' => 'btn btn-success']).' '; },
-                                'update' => function ($url, $model) { return Html::a('<i class="fas fa-pen"></i>', $url, ['class' => 'btn btn-primary']).' '; },
-                                'delete' => function ($url, $model) { return Html::a('<i class="fas fa-trash"></i>', $url, ['class' => 'btn btn-danger', 'data-confirm' => 'Are you sure?', 'data-method' => 'post']).' '; },
-                            ]
-                        ],
+                    [
+                        'class' => 'yii\grid\ActionColumn',
+                        'header' => 'Action',
+                        'template' => '{view}{update}{delete}', 
+                        'contentOptions' => ['style' => 'width:150px;'],
+                        'buttons' => [
+                            'view' => function ($url, $model) { return Html::a('<i class="fas fa-eye"></i>', $url, ['class' => 'btn btn-success']).' '; },
+                            'update' => function ($url, $model) { return Html::a('<i class="fas fa-pen"></i>', $url, ['class' => 'btn btn-primary']).' '; },
+                            'delete' => function ($url, $model) { return Html::a('<i class="fas fa-trash"></i>', $url, ['class' => 'btn btn-danger', 'data-confirm' => 'Are you sure?', 'data-method' => 'post']).' '; },
+                        ]
                     ],
-                ]); ?>
+                ],
+            ]); ?>
         </div>
     </div>
