@@ -17,7 +17,7 @@ class DatabaseController extends Controller
         $password = "BanksekolahDB123";
         $database = "banksekolah";
         $dir = Yii::getAlias("@uploads/database/");
-        $filename = $database."_".date("Y-m-d-His").".banksekolah.gzip";
+        $filename = $database."_".date("Y-m-d-His").".bs.gzip";
         $downloadUrl = "https://banksekolah.com/backend/web/uploads/database/$filename";
 
         // mysqldump
