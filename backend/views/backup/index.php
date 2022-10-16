@@ -44,17 +44,6 @@ $this->params['breadcrumbs'][] = $this->title;
                     ['attribute' => 'download', 'format' => 'raw'],
                     //'updated_at',
 
-                    [
-                        'class' => 'yii\grid\ActionColumn',
-                        'header' => 'Action',
-                        'template' => '{view}{update}{delete}', 
-                        'contentOptions' => ['style' => 'width:150px;'],
-                        'buttons' => [
-                            'view' => function ($url, $model) { return Html::a('<i class="fas fa-eye"></i>', $url, ['class' => 'btn btn-success']).' '; },
-                            'update' => function ($url, $model) { return Html::a('<i class="fas fa-pen"></i>', $url, ['class' => 'btn btn-primary']).' '; },
-                            'delete' => function ($url, $model) { return Html::a('<i class="fas fa-trash"></i>', $url, ['class' => 'btn btn-danger', 'data-confirm' => 'Are you sure?', 'data-method' => 'post']).' '; },
-                        ]
-                    ],
                 ],
             ]); ?>
         </div>
