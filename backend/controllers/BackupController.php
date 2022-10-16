@@ -38,7 +38,7 @@ class BackupController extends Controller
         \common\helpers\Sidebar::setActiveMenu('backup', 'index');
 
         $dataProvider = new ActiveDataProvider([
-            'query' => Backup::find(),
+            'query' => Backup::find()->orderBy(['id' => SORT_DESC]),
         ]);
 
         return $this->render('index', [
