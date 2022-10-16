@@ -4,13 +4,14 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\grid\GridView;
 
-$this->title = 'Backups';
+$this->title = 'Backup';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="card">
     <div class="card-header">
         <div class="row">
             <div class="col-lg-6">
+                Download backup database Banksekolah
                 <?php $form = ActiveForm::begin(['method' => 'get', 'action' => Url::to(['index']), 'options' => ['class' => 'form-inline']]) ?>
                 <!--
                 <div class="input-group input-group-sm">
