@@ -103,7 +103,13 @@ class TransactionController extends Controller
         $transaction = Transaction::findOne($id);
         $transactions = Transaction::find()->where(['number' => $transaction->number])->all();
 
-        $content = $this->renderPartial('@app/views/pdf-template/payment-receipt', [
+        $school = $transaction->school;
+        $nota_format = 'payment-receipt-format-1';
+        if ($school->nota_format) {
+            $nota_format = $school->nota_format;
+        }
+
+        $content = $this->renderPartial('@app/views/pdf-template/'.$nota_format, [
             'transaction' => $transaction,
             'transactions' => $transactions,
         ]);

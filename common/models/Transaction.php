@@ -81,6 +81,11 @@ class Transaction extends \yii\db\ActiveRecord
         return $this->hasOne(Student::className(), ['id' => 'student_id']);
     }
 
+    public function getSchool()
+    {
+        return $this->hasOne(School::className(), ['id' => 'school_id']);
+    }
+
     public function getSchoolPayment()
     {
         return $this->hasOne(SchoolPayment::className(), ['id' => 'school_payment_id']);
