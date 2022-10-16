@@ -6,6 +6,7 @@ use yii\grid\GridView;
 
 $this->title = 'Daftar Pembayaran';
 $this->params['breadcrumbs'][] = $this->title;
+$user = Yii::$app->user->identity;
 ?>
 <div class="card">
     <div class="card-header">
@@ -22,7 +23,11 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
             <div class="col-lg-6">
                 <div class="card-tools float-right">
-                    <?= Html::a('<i class="fas fa-plus fa-lg"></i> Tambah Pembayaran', ['create'], ['class' => 'btn btn-success']) ?>
+                    <?php
+                    if ($user->role_id == 2 || $user->role_id == 3) {
+                        echo Html::a('<i class="fas fa-plus fa-lg"></i> Tambah Pembayaran', ['create'], ['class' => 'btn btn-success']);
+                    }
+                    ?>
                     <?= Html::a('<i class="fas fa-sync-alt fa-lg"></i>', ['index'], ['class' => 'btn btn-primary']) ?> 
                 </div>
             </div>

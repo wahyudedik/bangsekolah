@@ -11,6 +11,7 @@ $this->title = 'Tagihan';
 $this->params['breadcrumbs'][] = $this->title;
 
 $school = School::findOne(Yii::$app->session->get('school_id'));
+$user = Yii::$app->user->identity;
 ?>
 <div class="card">
     <div class="card-header">
@@ -36,7 +37,7 @@ $school = School::findOne(Yii::$app->session->get('school_id'));
             </div>
             <div class="col-lg-6">
                 <div class="card-tools float-right">
-                    <?php if (count($school->students)>0): ?>
+                    <?php if (count($school->students)>0 && ($user->role_id == 2 || $user->role_id == 3)): ?>
                         <?= Html::a('<i class="fas fa-plus fa-lg"></i> Buat Tagihan', ['create'], ['class' => 'btn btn-success']) ?>
                     <?php endif; ?>
                     <?= Html::a('<i class="fas fa-sync-alt fa-lg"></i>', ['index'], ['class' => 'btn btn-primary']) ?>

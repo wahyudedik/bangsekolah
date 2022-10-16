@@ -3,6 +3,7 @@ use yii\helpers\Url;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\grid\GridView;
+use common\models\UserSchool;
 
 $this->title = 'Aktivitas';
 $this->params['breadcrumbs'][] = $this->title;
@@ -11,7 +12,16 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="card-header">
         <div class="row">
             <div class="col-lg-6">
-                Log Aktivitas SEkolah x
+                <?php 
+                $user = Yii::$app->user->identity;
+                $userSchool = UserSchool::find()->where(['user_id' => $user->id])->one();
+                if ($userSchool) {
+                    echo 'Log Aktivitas '.$userSchool->school->name;
+                } else {
+                    echo 'Log Aktivitas';
+                }
+
+                ?>
                 <?php $form = ActiveForm::begin(['method' => 'get', 'action' => Url::to(['index']), 'options' => ['class' => 'form-inline']]) ?>
                 <!-- <div class="input-group input-group-sm">
                     <input type="text" name="q" class="form-control" placeholder="Search ..." value="<?=   $q ?>">
