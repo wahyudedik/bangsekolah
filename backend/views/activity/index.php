@@ -11,6 +11,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="card-header">
         <div class="row">
             <div class="col-lg-6">
+                Log Aktivitas SEkolah x
                 <?php $form = ActiveForm::begin(['method' => 'get', 'action' => Url::to(['index']), 'options' => ['class' => 'form-inline']]) ?>
                 <!-- <div class="input-group input-group-sm">
                     <input type="text" name="q" class="form-control" placeholder="Search ..." value="<?=   $q ?>">
@@ -39,13 +40,25 @@ $this->params['breadcrumbs'][] = $this->title;
                 'columns' => [
                     ['class' => 'yii\grid\SerialColumn'],
 
-                    ['attribute' => 'school.name', 'label' => 'Sekolah'],
+                    // ['attribute' => 'school.name', 'label' => 'Sekolah'],
+                    [
+                        'label' => 'Sekolah',
+                        'value' => function($model) {
+                            return $model->school ? $model->school->name : 'Admin';
+                        }
+                    ],
                     ['attribute' => 'user.name', 'label' => 'Nama Pengguna'],
                     ['attribute' => 'user.username', 'label' => 'Username'],
                     'name',
-                    'description',
+                    [
+                        'label' => 'Catatan',
+                        'value' => function($model) {
+                            return $model->description ? $model->description : '';
+                        }
+                    ],                    
+                    // 'description',
                     // 'created_at',
-                    //'updated_at',
+                    // 'updated_at',
 
                     [
                         'class' => 'yii\grid\ActionColumn',

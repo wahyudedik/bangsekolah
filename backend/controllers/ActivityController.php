@@ -4,6 +4,7 @@ namespace backend\controllers;
 
 use Yii;
 use common\models\Activity;
+use common\models\UserSchool;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -37,8 +38,22 @@ class ActivityController extends Controller
     {
         \common\helpers\Sidebar::setActiveMenu('activity', 'index');
 
+        $query = Activity::find()->orderBy(['id' => SORT_DESC]);
+
+        // filter school
+        $user = Yii::$app->user->identity;
+        if ($user->role_id !== 1) {
+            $userSchool = UserSchool::find()->where(['user_id' => $user->id])->one();
+            $school_id = null;
+            if ($userSchool) $school_id = $userSchool->school_id;
+            $query->andFilterWhere([
+                'or',
+                ['like', 'school_id', $school_id]
+            ]);
+        }
+
         $dataProvider = new ActiveDataProvider([
-            'query' => Activity::find()->orderBy(['id' => SORT_DESC]),
+            'query' => $query,
         ]);
 
         return $this->render('index', [
