@@ -8,7 +8,7 @@ use common\models\UserSchool;
 $user = Yii::$app->user->identity;
 $baseUrl = Yii::$app->request->baseUrl;
 $userSchool = UserSchool::find()->where(['user_id' => $user->id])->one();
-$schoo = null;
+$school = null;
 if ($userSchool) {
 	$school = $userSchool->school;
 }

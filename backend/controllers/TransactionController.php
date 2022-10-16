@@ -12,6 +12,8 @@ use common\models\SchoolPayment;
 use common\models\SchoolClass;
 use common\models\Year;
 
+use common\helpers\Activities;
+use common\helpers\Strings;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -220,12 +222,16 @@ class TransactionController extends Controller
                          $invoice->save();
                     }
 
+                    // activity log
+                    Activities::log('Transaksi Pembayaran', $invoice->student->nis.' '.$invoice->student->name.' ('.Strings::getRupiah($amount).')');
+
                     $saved++;
                 }
                 $i++;
             }
 
             if ($saved > 0) {
+
                 Yii::$app->session->setFlash('success', $saved.' transaksi berhasil disimpan. Klik detail transaksi untuk mencetak bukti bayar');
             } else {
                 Yii::$app->session->setFlash('danger', 'Tidak ada transaksi yang tersimpan');

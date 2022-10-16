@@ -6,6 +6,7 @@ use yii\web\Controller;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use common\helpers\Strings;
+use common\helpers\Activities;
 
 use common\models\User;
 use common\models\UserSchool;
@@ -101,7 +102,6 @@ class SiteController extends Controller
      */
     public function actionLogin()
     {
-        // return Yii::$app->security->generatePasswordHash('admin');
         $model = new LoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
             $user_school = UserSchool::find()->where(['user_id' => Yii::$app->user->identity->id])->one();
@@ -111,15 +111,13 @@ class SiteController extends Controller
             } else {
                 Yii::$app->session->set('school_id', '');
                 Yii::$app->session->set('school_name', '');
-                // @Yii::$app->session->remove('school_id');
-                // @Yii::$app->session->remove('school_name');
             }
+
+            // activity log
+            Activities::log('Login');
+
             return $this->goBack();
-            // return 'masuk';
-            // return $this->redirect(['site/index']);
         } else {
-            // $model->login();
-            // return 'login';
             return $this->renderPartial('login', [
                 'model' => $model,
             ]);
@@ -133,6 +131,9 @@ class SiteController extends Controller
      */
     public function actionLogout()
     {
+        // activity log
+        Activities::log('Logout');
+
         Yii::$app->user->logout();
         return $this->goHome();
     }

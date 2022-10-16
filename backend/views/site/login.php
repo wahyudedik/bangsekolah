@@ -53,8 +53,8 @@ if ($settingPerusahaan) $perusahaan = $settingPerusahaan->nilai;
                 <div class="input-group mb-3">
                     <?= $form->field($model, 'password')->passwordInput(['placeholder' => 'Password'])->label(false) ?>
                     <div class="input-group-append">
-                        <div class="input-group-text">
-                            <span class="fas fa-lock"></span>
+                        <div class="input-group-text" id="toggle-password">
+                            <span id="password-button" class="fas fa-eye-slash"></span>
                         </div>
                     </div>
                 </div>
@@ -84,4 +84,33 @@ if ($settingPerusahaan) $perusahaan = $settingPerusahaan->nilai;
         height: 35px;
         font-size: 1.1em;
     }
+    .help-block {
+        /*display: none;*/
+        position: absolute;
+        top: 40px;
+        background: #dc3545;
+        border-radius: 5px;
+        padding: 3px;
+        color: white;
+        font-size: 11px;
+    }
+    .help-block:empty {
+        display: none;
+    }
 </style>
+
+<script src="<?= $baseUrl ?>/theme/plugins/jquery/jquery.min.js"></script>
+<script type="text/javascript">
+    $("#toggle-password").on('click', function(event) {
+        event.preventDefault();
+        if($('#loginform-password').attr("type") == "text"){
+            $('#loginform-password').attr('type', 'password');
+            $('#password-button').addClass( "fa-eye-slash" );
+            $('#password-button').removeClass( "fa-eye" );
+        }else if($('#loginform-password').attr("type") == "password"){
+            $('#loginform-password').attr('type', 'text');
+            $('#password-button').removeClass( "fa-eye-slash" );
+            $('#password-button').addClass( "fa-eye" );
+        }
+    });
+</script>
