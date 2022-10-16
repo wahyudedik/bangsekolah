@@ -106,7 +106,7 @@ class RoleMenu extends \yii\db\ActiveRecord
                 $link .= '
                 <script>
                     $("#up-'.$this->id.'").click(function(){
-                        $.post("'.Url::to(['role-menu/up', 'id' => $this->id]).'", {}, function(result){
+                        $.get("'.Url::to(['role-menu/up', 'id' => $this->id]).'", {}, function(result){
                             $("#grid-role-menu").html(result);
                         })
                     });
@@ -119,7 +119,7 @@ class RoleMenu extends \yii\db\ActiveRecord
                 $link .= '
                 <script>
                     $("#down-'.$this->id.'").click(function(){
-                        $.post("'.Url::to(['role-menu/down', 'id' => $this->id]).'", {}, function(result){
+                        $.get("'.Url::to(['role-menu/down', 'id' => $this->id]).'", {}, function(result){
                             $("#grid-role-menu").html(result);
                         })
                     });
@@ -135,7 +135,7 @@ class RoleMenu extends \yii\db\ActiveRecord
         $json_privileges = json_decode($this->privileges);
         if ($json_privileges) {
             foreach ($json_privileges as $priv) {
-                $string .= '<span class="badge badge-default">'.$priv.'</span>';
+                $string .= '<span class="badge badge-success">'.$priv.'</span>';
             }
         }
         return $string;

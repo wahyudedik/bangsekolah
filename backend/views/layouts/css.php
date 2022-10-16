@@ -9,10 +9,10 @@ $baseUrl = Yii::$app->request->baseUrl;
 	}
 </style>
 
-<link rel="stylesheet" type="text/css" href="<?= $baseUrl?>/theme/css/bootstrap/bootstrap.min.css" />
-<link rel="stylesheet" type="text/css" href="<?= $baseUrl?>/theme/css/libs/font-awesome.css" />
-<link rel="stylesheet" type="text/css" href="<?= $baseUrl?>/theme/css/compiled/theme_styles.css" />
-<link rel="stylesheet" type="text/css" href="<?= $baseUrl?>/css/custom.css" />
+<!-- <link rel="stylesheet" type="text/css" href="<?= $baseUrl?>/theme/css/bootstrap/bootstrap.min.css" /> -->
+<!-- <link rel="stylesheet" type="text/css" href="<?= $baseUrl?>/theme/css/libs/font-awesome.css" /> -->
+<!-- <link rel="stylesheet" type="text/css" href="<?= $baseUrl?>/theme/css/compiled/theme_styles.css" /> -->
+<!-- <link rel="stylesheet" type="text/css" href="<?= $baseUrl?>/css/custom.css" /> -->
 
 <!-- <link rel="stylesheet" type="text/css" href="<?= $baseUrl?>/theme/css/libs/nanoscroller.css" /> -->
 <!-- <link rel="stylesheet" type="text/css" href="<?= $baseUrl?>/theme/css/libs/morris.css" /> -->

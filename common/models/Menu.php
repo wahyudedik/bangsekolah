@@ -123,7 +123,7 @@ class Menu extends \yii\db\ActiveRecord
         $json_action = json_decode($this->actions);
         if ($json_action) {
             foreach ($json_action as $act) {
-                $string .= '<span class="badge badge-default">'.$act.'</span>';
+                $string .= '<span class="badge badge-success">'.$act.'</span>';
             }
         }
         return $string;
