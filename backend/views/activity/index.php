@@ -66,8 +66,8 @@ $this->params['breadcrumbs'][] = $this->title;
                             return $model->description ? $model->description : '';
                         }
                     ],                    
+                    'created_at',
                     // 'description',
-                    // 'created_at',
                     // 'updated_at',
 
                     [
