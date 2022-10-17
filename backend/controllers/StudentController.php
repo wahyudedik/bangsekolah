@@ -207,27 +207,6 @@ class StudentController extends Controller
         return $this->redirect(['index']);
     }
 
-    public function actionChangeClass($id)
-    {
-        $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post())) {
-
-            // change student class and year
-            $student = $invoice->student;
-            $student->class = $model->class; 
-
-            // change invoice
-            $model->save();
-
-            return $this->redirect(['view', 'id' => $model->id]);
-        }
-
-        return $this->render('change-class', [
-            'model' => $model,
-        ]);
-    }
-
     /**
      * Finds the Student model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.

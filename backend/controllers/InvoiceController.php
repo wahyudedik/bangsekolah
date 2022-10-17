@@ -281,6 +281,19 @@ class InvoiceController extends Controller
         ]);
     }
 
+    public function actionChangeAmount($id)
+    {
+        $model = $this->findModel($id);
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['view', 'id' => $model->id]);
+        }
+
+        return $this->render('change-amount', [
+            'model' => $model,
+        ]);
+    }
+
     /**
      * Deletes an existing Invoice model.
      * If deletion is successful, the browser will be redirected to the 'index' page.

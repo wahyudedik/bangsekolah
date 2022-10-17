@@ -20,9 +20,9 @@ $user = Yii::$app->user->identity;
                 <?= Html::a('<i class="fas fa-chevron-left"></i> Kembali', ['student/index'], ['class' => 'btn btn-warning']) ?>
                 <div class="filter-block float-right">
                     <?php
-                    if ($user->role_id == 2) {
-                        echo Html::a('<i class="nav-icon fas fa-sign-in-alt"></i> Pindah Kelas', ['change-class', 'id' => $model->id], ['class' => 'btn btn-warning']);
-                    }                     
+                    // if ($user->role_id == 2) {
+                        // echo Html::a('<i class="nav-icon fas fa-sign-in-alt"></i> Pindah Kelas', ['change-class', 'id' => $model->id], ['class' => 'btn btn-warning']);
+                    // }                     
                     ?>
                     <?= Html::a('<i class="fas fa-pen"></i> Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
                     <?= Html::a('<i class="fas fa-trash"></i> Hapus', ['delete', 'id' => $model->id], [

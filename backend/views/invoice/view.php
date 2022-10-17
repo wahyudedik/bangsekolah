@@ -20,6 +20,9 @@ $user = Yii::$app->user->identity;
                 <?= Html::a('<i class="fas fa-chevron-left"></i> Kembali', ['invoice/invoices', 'student' => $model->student->id], ['class' => 'btn btn-warning']) ?>
                 <div class="filter-block float-right">
                     <?php 
+                    if ($user->role_id == 2) {
+                        echo Html::a('<i class="nav-icon fas fa-edit"></i> Ubah Tagihan', ['invoice/change-amount', 'id' => $model->id], ['class' => 'btn btn-info']);
+                    }
                     if ($user->role_id == 4) {
                         echo Html::a('<i class="nav-icon fas fa-hand-holding-usd"></i> Bayar Tagihan Ini', ['transaction/create', 'search' => $model->student->nis], ['class' => 'btn btn-success']);
                     }
