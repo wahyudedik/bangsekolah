@@ -15,6 +15,9 @@ $this->params['breadcrumbs'][] = $student->name;
         <div class="card">
             <header class="card-header">
                 <?= Html::a('<i class="fas fa-chevron-left"></i> Kembali', ['invoice/index'], ['class' => 'btn btn-warning']) ?>
+                <div class="card-tools float-right">
+                    <?= Html::a('<i class="fas fa-plus"></i> Buat tagihan', ['invoice/create-single', 'student' => $student->id], ['class' => 'btn btn-success']) ?>
+                </div>
             </header>
             <div class="card-body p-0">
                 <div class="table-responsive">
