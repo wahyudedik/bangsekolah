@@ -18,7 +18,7 @@ if ($userSchool) {
 		<li class="nav-item">
 			<a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
 		</li>
-		<?php if ($userSchool && count($school->students)>0 && $user->role_id == 4): ?>
+		<?php if ($userSchool && count($school->students)>0 && ($user->role_id == 2 || $user->role_id == 4)): ?>
 			<li class="nav-item d-none d-sm-inline-block">
 				<a href="<?= Url::to(['transaction/create']) ?>" class="nav-link">Pembayaran Siswa</a>
 			</li>
