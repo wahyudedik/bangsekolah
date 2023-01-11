@@ -36,6 +36,12 @@ if ($settingPerusahaan) $perusahaan = $settingPerusahaan->nilai;
         <div class="card-body">
             <h5 class="login-box-msg" style="padding-bottom: 0px;">BANKSEKOLAH</h5>
             <p class="login-box-msg">Sign in to start your session</p>
+            <?php
+            foreach(Yii::$app->session->getAllFlashes() as $key => $message) {
+                echo '<div class="alert alert-' . $key . '">' . $message . "</div>\n";
+            }
+            ?>
+            
             <?php $form = ActiveForm::begin(['id' => 'login-form', 'options' => ['class' => 'form-signin'], 
                 'fieldConfig' => [
                 'options' => [
