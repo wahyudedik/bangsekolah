@@ -77,6 +77,12 @@ class SiteController extends Controller
      */
     public function actionIndex($startdate = null, $enddate = null)
     {
+        // check expiration day
+        $user_school = UserSchool::find()->where(['user_id' => Yii::$app->user->identity->id])->one();
+        if (date('Y-m-d') > $user_school->school->expired_date) {
+            return $this->redirect(['site/login']);
+        }
+
         // return Yii::$app->security->generatePasswordHash('gresik2022');
         if (!$startdate) $startdate = date('Y-m-d', strtotime('-1 month'));
         if (!$enddate) $enddate = date('Y-m-d');
