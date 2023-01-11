@@ -118,7 +118,7 @@ class SiteController extends Controller
                     Yii::$app->session->set('school_id', $user_school->school_id);
                     Yii::$app->session->set('school_name', $user_school->school->name);
                 } else {
-                    Yii::$app->session->setFlash('danger', 'Layanan BANKSEKOLAH Anda sudah expired. Hubungi admin untuk memperpanjang layanan.');
+                    Yii::$app->session->setFlash('danger', 'Layanan BANKSEKOLAH Anda sudah melewati jatuh tempo, silakan hubungi 085649400339 untuk memperpanjang layanan');
                     return $this->redirect(['site/login']);
                 }
 
