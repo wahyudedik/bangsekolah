@@ -79,8 +79,10 @@ class SiteController extends Controller
     {
         // check expiration day
         $user_school = UserSchool::find()->where(['user_id' => Yii::$app->user->identity->id])->one();
-        if (date('Y-m-d') > $user_school->school->expired_date) {
-            return $this->redirect(['site/login']);
+        if ($user_school) {
+            if (date('Y-m-d') > $user_school->school->expired_date) {
+                return $this->redirect(['site/login']);
+            }
         }
 
         // return Yii::$app->security->generatePasswordHash('gresik2022');
