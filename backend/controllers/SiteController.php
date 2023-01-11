@@ -106,8 +106,15 @@ class SiteController extends Controller
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
             $user_school = UserSchool::find()->where(['user_id' => Yii::$app->user->identity->id])->one();
             if ($user_school) {
-                Yii::$app->session->set('school_id', $user_school->school_id);
-                Yii::$app->session->set('school_name', $user_school->school->name);
+
+                // check expiration day
+                if (date('Y-m-d') <= $user_school->school->expired_date) {
+                    Yii::$app->session->set('school_id', $user_school->school_id);
+                    Yii::$app->session->set('school_name', $user_school->school->name);
+                } else {
+                    return $this->redirect(['site/login']);
+                }
+
             } else {
                 Yii::$app->session->set('school_id', '');
                 Yii::$app->session->set('school_name', '');
