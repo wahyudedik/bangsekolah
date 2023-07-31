@@ -144,7 +144,7 @@ class InvoiceController extends Controller
             }
 
             // search student
-            $students = Student::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'class' => $model->class, 'status' => 'ACTIVE'])->all();
+            $students = Student::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'class' => $model->class, 'year' => $model->year, 'status' => 'ACTIVE'])->all();
             if (!$students) {
                 Yii::$app->session->setFlash('danger', 'Tidak ada siswa di kelas '.$model->class.'. Tambahkan daftar siswa terlebih dahulu.');
                 return $this->redirect(['create', 'model' => $model]);
