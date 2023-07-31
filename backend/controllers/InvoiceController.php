@@ -149,6 +149,7 @@ class InvoiceController extends Controller
                 Yii::$app->session->setFlash('danger', 'Tidak ada siswa di kelas '.$model->class.'. Tambahkan daftar siswa terlebih dahulu.');
                 return $this->redirect(['create', 'model' => $model]);
             }
+            return count($students);
 
             // populate data
             $months = SchoolMonth::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'status' => 'ACTIVE'])->all();
