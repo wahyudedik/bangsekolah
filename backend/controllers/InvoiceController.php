@@ -464,7 +464,8 @@ class InvoiceController extends Controller
         $students = Student::find()->where([
             'school_id' => Yii::$app->session->get('school_id'),
             'year' => $year,
-            'class' => $class
+            'class' => $class,
+            'status' => 'ACTIVE',
         ])->all();
         
         return count($students);
