@@ -40,7 +40,7 @@ $user = Yii::$app->user->identity;
                     <?php if ($school): ?>
                         <?php if (count($school->schoolPayments)>0 && count($school->schoolMonths)>0 && count($school->schoolClasses)>0 && ($user->role_id == 2 || $user->role_id == 3)): ?>
                             <?= Html::a('<i class="fas fa-plus fa-lg"></i> Tambah Siswa', ['create'], ['class' => 'btn btn-success']) ?>
-                            <?= Html::a('<i class="fas fa-chalkboard-teacher fa-lg"></i> Pindah Kelas', ['update-class/index'], ['class' => 'btn btn-primary']) ?>
+                            <?= Html::a('<i class="fas fa-chalkboard-teacher fa-lg"></i> Naik Kelas', ['update-class/index'], ['class' => 'btn btn-primary']) ?>
                             <?= Html::a('<i class="fas fa-upload fa-lg"></i> Import', ['import'], ['class' => 'btn btn-primary']) ?>
                         <?php endif; ?>
                     <?php endif; ?>

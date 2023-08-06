@@ -6,7 +6,7 @@ use yii\grid\GridView;
 use yii\widgets\LinkPager;
 use yii\widgets\ActiveForm;
 
-$this->title = 'Pindah Kelas';
+$this->title = 'Naik Kelas';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <?php $form = ActiveForm::begin(['action' => ['update-class/create', 'fromYear' => $year, 'fromClass' => $class], 'method' => 'post']) ?>
@@ -73,21 +73,21 @@ $this->params['breadcrumbs'][] = $this->title;
                                 </thead>
                                 <tbody>
                                     <?php foreach ($students as $stdn) : ?>
-                                        <?php if ($stdn->unpaidInvoiceCount == 0): ?>
+                                        <?php //if ($stdn->unpaidInvoiceCount == 0): ?>
                                             <tr>
                                                 <td><input type="checkbox" name="student[]" class="check-student" value="<?= $stdn->id ?>"></td>
                                                 <td><?= $stdn->nis ?></td>
                                                 <td><?= $stdn->nisn ?></td>
                                                 <td><?= $stdn->name ?></td>
                                             </tr>
-                                        <?php else: ?>
-                                            <tr>
+                                        <?php // else: ?>
+                                            <!-- <tr>
                                                 <td><input type="checkbox" disabled></td>
                                                 <td class="text-danger"><?= $stdn->nis ?></td>
                                                 <td class="text-danger"><?= $stdn->nisn ?></td>
                                                 <td class="text-danger"><?= $stdn->name ?></td>
-                                            </tr>
-                                        <?php endif; ?>
+                                            </tr> -->
+                                        <?php //endif; ?>
                                     <?php endforeach; ?>
                                 </tbody>
                             </table>
