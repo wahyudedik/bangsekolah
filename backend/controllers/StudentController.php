@@ -248,10 +248,10 @@ class StudentController extends Controller
         if ($sheet == 0) {
             foreach ($dataExcel as $rowExcelData) {
                 if ($row_number++ > 0 && $rowExcelData[0] !== null) {
-                    // check nisn student
-                    $student = Student::find()->where(['school_id' => Yii::$app->session->get('school_id'),'nisn' => trim((string)$rowExcelData[1])])->one();
+                    // check nis student
+                    $student = Student::find()->where(['school_id' => Yii::$app->session->get('school_id'),'nis' => trim((string)$rowExcelData[0])])->one();
                     if ($student) {
-                        $error = 'NISN siswa sudah ada '.$student->nisn;
+                        $error = 'NIS siswa sudah ada '.$student->nis;
                         break;
                     }
 
