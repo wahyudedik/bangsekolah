@@ -55,7 +55,7 @@ class Student extends \yii\db\ActiveRecord
         return [
             [['school_id'], 'integer'],
             [['created_at', 'updated_at', 'file'], 'safe'],
-            [['nisn'], 'unique'],
+            // [['nisn'], 'unique'],
             [['nis', 'nisn', 'name', 'class', 'gender', 'year', 'status'], 'string', 'max' => 255],
             [['school_id'], 'exist', 'skipOnError' => true, 'targetClass' => School::className(), 'targetAttribute' => ['school_id' => 'id']],
         ];
