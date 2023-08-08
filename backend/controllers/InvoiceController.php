@@ -50,7 +50,7 @@ class InvoiceController extends Controller
             return $this->goHome();
         }
 
-        $query = Student::find()->where(['school_id' => Yii::$app->session->get('school_id')]);
+        $query = Student::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'status' => 'ACTIVE']);
         $classes = SchoolClass::find()->where(['school_id' => Yii::$app->session->get('school_id')])->all();
 
         // force fill default class
