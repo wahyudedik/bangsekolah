@@ -137,7 +137,7 @@ class Invoice extends \yii\db\ActiveRecord
 
     public function getTransactions()
     {
-        return $this->hasOne(Transaction::className(), ['invoice_id' => 'id']);
+        return $this->hasMany(Transaction::className(), ['invoice_id' => 'id']);
     }
 
     public function getAmountRupiah() {

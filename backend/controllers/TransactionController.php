@@ -157,6 +157,62 @@ class TransactionController extends Controller
         return $pdf->render();
     }
 
+    public function actionPrintByInvoice($number = null)
+    {
+        $school = School::findOne(Yii::$app->session->get('school_id'));
+        $invoice = Invoice::find()->where(['number' => $number])->one();
+        $student = $invoice->student;
+        $transactions = $invoice->transactions;
+
+        $content = $this->renderPartial('@app/views/pdf-template/transaction-by-invoice', [
+            'school' => $school,
+            'invoice' => $invoice,
+            'student' => $student,
+            'transactions' => $transactions,
+        ]);
+
+
+        $pdf = new Pdf([
+            'mode' => Pdf::MODE_CORE,
+            'filename' => 'Riwayat Pembayaran Invoice - '.$invoice->number.'.pdf',
+            'format' => [215, 330],
+            // 'format' => [330, 215],
+            'orientation' => Pdf::ORIENT_PORTRAIT,
+            'destination' => Pdf::DEST_BROWSER,
+            // 'marginTop' => '10',
+            // 'marginLeft' => '15',
+            // 'marginRight' => '15',
+            'marginTop' => '5',
+            'marginLeft' => '5',
+            'marginRight' => '5',
+            'content' => $content,
+            // 'cssFile' => '@vendor/kartik-v/yii2-mpdf/assets/kv-mpdf-bootstrap.css',
+            // 'cssFile' => '@app/web/css/surat-penawaran.css',
+            'cssInline' => '
+            
+            .border-top{border-top: 1px solid grey !important;}
+            .monospace{font-family: monospace;}
+            .small{font-size:14px;}
+            .medium{font-size:15px;}
+            .large{font-size:17px;}
+
+            ',
+            
+            'options' => [
+                'showWatermarkText' => true,
+                'showWatermarkImage' => true,
+            ],
+            'methods' => [
+                'SetTitle' => 'Riwayat Pembayaran Invoice - '.$invoice->number,
+            ]
+        ]);
+
+        Yii::$app->response->format = \yii\web\Response::FORMAT_RAW;
+        $headers = Yii::$app->response->headers;
+        $headers->add('Content-Type', 'application/pdf');
+        return $pdf->render();
+    }
+
     /**
      * Creates a new Transaction model.
      * If creation is successful, the browser will be redirected to the 'view' page.

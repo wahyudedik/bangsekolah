@@ -60,6 +60,9 @@ $user = Yii::$app->user->identity;
     <div class="col-lg-6 col-md-6 col-sm-12">
         <div class="card">
             <header class="card-header">
+                <div class="filter-block float-right">
+                    <?= Html::a('<i class="nav-icon fas fa-print"></i> Print Semua Riwayat', ['transaction/print-by-invoice', 'number' => $model->number], ['class' => 'btn btn-info']) ?>
+                </div>
                 <h5>Riwayat Pembayaran</h5>
             </header>
             <div class="card-body p-0">
