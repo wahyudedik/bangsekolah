@@ -63,11 +63,11 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <td>:</td>
                                 <td><?= $student->class ?></td>
                             </tr>
-                            <tr>
+                            <!-- <tr>
                                 <th>Tahun Ajaran</th>
                                 <td>:</td>
                                 <td><?= $student->year ?></td>
-                            </tr>
+                            </tr> -->
                         </table>
                     </div>
                 </div>
@@ -141,7 +141,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <tr>
                         <th>No</th>
                         <th>Nama Pembayaran</th>
-                        <th>Bulan</th>
+                        <th>Tahun</th>
                         <th>Jumlah</th>
                         <th>Dibuat Pada</th>
                         <th>Status Bayar</th>
@@ -152,7 +152,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <tr>
                             <td><?= $i++ ?></td>
                             <td><?= $invoice->schoolPayment->name ?></td>
-                            <td><?= $invoice->month ?></td>
+                            <td><?= $invoice->year ?></td>
                             <td><?= Strings::getRupiah($invoice->amount) ?></td>
                             <td><?= date('d-m-Y', strtotime($invoice->created_at)) ?></td>
                             <td><?= $invoice->statusLabel ?></td>

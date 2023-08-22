@@ -69,7 +69,7 @@ class UpdateClassController extends \yii\web\Controller
                 $student = Student::findOne($student_id);
                 if ($student) {
                     if ($class == 'lulus') {
-                        $student->status = 'NONACTIVE';
+                        $student->status = 'GRADUATED';
                         $student->year = $year;
                     } else {
                         $student->year = $year;
