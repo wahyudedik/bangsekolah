@@ -11,7 +11,7 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <?php $form = ActiveForm::begin(['action' => ['update-class/create', 'fromYear' => $year, 'fromClass' => $class], 'method' => 'post']) ?>
 <div class="row">
-    <div class="col-lg-6">
+    <div class="col-lg-8">
         <div class="card">
             <div class="card-header">
                 <h5>Dari Kelas</h5>
@@ -69,6 +69,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                         <th>NIS</th>
                                         <th>NISN</th>
                                         <th>Nama Siswa</th>
+                                        <th>Tagihan</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -79,6 +80,17 @@ $this->params['breadcrumbs'][] = $this->title;
                                                 <td><?= $stdn->nis ?></td>
                                                 <td><?= $stdn->nisn ?></td>
                                                 <td><?= $stdn->name ?></td>
+                                                <td>
+                                                    <?php
+                                                    foreach ($stdn->invoices as $inv) {
+                                                        echo $inv->description.'<br>';
+                                                        echo $inv->number.'<br>';
+                                                        echo '<input type="text" name="inv_'.$inv->id.'" class="form-control" value="'.$inv->amount.'">';
+                                                        echo 'Terbayar:'.$inv->paidAmountRupiah.'<br>';
+                                                        echo '<hr>';
+                                                    } 
+                                                    ?>
+                                                </td>
                                             </tr>
                                         <?php // else: ?>
                                             <!-- <tr>
@@ -101,7 +113,7 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
         <?php endif; ?>
     </div>
-    <div class="col-lg-6">
+    <div class="col-lg-4">
         <div class="card">
             <div class="card-header">
                 <h5>Ke Kelas</h5>

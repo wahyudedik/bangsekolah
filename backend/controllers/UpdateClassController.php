@@ -78,6 +78,19 @@ class UpdateClassController extends \yii\web\Controller
                     if ($student->save()) {
                         $saved++;
                     }
+
+                    // cek invoice masing-masing siswa
+                    foreach ($student->invoices as $inv) {
+                        if (!empty($_POST['inv_'.$inv->id])) {
+                            if ($inv->amount <> $_POST['inv_'.$inv->id]) {
+                                // return $_POST['inv_'.$inv->id];
+                                if ($inv->paid_amount <= $_POST['inv_'.$inv->id]) {
+                                    $inv->amount = $_POST['inv_'.$inv->id];
+                                    $inv->save();
+                                }
+                            }
+                        }
+                    }
                 }
             }
 
