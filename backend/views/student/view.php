@@ -25,9 +25,9 @@ $user = Yii::$app->user->identity;
                     // }                     
                     ?>
                     <?= Html::a('<i class="fas fa-pen"></i> Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-                    <?= Html::a('<i class="fas fa-trash"></i> Hapus', ['delete', 'id' => $model->id], [
+                    <?= Html::a('<i class="fas fa-trash"></i> Hapus / Mutasi', ['delete', 'id' => $model->id], [
                             'class' => 'btn btn-danger',
-                            'onclick' => 'return confirm("Apakah Anda yakin hapus data ini?");',
+                            'onclick' => 'return confirm("Apakah Anda yakin hapus / mutasi siswa ini?");',
                     ]) ?>
                 </div>
             </header>
