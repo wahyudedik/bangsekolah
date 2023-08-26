@@ -85,6 +85,11 @@ class UpdateClassController extends \yii\web\Controller
                             if ($inv->amount <> $_POST['inv_'.$inv->id]) {
                                 // return $_POST['inv_'.$inv->id];
                                 if ($inv->paid_amount <= $_POST['inv_'.$inv->id]) {
+
+                                    if ($inv->paid_amount < $_POST['inv_'.$inv->id]) {
+                                        $inv->status = 'UNPAID';
+                                    }
+                                    
                                     $inv->amount = $_POST['inv_'.$inv->id];
                                     $inv->save();
                                 }
