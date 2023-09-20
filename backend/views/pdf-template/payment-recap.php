@@ -62,7 +62,7 @@ $baseUrl = Yii::$app->request->baseUrl;
                     $i=1;
                     foreach ($students as $student):
                         // get invoices
-                        $invoice = Invoice::find()->where(['student_id' => $student->id, 'school_payment_id' => $payment->id])->one();
+                        $invoice = Invoice::find()->where(['student_id' => $student->id, 'school_payment_id' => $payment->id, 'year' => $year])->one();
                         if ($invoice) :
                             ?>
                             <tr>
