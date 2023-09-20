@@ -3,7 +3,7 @@
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
-$this->title = 'Change Password';
+$this->title = 'Ubah Password';
 $this->params['breadcrumbs'][] = ['label' => 'Profile', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 
@@ -14,13 +14,13 @@ $baseUrl = Yii::$app->request->baseUrl;
     <div class="col-lg-9 col-md-8 col-sm-8">
         <div class="card">
             <header class="card-header">
-                <h2><?= $this->title ?></h2>
+                <h5><?= $this->title ?></h5>
             </header>
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-6">
                         <?php $form = ActiveForm::begin(); ?>
-                            <label>Password</label>
+                            <label>Password Baru</label>
                             <div class="input-group mb-3">
                                 <?= $form->field($model, 'password')->passwordInput()->label(false) ?>
                                 <div class="input-group-append">
@@ -29,7 +29,7 @@ $baseUrl = Yii::$app->request->baseUrl;
                                     </div>
                                 </div>
                             </div>
-                            <label>Confirm Password</label>
+                            <label>Ulangi Password</label>
                             <div class="input-group mb-3">
                                 <?= $form->field($model, 'confirm_password')->passwordInput()->label(false) ?>
                                 <div class="input-group-append">
@@ -39,12 +39,12 @@ $baseUrl = Yii::$app->request->baseUrl;
                                 </div>
                             </div>
                             <div class="form-group">
-                                <?= Html::submitButton('<i class="fas fa-save"></i> Save', ['class' => 'btn btn-success']) ?>
+                                <?= Html::submitButton('<i class="fas fa-save"></i> Simpan', ['class' => 'btn btn-success']) ?>
                             </div>
                         <?php ActiveForm::end(); ?>
                     </div>
                     <div class="col-md-6">
-                        <h2>Note: </h2>
+                        <h5>Note: </h5>
                         <div class="alert alert-info">
                             Use a password with a combination of letters, numbers, and symbols. The stronger the password the more secure your account. Do not share password information with anyone.
                         </div>

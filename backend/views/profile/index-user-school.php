@@ -12,7 +12,7 @@ $baseUrl = Yii::$app->request->baseUrl;
     <div class="col-lg-3 col-md-4 col-sm-4">
         <div class="card">
             <header class="card-header">
-                <h2><?= $model->school->name ?></h2>
+                <h4><?= $model->school->name ?></h4>
             </header>
             <div class="card-body">
                 <?php
@@ -28,9 +28,9 @@ $baseUrl = Yii::$app->request->baseUrl;
                 </div>
                 <br>
                 <div class="profile-message-btn center-block text-center">
-                    <?= Html::a('<i class="fas fa-lock"></i> Change Password', ['profile/change-password'], ['class' => 'btn btn-primary']) ?>
+                    <?= Html::a('<i class="fas fa-lock"></i> Ubah Password', ['profile/change-password'], ['class' => 'btn btn-primary']) ?>
                     <br><br>
-                    <?= Html::a('<i class="fas fa-pen"></i> Edit Profile', ['profile/update', 'id_user' => $model->user_id], ['class' => 'btn btn-primary']) ?>
+                    <?= Html::a('<i class="fas fa-pen"></i> Edit Profil', ['profile/update', 'id_user' => $model->user_id], ['class' => 'btn btn-primary']) ?>
                 </div>
             </div>
         </div>
@@ -40,7 +40,7 @@ $baseUrl = Yii::$app->request->baseUrl;
     <div class="col-lg-9 col-md-8 col-sm-8">
         <div class="card">
             <header class="card-header">
-                <h2 class="filter-block float-left">Profile</h2>
+                <h4 class="filter-block float-left">Profile</h4>
             </header>
             <div class="card-body">
             <?= DetailView::widget([

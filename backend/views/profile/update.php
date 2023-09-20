@@ -30,9 +30,9 @@ $baseUrl = Yii::$app->request->baseUrl;
                 <?= $form->field($model, 'logo')->fileInput()->label('Logo Sekolah') ?>
 
                 <div class="form-group">
-                    <?= Html::a('<i class="fas fa-chevron-left"></i> Back', ['profile/index'], ['class' => 'btn btn-warning']); ?>
+                    <?= Html::a('<i class="fas fa-chevron-left"></i> Kembali', ['profile/index'], ['class' => 'btn btn-warning']); ?>
 
-                    <?= Html::submitButton('<i class="fas fa-save"></i> Save', ['class' => 'btn btn-success']) ?>
+                    <?= Html::submitButton('<i class="fas fa-save"></i> Simpan', ['class' => 'btn btn-success']) ?>
                 </div>
 			</div>
 

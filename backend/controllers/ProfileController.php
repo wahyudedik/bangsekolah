@@ -109,7 +109,7 @@ class ProfileController extends \yii\web\Controller
                 Yii::$app->session->setFlash('danger', 'Password failed to change');
             }
 
-            return $this->redirect(['view']);
+            return $this->redirect(['index']);
         }
 
         return $this->render('change-password', [
