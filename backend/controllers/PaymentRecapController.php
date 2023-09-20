@@ -34,6 +34,9 @@ class PaymentRecapController extends Controller
         if ($year && $class && $payment) {
             $payment = SchoolPayment::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'number' => $payment])->one();
             $students = Student::find()->where(['year' => $year, 'class' => $class, 'school_id' => Yii::$app->session->get('school_id'), 'status' => 'ACTIVE'])->all();
+        } else {
+            $payment = null;
+            $students = null;
         }
 
         return $this->render('index', [
