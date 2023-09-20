@@ -43,6 +43,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         ['attribute' => 'student.name', 'label' => 'Nama Siswa'],
                         ['attribute' => 'invoice.description', 'label' => 'Nama Pembayaran'],
                         ['attribute' => 'amountRupiah', 'label' => 'Jumlah Bayar'],
+                        ['attribute' => 'payment_method', 'label' => 'Metode Pembayaran'],
 
                         ['attribute' => 'user.name', 'label' => 'Admin'],
                     ],
