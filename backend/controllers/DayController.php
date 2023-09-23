@@ -3,16 +3,16 @@
 namespace backend\controllers;
 
 use Yii;
-use common\models\EffectiveDay;
+use common\models\Day;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
- * EffectiveDayController implements the CRUD actions for EffectiveDay model.
+ * DayController implements the CRUD actions for Day model.
  */
-class EffectiveDayController extends Controller
+class DayController extends Controller
 {
     /**
      * {@inheritdoc}
@@ -30,15 +30,15 @@ class EffectiveDayController extends Controller
     }
 
     /**
-     * Lists all EffectiveDay models.
+     * Lists all Day models.
      * @return mixed
      */
     public function actionIndex($q = null)
     {
-        \common\helpers\Sidebar::setActiveMenu('effectiveday', 'index');
+        \common\helpers\Sidebar::setActiveMenu('day', 'index');
 
         $dataProvider = new ActiveDataProvider([
-            'query' => EffectiveDay::find(),
+            'query' => Day::find(),
         ]);
 
         return $this->render('index', [
@@ -48,7 +48,7 @@ class EffectiveDayController extends Controller
     }
 
     /**
-     * Displays a single EffectiveDay model.
+     * Displays a single Day model.
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
@@ -61,13 +61,13 @@ class EffectiveDayController extends Controller
     }
 
     /**
-     * Creates a new EffectiveDay model.
+     * Creates a new Day model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new EffectiveDay();
+        $model = new Day();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
@@ -79,7 +79,7 @@ class EffectiveDayController extends Controller
     }
 
     /**
-     * Updates an existing EffectiveDay model.
+     * Updates an existing Day model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -99,7 +99,7 @@ class EffectiveDayController extends Controller
     }
 
     /**
-     * Deletes an existing EffectiveDay model.
+     * Deletes an existing Day model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -113,15 +113,15 @@ class EffectiveDayController extends Controller
     }
 
     /**
-     * Finds the EffectiveDay model based on its primary key value.
+     * Finds the Day model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return EffectiveDay the loaded model
+     * @return Day the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = EffectiveDay::findOne($id)) !== null) {
+        if (($model = Day::findOne($id)) !== null) {
             return $model;
         }
 

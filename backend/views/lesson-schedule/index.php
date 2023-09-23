@@ -4,7 +4,7 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\grid\GridView;
 
-$this->title = 'Lesson Schedules';
+$this->title = 'Jadwal Pelajaran';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="card">
@@ -22,7 +22,7 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
             <div class="col-lg-6">
                 <div class="card-tools float-right">
-                    <?= Html::a('<i class="fas fa-plus fa-lg"></i> Create Lesson Schedule', ['create'], ['class' => 'btn btn-success']) ?>
+                    <?= Html::a('<i class="fas fa-plus fa-lg"></i> Tambah Jadwal Pelajaran', ['create'], ['class' => 'btn btn-success']) ?>
                     <?= Html::a('<i class="fas fa-sync-alt fa-lg"></i>', ['index'], ['class' => 'btn btn-primary']) ?> 
                 </div>
             </div>
@@ -39,18 +39,16 @@ $this->params['breadcrumbs'][] = $this->title;
                 'columns' => [
                     ['class' => 'yii\grid\SerialColumn'],
 
-                        'id',
-            'school_id',
-            'school_class_id',
-            'date',
-            'lesson_hour',
-            //'teacher_id',
-            //'lesson_id',
-            //'status',
-            //'created_at',
-            //'updated_at',
-            //'created_by',
-            //'updated_by',
+                    'schoolClass.name',
+                    'date',
+                    'hour',
+                    ['attribute' => 'teacher.name', 'label' => 'Guru'],
+                    'lesson.name',
+                    //'status',
+                    //'created_at',
+                    //'updated_at',
+                    //'created_by',
+                    //'updated_by',
 
                         [
                             'class' => 'yii\grid\ActionColumn',

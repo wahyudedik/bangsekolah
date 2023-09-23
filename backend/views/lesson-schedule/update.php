@@ -1,8 +1,8 @@
 <?php
 use yii\helpers\Html;
 
-$this->title = 'Update Lesson Schedule: ' . $model->id;
-$this->params['breadcrumbs'][] = ['label' => 'Lesson Schedules', 'url' => ['index']];
+$this->title = 'Update Jadwal Pelajaran: ' . $model->id;
+$this->params['breadcrumbs'][] = ['label' => 'Jadwal Pelajaran', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = 'Update';
 ?>

@@ -11,7 +11,7 @@ use yii\widgets\ActiveForm;
                 <?= $form->field($model, 'school_id')->textInput() ?>
 <?= $form->field($model, 'school_class_id')->textInput() ?>
 <?= $form->field($model, 'date')->textInput() ?>
-<?= $form->field($model, 'lesson_hour')->textInput(['maxlength' => true]) ?>
+<?= $form->field($model, 'hour')->textInput(['maxlength' => true]) ?>
 <?= $form->field($model, 'teacher_id')->textInput() ?>
 <?= $form->field($model, 'lesson_id')->textInput() ?>
 <?= $form->field($model, 'status')->textInput(['maxlength' => true]) ?>

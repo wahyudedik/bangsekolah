@@ -4,7 +4,7 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\grid\GridView;
 
-$this->title = 'Hari Efektif';
+$this->title = 'Hari';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="card">
@@ -22,7 +22,7 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
             <div class="col-lg-6">
                 <div class="card-tools float-right">
-                    <?= Html::a('<i class="fas fa-plus fa-lg"></i> Tambah Hari Efektif', ['create'], ['class' => 'btn btn-success']) ?>
+                    <?= Html::a('<i class="fas fa-plus fa-lg"></i> Tambah Hari', ['create'], ['class' => 'btn btn-success']) ?>
                     <?= Html::a('<i class="fas fa-sync-alt fa-lg"></i>', ['index'], ['class' => 'btn btn-primary']) ?> 
                 </div>
             </div>

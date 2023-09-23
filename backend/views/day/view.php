@@ -3,7 +3,7 @@ use yii\helpers\Html;
 use yii\widgets\DetailView;
 
 $this->title = $model->name;
-$this->params['breadcrumbs'][] = ['label' => 'Hari Efektif', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Hari', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>

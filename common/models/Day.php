@@ -5,7 +5,7 @@ namespace common\models;
 use Yii;
 
 /**
- * This is the model class for table "effective_day".
+ * This is the model class for table "day".
  *
  * @property int $id
  * @property int $school_id
@@ -16,14 +16,14 @@ use Yii;
  *
  * @property School $school
  */
-class EffectiveDay extends \yii\db\ActiveRecord
+class Day extends \yii\db\ActiveRecord
 {
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return 'effective_day';
+        return 'day';
     }
 
     public function behaviors()
