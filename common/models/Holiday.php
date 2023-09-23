@@ -62,8 +62,8 @@ class Holiday extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'school_id' => 'School ID',
-            'name' => 'Name',
-            'date' => 'Date',
+            'name' => 'Nama Hari Libur',
+            'date' => 'Tanggal',
             'status' => 'Status',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',

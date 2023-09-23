@@ -3,41 +3,36 @@ use yii\helpers\Html;
 use yii\widgets\DetailView;
 
 $this->title = $model->name;
-$this->params['breadcrumbs'][] = ['label' => 'Holidays', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Hari Libur', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
-<div class="card">
-    <header class="card-header">
-        <div class="filter-block pull-right">
-            <?= Html::a('<i class="fas fa-pen"></i> Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-            <?= Html::a('<i class="fas fa-trash"></i> Delete', ['delete', 'id' => $model->id], [
-                'class' => 'btn btn-danger',
-                'data' => [
-                    'confirm' => 'Are you sure you want to delete this item?',
-                    'method' => 'post',
-                ],
-            ]) ?>
-        </div>
-    </header>
-    <div class="card-body">
-        <div class="row">
-            <div class="col-lg-6">
-                <?= DetailView::widget([
-                        'model' => $model,
-                        'options' => [
-                            'class' => 'table table-striped table-hover'
-                        ],
-                        'attributes' => [
-                            'id',
-            'school_id',
-            'name',
-            'date',
-            'status',
-            'created_at',
-            'updated_at',
-                        ],
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card">
+            <header class="card-header">
+                <?= Html::a('<i class="fas fa-chevron-left"></i> Kembali', ['holiday/index'], ['class' => 'btn btn-warning']) ?>
+                <div class="filter-block float-right">
+                    <?= Html::a('<i class="fas fa-pen"></i> Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+                    <?= Html::a('<i class="fas fa-trash"></i> Hapus', ['delete', 'id' => $model->id], [
+                        'class' => 'btn btn-danger',
+                        'onclick' => 'return confirm("Apakah Anda yakin hapus data ini?");',
                     ]) ?>
+                </div>
+            </header>
+            <div class="card-body">
+                <?= DetailView::widget([
+                    'model' => $model,
+                    'options' => [
+                        'class' => 'table table-striped table-hover'
+                    ],
+                    'attributes' => [
+                        'name',
+                        'date',
+                        'created_at',
+                        'updated_at',
+                    ],
+                ]) ?>
             </div>
         </div>
     </div>

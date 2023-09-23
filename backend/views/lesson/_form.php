@@ -17,8 +17,8 @@ use yii\widgets\ActiveForm;
                     } else {
                         echo Html::a('<i class="fas fa-chevron-left"></i> Kembali', ['lesson/view', 'id' => $model->id], ['class' => 'btn btn-warning']);
                     }
-                    ?>                                        
-                    <?= Html::submitButton('<i class="fas fa-save"></i> Save', ['class' => 'btn btn-success']) ?>
+                    ?>
+                    <?= Html::submitButton('<i class="fas fa-save"></i> Simpan', ['class' => 'btn btn-success']) ?>
                 </div>
                 <?php ActiveForm::end(); ?>
             </div>
