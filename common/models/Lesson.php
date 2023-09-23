@@ -63,8 +63,8 @@ class Lesson extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'school_id' => 'School ID',
-            'major' => 'Major',
-            'name' => 'Name',
+            'major' => 'Jurusan',
+            'name' => 'Mata Pelajaran',
             'status' => 'Status',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',

@@ -38,7 +38,7 @@ class LessonController extends Controller
         \common\helpers\Sidebar::setActiveMenu('lesson', 'index');
 
         $dataProvider = new ActiveDataProvider([
-            'query' => Lesson::find(),
+            'query' => Lesson::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'status' => 'ACTIVE']),
         ]);
 
         return $this->render('index', [
@@ -68,6 +68,8 @@ class LessonController extends Controller
     public function actionCreate()
     {
         $model = new Lesson();
+        $model->school_id = Yii::$app->session->get('school_id');
+        $model->status = 'ACTIVE';
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
@@ -107,7 +109,9 @@ class LessonController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        $model = $this->findModel($id);
+        $model->status = 'NONACTIVE';
+        $model->save();
 
         return $this->redirect(['index']);
     }
