@@ -47,6 +47,7 @@ class Holiday extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
+            [['name'], 'required'],
             [['school_id'], 'integer'],
             [['date', 'created_at', 'updated_at'], 'safe'],
             [['name', 'status'], 'string', 'max' => 255],

@@ -1,8 +1,8 @@
 <?php
 use yii\helpers\Html;
 
-$this->title = 'Create Effective Day';
-$this->params['breadcrumbs'][] = ['label' => 'Effective Days', 'url' => ['index']];
+$this->title = 'Tambah Hari Efektif';
+$this->params['breadcrumbs'][] = ['label' => 'Hari Efektif', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="effective-day-create">

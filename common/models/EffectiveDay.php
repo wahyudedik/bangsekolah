@@ -46,6 +46,7 @@ class EffectiveDay extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
+            [['name'], 'required'],
             [['school_id'], 'integer'],
             [['created_at', 'updated_at'], 'safe'],
             [['name', 'status'], 'string', 'max' => 255],
@@ -61,7 +62,7 @@ class EffectiveDay extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'school_id' => 'School ID',
-            'name' => 'Name',
+            'name' => 'Nama Hari',
             'status' => 'Status',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',

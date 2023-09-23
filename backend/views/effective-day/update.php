@@ -1,8 +1,8 @@
 <?php
 use yii\helpers\Html;
 
-$this->title = 'Update Effective Day: ' . $model->name;
-$this->params['breadcrumbs'][] = ['label' => 'Effective Days', 'url' => ['index']];
+$this->title = 'Update Hari Efektif: ' . $model->name;
+$this->params['breadcrumbs'][] = ['label' => 'Hari Efektif', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->name, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = 'Update';
 ?>
