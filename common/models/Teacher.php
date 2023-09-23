@@ -22,12 +22,28 @@ use Yii;
  */
 class Teacher extends \yii\db\ActiveRecord
 {
+    public $file;
+    
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
         return 'teacher';
+    }
+
+    public function behaviors()
+    {
+        return [
+            'timestamp' => [
+                 'class' => 'yii\behaviors\TimestampBehavior',
+                 'attributes' => [
+                     \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => ['created_at', 'updated_at'],
+                     \yii\db\ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_at'],
+                 ],
+                 'value' => new \yii\db\Expression('NOW()'),
+             ],
+        ];
     }
 
     /**
@@ -37,7 +53,7 @@ class Teacher extends \yii\db\ActiveRecord
     {
         return [
             [['school_id'], 'integer'],
-            [['created_at', 'updated_at'], 'safe'],
+            [['created_at', 'updated_at', 'file'], 'safe'],
             [['nik', 'name', 'gender', 'class', 'year', 'status'], 'string', 'max' => 255],
         ];
     }
@@ -50,11 +66,11 @@ class Teacher extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'school_id' => 'School ID',
-            'nik' => 'Nik',
-            'name' => 'Name',
+            'nik' => 'NIK',
+            'name' => 'Nama Lengkap',
             'gender' => 'Gender',
-            'class' => 'Class',
-            'year' => 'Year',
+            'class' => 'Wali Kelas',
+            'year' => 'Tahun Ajaran',
             'status' => 'Status',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',

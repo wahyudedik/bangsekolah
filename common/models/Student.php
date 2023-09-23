@@ -25,6 +25,7 @@ use Yii;
 class Student extends \yii\db\ActiveRecord
 {
     public $file;
+    
     /**
      * {@inheritdoc}
      */
