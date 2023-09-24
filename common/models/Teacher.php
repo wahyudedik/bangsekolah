@@ -84,4 +84,12 @@ class Teacher extends \yii\db\ActiveRecord
     {
         return $this->hasMany(LessonSchedule::className(), ['teacher_id' => 'id']);
     }
+
+    public static function getList()
+    {
+        return \yii\helpers\ArrayHelper::map(
+            Teacher::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'status' => 'ACTIVE'])->asArray()->all(),
+            'id', 'name'
+        );
+    }
 }

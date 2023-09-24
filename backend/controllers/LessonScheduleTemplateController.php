@@ -3,6 +3,7 @@
 namespace backend\controllers;
 
 use Yii;
+use common\models\Day;
 use common\models\LessonScheduleTemplate;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
@@ -41,9 +42,12 @@ class LessonScheduleTemplateController extends Controller
             'query' => LessonScheduleTemplate::find(),
         ]);
 
+        $days = Day::find()->where(['school_id' => Yii::$app->session->get('school_id')])->all();
+
         return $this->render('index', [
             'dataProvider' => $dataProvider,
             'q' => $q,
+            'days' => $days,
         ]);
     }
 
@@ -69,12 +73,15 @@ class LessonScheduleTemplateController extends Controller
     {
         $model = new LessonScheduleTemplate();
 
+        // $classes = SchoolClass::find()->where(['school_id' => Yii::$app->session->get('school_id')])->all();
+
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
         return $this->render('create', [
             'model' => $model,
+            // 'classes' => $classes,
         ]);
     }
 

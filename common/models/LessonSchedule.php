@@ -9,7 +9,7 @@ use Yii;
  *
  * @property int $id
  * @property int $school_id
- * @property int $school_class_id
+ * @property string $class
  * @property string $date
  * @property string $hour
  * @property int $teacher_id
@@ -61,13 +61,12 @@ class LessonSchedule extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['school_id', 'school_class_id', 'teacher_id', 'lesson_id', 'created_by', 'updated_by'], 'integer'],
+            [['school_id', 'teacher_id', 'lesson_id', 'created_by', 'updated_by'], 'integer'],
             [['date', 'created_at', 'updated_at'], 'safe'],
-            [['hour', 'status'], 'string', 'max' => 255],
+            [['hour', 'status', 'class'], 'string', 'max' => 255],
             [['school_id'], 'exist', 'skipOnError' => true, 'targetClass' => School::className(), 'targetAttribute' => ['school_id' => 'id']],
             [['teacher_id'], 'exist', 'skipOnError' => true, 'targetClass' => Teacher::className(), 'targetAttribute' => ['teacher_id' => 'id']],
             [['lesson_id'], 'exist', 'skipOnError' => true, 'targetClass' => Lesson::className(), 'targetAttribute' => ['lesson_id' => 'id']],
-            [['school_class_id'], 'exist', 'skipOnError' => true, 'targetClass' => SchoolClass::className(), 'targetAttribute' => ['school_class_id' => 'id']],
         ];
     }
 
@@ -79,7 +78,7 @@ class LessonSchedule extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'school_id' => 'School ID',
-            'school_class_id' => 'School Class ID',
+            'class' => 'Kelas',
             'date' => 'Tanggal',
             'hour' => 'Jam',
             'teacher_id' => 'Guru',
@@ -114,14 +113,6 @@ class LessonSchedule extends \yii\db\ActiveRecord
     public function getLesson()
     {
         return $this->hasOne(Lesson::className(), ['id' => 'lesson_id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getSchoolClass()
-    {
-        return $this->hasOne(SchoolClass::className(), ['id' => 'school_class_id']);
     }
 
     /**

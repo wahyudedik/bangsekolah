@@ -76,4 +76,12 @@ class Day extends \yii\db\ActiveRecord
     {
         return $this->hasOne(School::className(), ['id' => 'school_id']);
     }
+
+    public static function getList()
+    {
+        return \yii\helpers\ArrayHelper::map(
+            Day::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'status' => 'ACTIVE'])->asArray()->all(),
+            'name', 'name'
+        );
+    }
 }

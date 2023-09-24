@@ -9,8 +9,8 @@ use Yii;
  *
  * @property int $id
  * @property int $school_id
- * @property int $school_class_id
- * @property int $day_id
+ * @property string $class
+ * @property string $day
  * @property string $hour
  * @property int $teacher_id
  * @property int $lesson_id
@@ -57,10 +57,9 @@ class LessonScheduleTemplate extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['school_id', 'school_class_id', 'day_id', 'teacher_id', 'lesson_id', 'created_by', 'updated_by'], 'integer'],
+            [['school_id', 'teacher_id', 'lesson_id', 'created_by', 'updated_by'], 'integer'],
             [['created_at', 'updated_at'], 'safe'],
-            [['hour', 'status'], 'string', 'max' => 255],
-            [['day_id'], 'exist', 'skipOnError' => true, 'targetClass' => Day::className(), 'targetAttribute' => ['day_id' => 'id']],
+            [['hour', 'status', 'class', 'day'], 'string', 'max' => 255],
         ];
     }
 
@@ -72,8 +71,8 @@ class LessonScheduleTemplate extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'school_id' => 'School ID',
-            'school_class_id' => 'Kelas',
-            'day_id' => 'Hari',
+            'class' => 'Kelas',
+            'day' => 'Hari',
             'hour' => 'Jam',
             'teacher_id' => 'Guru',
             'lesson_id' => 'Pelajaran',
@@ -85,11 +84,13 @@ class LessonScheduleTemplate extends \yii\db\ActiveRecord
         ];
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getDay()
+    public function getTeacher()
     {
-        return $this->hasOne(Day::className(), ['id' => 'day_id']);
+        return $this->hasOne(Teacher::className(), ['id' => 'teacher_id']);
+    }
+
+    public function getLesson()
+    {
+        return $this->hasOne(Lesson::className(), ['id' => 'lesson_id']);
     }
 }

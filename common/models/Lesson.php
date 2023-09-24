@@ -86,4 +86,12 @@ class Lesson extends \yii\db\ActiveRecord
     {
         return $this->hasMany(LessonSchedule::className(), ['lesson_id' => 'id']);
     }
+
+    public static function getList()
+    {
+        return \yii\helpers\ArrayHelper::map(
+            Lesson::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'status' => 'ACTIVE'])->asArray()->all(),
+            'id', 'name'
+        );
+    }
 }

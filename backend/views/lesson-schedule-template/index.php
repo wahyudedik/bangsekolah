@@ -3,6 +3,7 @@ use yii\helpers\Url;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\grid\GridView;
+use common\models\LessonScheduleTemplate;
 
 $this->title = 'Jadwal Pelajaran';
 $this->params['breadcrumbs'][] = $this->title;
@@ -30,7 +31,7 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
     <div class="card-body p-0">
         <div class="table-responsive">
-            <table class="table">
+            <table class="table table-bordered">
                 <tr>
                     <th>No</th>
                     <th>Hari</th>
@@ -39,9 +40,38 @@ $this->params['breadcrumbs'][] = $this->title;
                     <th>Guru</th>
                     <th>Pelajaran</th>
                 </tr>
-                <?php foreach ($days as $day): ?>
-                    
-                <?php endforeach; ?>
+                <?php
+                $no = 1;
+                foreach ($days as $day) {
+                    $templates = LessonScheduleTemplate::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'day' => $day->name])->all();
+                    if (count($templates) > 0) {
+                        $lessonNum = 1;
+                        foreach ($templates as $template) {
+                            echo '<tr>';
+                            if ($lessonNum == 1) {
+                                echo '<td rowspan="'.count($templates).'">'.$no.'</td>';
+                                echo '<td rowspan="'.count($templates).'">'.$day->name.'</td>';
+                            }
+                            echo '<td>'.$template->class.'</td>';
+                            echo '<td>'.$template->hour.'</td>';
+                            echo '<td>'.$template->teacher->name.'</td>';
+                            echo '<td>'.$template->lesson->name.'</td>';
+                            echo '</tr>';
+                            $lessonNum++;
+                        }
+                    } else {
+                        echo '<tr>';
+                        echo '<td>'.$no.'</td>';
+                        echo '<td>'.$day->name.'</td>';
+                        echo '<td></td>';
+                        echo '<td></td>';
+                        echo '<td></td>';
+                        echo '<td></td>';
+                        echo '</tr>';
+                    }
+                    $no++;
+                }
+                ?>
             </table>
         </div>
     </div>
