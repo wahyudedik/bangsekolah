@@ -72,6 +72,8 @@ class LessonScheduleTemplateController extends Controller
     public function actionCreate()
     {
         $model = new LessonScheduleTemplate();
+        $model->school_id = Yii::$app->session->get('school_id');
+        $model->status = 'ACTIVE';
 
         // $classes = SchoolClass::find()->where(['school_id' => Yii::$app->session->get('school_id')])->all();
 
