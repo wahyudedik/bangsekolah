@@ -11,7 +11,7 @@ class ApiController extends Controller
 {
 
     public function actionFinger() {
-        $body = file_get_contents('php://input');
+        $body = json_encode(file_get_contents('php://input'), true);
         $log = new FingerLog();
         $log->body = $body;
         $log->save();
