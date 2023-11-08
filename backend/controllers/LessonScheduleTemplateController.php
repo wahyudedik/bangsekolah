@@ -4,6 +4,7 @@ namespace backend\controllers;
 
 use Yii;
 use common\models\Day;
+use common\models\SchoolClass;
 use common\models\LessonScheduleTemplate;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
@@ -34,20 +35,32 @@ class LessonScheduleTemplateController extends Controller
      * Lists all LessonScheduleTemplate models.
      * @return mixed
      */
-    public function actionIndex($q = null)
+    public function actionIndex($class = null)
     {
-        \common\helpers\Sidebar::setActiveMenu('lessonscheduletemplate', 'index');
+        \common\helpers\Sidebar::setActiveMenu('lesson-schedule-template', 'index');
+
+        $school_id = Yii::$app->session->get('school_id');
+        // get first class
+        if ($class) {
+            $schoolClass = SchoolClass::find()->where(['school_id' => $school_id, 'name' => $class])->one();
+        } else {
+            $schoolClass = SchoolClass::find()->where(['school_id' => $school_id])->one();
+            $class = $schoolClass->name;
+        }
 
         $dataProvider = new ActiveDataProvider([
-            'query' => LessonScheduleTemplate::find(),
+            'query' => LessonScheduleTemplate::find()->where(['class' => $schoolClass->name]),
         ]);
 
         $days = Day::find()->where(['school_id' => Yii::$app->session->get('school_id')])->all();
+        $model = new LessonScheduleTemplate();
+        $model->class = $schoolClass->name;
 
         return $this->render('index', [
             'dataProvider' => $dataProvider,
-            'q' => $q,
+            'class' => $class,
             'days' => $days,
+            'model' => $model,
         ]);
     }
 
@@ -78,7 +91,8 @@ class LessonScheduleTemplateController extends Controller
         // $classes = SchoolClass::find()->where(['school_id' => Yii::$app->session->get('school_id')])->all();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+            // return $this->redirect(['view', 'id' => $model->id]);
+            return $this->redirect(['index']);
         }
 
         return $this->render('create', [
@@ -99,7 +113,8 @@ class LessonScheduleTemplateController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+            // return $this->redirect(['view', 'id' => $model->id]);
+            return $this->redirect(['index']);
         }
 
         return $this->render('update', [

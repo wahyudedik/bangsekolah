@@ -1,9 +1,11 @@
 <?php
+
 use yii\helpers\Url;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\grid\GridView;
 use common\models\LessonScheduleTemplate;
+use common\models\SchoolClass;
 
 $this->title = 'Jadwal Pelajaran';
 $this->params['breadcrumbs'][] = $this->title;
@@ -12,19 +14,16 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="card-header">
         <div class="row">
             <div class="col-lg-6">
-                <?php $form = ActiveForm::begin(['method' => 'get', 'action' => Url::to(['index']), 'options' => ['class' => 'form-inline']]) ?>
+                <?php $form = ActiveForm::begin(['method' => 'get', 'action' => Url::to(['index']), 'options' => ['class' => 'form-inline', 'id' => 'form-search']]) ?>
                 <div class="input-group input-group-sm">
-                    <input type="text" name="q" class="form-control" placeholder="Search ..." value="<?=   $q ?>">
-                    <span class="input-group-append">
-                        <button type="button" class="btn btn-info btn-flat"><i class="fas fa-search search-icon"></i></button>
-                    </span>
+                    <?= $form->field($model, 'class')->dropDownList(SchoolClass::getList(), ['name' => 'class']) ?>
                 </div>
                 <?php ActiveForm::end() ?>
             </div>
             <div class="col-lg-6">
                 <div class="card-tools float-right">
                     <?= Html::a('<i class="fas fa-plus fa-lg"></i> Create Lesson Schedule Template', ['create'], ['class' => 'btn btn-success']) ?>
-                    <?= Html::a('<i class="fas fa-sync-alt fa-lg"></i>', ['index'], ['class' => 'btn btn-primary']) ?> 
+                    <?= Html::a('<i class="fas fa-sync-alt fa-lg"></i>', ['index'], ['class' => 'btn btn-primary']) ?>
                 </div>
             </div>
         </div>
@@ -35,34 +34,37 @@ $this->params['breadcrumbs'][] = $this->title;
                 <tr>
                     <th>No</th>
                     <th>Hari</th>
-                    <th>Kelas</th>
+                    <!-- <th>Kelas</th> -->
                     <th>Jam</th>
                     <th>Guru</th>
                     <th>Pelajaran</th>
+                    <th>Action</th>
                 </tr>
                 <?php
                 $no = 1;
                 foreach ($days as $day) {
-                    $templates = LessonScheduleTemplate::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'day' => $day->name])->all();
+                    $templates = LessonScheduleTemplate::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'class' => $class, 'day' => $day->name])->all();
                     if (count($templates) > 0) {
                         $lessonNum = 1;
                         foreach ($templates as $template) {
                             echo '<tr>';
                             if ($lessonNum == 1) {
-                                echo '<td rowspan="'.count($templates).'">'.$no.'</td>';
-                                echo '<td rowspan="'.count($templates).'">'.$day->name.'</td>';
+                                echo '<td rowspan="' . count($templates) . '">' . $no . '</td>';
+                                echo '<td rowspan="' . count($templates) . '">' . $day->name . '</td>';
                             }
-                            echo '<td>'.$template->class.'</td>';
-                            echo '<td>'.$template->hour.'</td>';
-                            echo '<td>'.$template->teacher->name.'</td>';
-                            echo '<td>'.$template->lesson->name.'</td>';
+                            // echo '<td>' . $template->class . '</td>';
+                            echo '<td>' . $template->hour . '</td>';
+                            echo '<td>' . $template->teacher->name . '</td>';
+                            echo '<td>' . $template->lesson->name . '</td>';
+                            echo '<td>' . Html::a('<i class="fas fa-edit"></i>', ['update', 'id' => $template->id], ['class' => 'btn btn-primary']) . '</td>';
                             echo '</tr>';
                             $lessonNum++;
                         }
                     } else {
                         echo '<tr>';
-                        echo '<td>'.$no.'</td>';
-                        echo '<td>'.$day->name.'</td>';
+                        echo '<td>' . $no . '</td>';
+                        echo '<td>' . $day->name . '</td>';
+                        echo '<td></td>';
                         echo '<td></td>';
                         echo '<td></td>';
                         echo '<td></td>';
@@ -76,3 +78,20 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
     </div>
 </div>
+
+<style>
+    .card-body.p-0 .table tbody>tr>td:first-of-type,
+    .card-body.p-0 .table tbody>tr>th:first-of-type,
+    .card-body.p-0 .table tfoot>tr>td:first-of-type,
+    .card-body.p-0 .table tfoot>tr>th:first-of-type,
+    .card-body.p-0 .table thead>tr>td:first-of-type,
+    .card-body.p-0 .table thead>tr>th:first-of-type {
+        padding-left: 5px;
+    }
+</style>
+
+<script>
+    $('#lessonscheduletemplate-class').change(function() {
+        this.form.submit();
+    });
+</script>
