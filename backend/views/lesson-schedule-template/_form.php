@@ -1,4 +1,5 @@
 <?php
+
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use common\models\SchoolClass;
@@ -25,7 +26,8 @@ use common\models\Lesson;
                 <?= $form->field($model, 'teacher_id')->dropDownList(Teacher::getList()) ?>
                 <?= $form->field($model, 'lesson_id')->dropDownList(Lesson::getList()) ?>
                 <div class="form-group">
-                    <?= Html::submitButton('<i class="fas fa-save"></i> Save', ['class' => 'btn btn-success']) ?>
+                    <?= Html::a('<i class="fas fa-chevron-left"></i> Kembali', ['index'], ['class' => 'btn btn-warning']) ?>
+                    <?= Html::submitButton('<i class="fas fa-save"></i> Simpan', ['class' => 'btn btn-success']) ?>
                 </div>
                 <?php ActiveForm::end(); ?>
             </div>

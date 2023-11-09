@@ -1,7 +1,8 @@
 <?php
+
 use yii\helpers\Html;
 
-$this->title = 'Create Lesson Schedule Template';
+$this->title = 'Tambah Jadwal Pelajaran';
 $this->params['breadcrumbs'][] = ['label' => 'Jadwal Pelajaran', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>

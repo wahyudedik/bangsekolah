@@ -40,12 +40,12 @@ class LessonSchedule extends \yii\db\ActiveRecord
     {
         return [
             'timestamp' => [
-                 'class' => 'yii\behaviors\TimestampBehavior',
-                 'attributes' => [
-                     \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => ['created_at', 'updated_at'],
-                     \yii\db\ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_at'],
-                 ],
-                 'value' => new \yii\db\Expression('NOW()'),
+                'class' => 'yii\behaviors\TimestampBehavior',
+                'attributes' => [
+                    \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => ['created_at', 'updated_at'],
+                    \yii\db\ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_at'],
+                ],
+                'value' => new \yii\db\Expression('NOW()'),
             ],
             [
                 'class' => 'yii\behaviors\BlameableBehavior',
@@ -121,5 +121,10 @@ class LessonSchedule extends \yii\db\ActiveRecord
     public function getLessonScheduleAttendances()
     {
         return $this->hasMany(LessonScheduleAttendance::className(), ['lesson_schedule_id' => 'id']);
+    }
+
+    public function getAttendanceCount()
+    {
+        return count($this->lessonScheduleAttendances);
     }
 }

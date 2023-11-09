@@ -22,7 +22,7 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
             <div class="col-lg-6">
                 <div class="card-tools float-right">
-                    <?= Html::a('<i class="fas fa-plus fa-lg"></i> Create Lesson Schedule Template', ['create'], ['class' => 'btn btn-success']) ?>
+                    <?= Html::a('<i class="fas fa-plus fa-lg"></i> Tambah Jadwal Pelajaran', ['create'], ['class' => 'btn btn-success']) ?>
                     <?= Html::a('<i class="fas fa-sync-alt fa-lg"></i>', ['index'], ['class' => 'btn btn-primary']) ?>
                 </div>
             </div>
@@ -56,7 +56,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             echo '<td>' . $template->hour . '</td>';
                             echo '<td>' . $template->teacher->name . '</td>';
                             echo '<td>' . $template->lesson->name . '</td>';
-                            echo '<td>' . Html::a('<i class="fas fa-edit"></i>', ['update', 'id' => $template->id], ['class' => 'btn btn-primary']) . '</td>';
+                            echo '<td>' . Html::a('<i class="fas fa-pen"></i>', ['update', 'id' => $template->id], ['class' => 'btn btn-primary']) . '</td>';
                             echo '</tr>';
                             $lessonNum++;
                         }
@@ -87,6 +87,10 @@ $this->params['breadcrumbs'][] = $this->title;
     .card-body.p-0 .table thead>tr>td:first-of-type,
     .card-body.p-0 .table thead>tr>th:first-of-type {
         padding-left: 5px;
+    }
+
+    .control-label {
+        margin-right: 10px;
     }
 </style>
 
