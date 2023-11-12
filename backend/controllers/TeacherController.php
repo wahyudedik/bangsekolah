@@ -44,8 +44,7 @@ class TeacherController extends Controller
         if ($search !== null) {
             $query->andFilterWhere([
                 'or',
-                ['like', 'nis', $search],
-                ['like', 'nisn', $search],
+                ['like', 'nik', $search],
                 ['like', 'name', $search],
             ]);
         }
@@ -54,9 +53,8 @@ class TeacherController extends Controller
                 $query->andFilterWhere([
                     'and',
                     ['class' => $class],
-                ]); 
+                ]);
             }
-            
         }
 
         $dataProvider = new ActiveDataProvider([
@@ -120,7 +118,7 @@ class TeacherController extends Controller
         if ($model->load(Yii::$app->request->post())) {
 
             $import = UploadedFile::getInstance($model, 'file');
-            if(isset($import)){
+            if (isset($import)) {
                 $exploded_name = explode('.', $import->name);
                 $extension = end($exploded_name);
                 $model->file = Yii::$app->security->generateRandomString() . ".{$extension}";
@@ -140,8 +138,7 @@ class TeacherController extends Controller
                         $model = new Teacher();
                         $model->status = 'ACTIVE';
                         $model->school_id = Yii::$app->session->get('school_id');
-                        $model->nis = $item['nis'];
-                        $model->nisn = $item['nisn'];
+                        $model->nik = $item['nik'];
                         $model->name = $item['name'];
                         $model->gender = $item['gender'];
                         $model->class = $item['class'];
@@ -159,7 +156,7 @@ class TeacherController extends Controller
                     }
                 }
                 $transaction->commit();
-                Yii::$app->session->setFlash('success', $totalItem.' siswa berhasil diimport');
+                Yii::$app->session->setFlash('success', $totalItem . ' guru berhasil diimport');
                 return $this->redirect(['index']);
             }
         }
@@ -248,34 +245,33 @@ class TeacherController extends Controller
         if ($sheet == 0) {
             foreach ($dataExcel as $rowExcelData) {
                 if ($row_number++ > 0 && $rowExcelData[0] !== null) {
-                    // check nis teacher
-                    $teacher = Teacher::find()->where(['school_id' => Yii::$app->session->get('school_id'),'nis' => trim((string)$rowExcelData[0])])->one();
+                    // check NIK teacher
+                    $teacher = Teacher::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'nik' => trim((string)$rowExcelData[0])])->one();
                     if ($teacher) {
-                        $error = 'NIS siswa sudah ada '.$teacher->nis;
+                        $error = 'NIK guru sudah ada ' . $teacher->nik;
                         break;
                     }
 
                     // check gender teacher
-                    $gender = trim((string)$rowExcelData[3]);
+                    $gender = trim((string)$rowExcelData[2]);
                     if ($gender !== 'L' && $gender !== 'P') {
-                        $error = 'Jenis kelamin siswa tidak valid. Gunakan L/P untuk jenis kelamin';
+                        $error = 'Jenis kelamin guru tidak valid. Gunakan L/P untuk jenis kelamin';
                         break;
                     }
 
                     // validasi data
-                    $class = trim((string)$rowExcelData[4]);
-                    $year = trim((string)$rowExcelData[5]);
+                    $class = trim((string)$rowExcelData[3]);
+                    $year = trim((string)$rowExcelData[4]);
                     if (in_array($class, $arrClass) && in_array($year, $arrYear)) {
                         $itemArray[] = [
-                            'nis' => trim((string)$rowExcelData[0]),
-                            'nisn' => trim((string)$rowExcelData[1]),
-                            'name' => trim((string)$rowExcelData[2]),
-                            'gender' => trim((string)$rowExcelData[3]),
-                            'class' => trim((string)$rowExcelData[4]),
-                            'year' => trim((string)$rowExcelData[5]),
+                            'nik' => trim((string)$rowExcelData[0]),
+                            'name' => trim((string)$rowExcelData[1]),
+                            'gender' => $gender,
+                            'class' => $class,
+                            'year' => $year,
                         ];
                     } else {
-                        $error = 'Data tidak valid pada baris ke '.$row_number;
+                        $error = 'Data tidak valid pada baris ke ' . $row_number;
                         break;
                     }
                 }
