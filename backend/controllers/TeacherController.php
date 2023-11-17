@@ -148,9 +148,7 @@ class TeacherController extends Controller
                             foreach ($model->errors as $error) {
                                 Yii::$app->session->setFlash('danger', $error[0]);
                             }
-                            return $this->render('create', [
-                                'id' => $model->id
-                            ]);
+                            return $this->render('import');
                         }
                         $totalItem++;
                     }
@@ -262,18 +260,18 @@ class TeacherController extends Controller
                     // validasi data
                     $class = trim((string)$rowExcelData[3]);
                     $year = trim((string)$rowExcelData[4]);
-                    if (in_array($class, $arrClass) && in_array($year, $arrYear)) {
-                        $itemArray[] = [
-                            'nik' => trim((string)$rowExcelData[0]),
-                            'name' => trim((string)$rowExcelData[1]),
-                            'gender' => $gender,
-                            'class' => $class,
-                            'year' => $year,
-                        ];
-                    } else {
-                        $error = 'Data tidak valid pada baris ke ' . $row_number;
-                        break;
-                    }
+                    // if (in_array($class, $arrClass) && in_array($year, $arrYear)) {
+                    // } else {
+                    //     $error = 'Data tidak valid pada baris ke ' . $row_number;
+                    //     break;
+                    // }
+                    $itemArray[] = [
+                        'nik' => trim((string)$rowExcelData[0]),
+                        'name' => trim((string)$rowExcelData[1]),
+                        'gender' => $gender,
+                        'class' => $class,
+                        'year' => $year,
+                    ];
                 }
             }
         }
