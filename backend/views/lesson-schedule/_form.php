@@ -13,7 +13,6 @@ use yii\widgets\ActiveForm;
                 <?php $form = ActiveForm::begin(); ?>
                 <?= $form->field($model, 'class')->dropDownList(SchoolClass::getList()) ?>
                 <?= $form->field($model, 'date')->textInput() ?>
-                <?= $form->field($model, 'lesson_schedule_template_id')->dropDownList(LessonScheduleTemplate::getList()) ?>
                 <div class="form-group">
                     <?= Html::submitButton('<i class="fas fa-save"></i> Save', ['class' => 'btn btn-success']) ?>
                 </div>

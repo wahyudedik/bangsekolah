@@ -5,7 +5,7 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\grid\GridView;
 
-$this->title = 'Jadwal Pelajaran';
+$this->title = 'Presensi';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="card">
@@ -23,7 +23,6 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
             <div class="col-lg-6">
                 <div class="card-tools float-right">
-                    <?= Html::a('<i class="fas fa-plus fa-lg"></i> Masuk Jadwal Pelajaran', ['create'], ['class' => 'btn btn-success']) ?>
                     <?= Html::a('<i class="fas fa-sync-alt fa-lg"></i>', ['index'], ['class' => 'btn btn-primary']) ?>
                 </div>
             </div>
@@ -56,14 +55,11 @@ $this->params['breadcrumbs'][] = $this->title;
                     [
                         'class' => 'yii\grid\ActionColumn',
                         'header' => 'Action',
-                        'template' => '{view}{update}{delete}',
+                        'template' => '{view}',
                         'contentOptions' => ['style' => 'width:150px;'],
                         'buttons' => [
                             'view' => function ($url, $model) {
                                 return Html::a('<i class="fas fa-eye"></i>', $url, ['class' => 'btn btn-success']) . ' ';
-                            },
-                            'update' => function ($url, $model) {
-                                return Html::a('<i class="fas fa-pen"></i>', $url, ['class' => 'btn btn-primary']) . ' ';
                             },
                             'delete' => function ($url, $model) {
                                 return Html::a('<i class="fas fa-trash"></i>', $url, ['class' => 'btn btn-danger', 'data-confirm' => 'Are you sure?', 'data-method' => 'post']) . ' ';

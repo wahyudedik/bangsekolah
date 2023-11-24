@@ -56,7 +56,7 @@ $user = Yii::$app->user->identity;
                             echo '<td>' . $template->teacher->name . '</td>';
                             echo '<td>' . $template->lesson->name . '</td>';
                             if ($template->teacher->user_id == $user->id) {
-                                echo '<td>' . Html::a('Masuk Kelas <i class="fas fa-chalkboard-teacher"></i>', ['lesson-schedule/take', 'id' => $template->id], ['class' => 'btn btn-primary']) . '</td>';
+                                echo '<td>' . Html::a('Masuk Kelas <i class="fas fa-chalkboard-teacher"></i>', ['lesson-schedule/create', 'id' => $template->id], ['class' => 'btn btn-primary']) . '</td>';
                             } else {
                                 echo '<td></td>';
                             }

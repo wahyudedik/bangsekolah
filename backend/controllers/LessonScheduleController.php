@@ -3,7 +3,11 @@
 namespace backend\controllers;
 
 use Yii;
+use common\models\Teacher;
+use common\models\Student;
 use common\models\LessonSchedule;
+use common\models\LessonScheduleAttendance;
+use common\models\LessonScheduleTemplate;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -35,7 +39,7 @@ class LessonScheduleController extends Controller
      */
     public function actionIndex($q = null)
     {
-        \common\helpers\Sidebar::setActiveMenu('lessonschedule', 'index');
+        \common\helpers\Sidebar::setActiveMenu('lesson-schedule', 'index');
 
         $dataProvider = new ActiveDataProvider([
             'query' => LessonSchedule::find(),
@@ -65,17 +69,47 @@ class LessonScheduleController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate()
+    public function actionCreate($id)
     {
-        $model = new LessonSchedule();
+        $template = LessonScheduleTemplate::findOne($id);
+        $school_id = Yii::$app->session->get('school_id');
+        // $user = Yii::$app->user->identity;
+        // $teacher = Teacher::find()->where(['user_id' => $user->id])->one();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        // cek apakah kelas pelajaran sudah ada
+        $check = LessonSchedule::find()->where([
+            'school_id' => $school_id,
+            'class' => $template->class,
+            'teacher_id' => $template->teacher_id,
+            'lesson_id' => $template->lesson_id,
+            'date' => date('Y-m-d')
+        ])->one();
+        if ($check) {
+            return $this->redirect(['lesson-schedule/view', 'id' => $check->id]);
         }
 
-        return $this->render('create', [
-            'model' => $model,
-        ]);
+        $model = new LessonSchedule();
+        $model->school_id = $school_id;
+        $model->class = $template->class;
+        $model->date = date('Y-m-d');
+        $model->hour = $template->hour;
+        $model->teacher_id = $template->teacher_id;
+        $model->lesson_id = $template->lesson_id;
+
+        if ($model->save()) {
+            // menambahkan semua siswa pada kelas tersebut ke kelas
+            $students = Student::find()->where(['school_id' => $school_id, 'class' => $template->class])->all();
+            foreach ($students as $student) {
+                $attendance = new LessonScheduleAttendance();
+                $attendance->lesson_schedule_id = $model->id;
+                $attendance->student_id = $student->id;
+                $attendance->status = 'ABSEN';
+                $attendance->save();
+            }
+        } else {
+            Yii::$app->session->setFlash('danger', 'Gagal buat kelas pelajaran baru');
+        }
+        return $this->redirect(['view', 'id' => $model->id]);
     }
 
     /**
