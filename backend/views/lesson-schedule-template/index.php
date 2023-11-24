@@ -34,7 +34,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 <tr>
                     <th>No</th>
                     <th>Hari</th>
-                    <!-- <th>Kelas</th> -->
                     <th>Jam</th>
                     <th>Guru</th>
                     <th>Pelajaran</th>
@@ -64,7 +63,6 @@ $this->params['breadcrumbs'][] = $this->title;
                         echo '<tr>';
                         echo '<td>' . $no . '</td>';
                         echo '<td>' . $day->name . '</td>';
-                        echo '<td></td>';
                         echo '<td></td>';
                         echo '<td></td>';
                         echo '<td></td>';

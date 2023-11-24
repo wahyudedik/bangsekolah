@@ -1,4 +1,5 @@
 <?php
+
 namespace backend\controllers;
 
 use Yii;
@@ -11,7 +12,9 @@ use common\helpers\Activities;
 use common\models\User;
 use common\models\UserSchool;
 use common\models\LoginForm;
-use common\models\Setting;
+use common\models\Day;
+use common\models\SchoolClass;
+use common\models\LessonScheduleTemplate;
 
 
 /**
@@ -41,7 +44,7 @@ class SiteController extends Controller
                         'actions' => ['index', 'create', 'view', 'update', 'delete'],
                         'allow' => true,
                         'roles' => ['@'],
-                        'matchCallback' => function ($rule, $action)  {
+                        'matchCallback' => function ($rule, $action) {
                             return User::can();
                         }
                     ],
@@ -75,32 +78,53 @@ class SiteController extends Controller
      *
      * @return string
      */
-    public function actionIndex($startdate = null, $enddate = null)
+    public function actionIndex($startdate = null, $enddate = null, $class = null)
     {
+        \common\helpers\Sidebar::setActiveMenu('site', 'index');
+        $user = Yii::$app->user->identity;
+
         // check expiration day
-        $user_school = UserSchool::find()->where(['user_id' => Yii::$app->user->identity->id])->one();
+        $user_school = UserSchool::find()->where(['user_id' => $user->id])->one();
         if ($user_school) {
             if (date('Y-m-d') > $user_school->school->expired_date) {
                 return $this->redirect(['site/login']);
             }
         }
 
-        // return Yii::$app->security->generatePasswordHash('gresik2022');
         if (!$startdate) $startdate = date('Y-m-d', strtotime('-1 month'));
         if (!$enddate) $enddate = date('Y-m-d');
-
-        \common\helpers\Sidebar::setActiveMenu('site', 'index');
 
         // Vars initiate
         if (!$startdate) $startdate = date('Y-m-d', strtotime('-1 month'));
         if (!$enddate) $enddate = date('Y-m-d');
-        // $end = new DateTime($enddate);
-        // $begin = new DateTime($startdate);
 
-        return $this->render('index', [
-            'startdate' => date('d M Y', strtotime($startdate)),
-            'enddate' => date('d M Y', strtotime($enddate)),
-        ]);
+        // check role
+        if ($user->role_id == 5) {
+            $school_id = Yii::$app->session->get('school_id');
+
+            // get first class
+            if ($class) {
+                $schoolClass = SchoolClass::find()->where(['school_id' => $school_id, 'name' => $class])->one();
+            } else {
+                $schoolClass = SchoolClass::find()->where(['school_id' => $school_id])->one();
+                $class = $schoolClass->name;
+            }
+
+            $days = Day::find()->where(['school_id' => $school_id])->all();
+            $model = new LessonScheduleTemplate();
+            $model->class = $schoolClass->name;
+
+            return $this->render('index-teacher', [
+                'class' => $class,
+                'days' => $days,
+                'model' => $model,
+            ]);
+        } else {
+            return $this->render('index', [
+                'startdate' => date('d M Y', strtotime($startdate)),
+                'enddate' => date('d M Y', strtotime($enddate)),
+            ]);
+        }
     }
 
     /**
@@ -123,7 +147,6 @@ class SiteController extends Controller
                     Yii::$app->session->setFlash('danger', 'Layanan BANKSEKOLAH Anda sudah melewati jatuh tempo, silakan hubungi 085649400339 untuk memperpanjang layanan');
                     return $this->redirect(['site/login']);
                 }
-
             } else {
                 Yii::$app->session->set('school_id', '');
                 Yii::$app->session->set('school_name', '');
@@ -153,5 +176,4 @@ class SiteController extends Controller
         Yii::$app->user->logout();
         return $this->goHome();
     }
-
 }

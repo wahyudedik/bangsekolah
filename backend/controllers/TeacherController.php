@@ -3,15 +3,16 @@
 namespace backend\controllers;
 
 use Yii;
+use common\models\User;
+use common\models\UserSchool;
 use common\models\Teacher;
-use common\models\SchoolMonth;
 use common\models\SchoolClass;
 use common\models\Year;
 
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
+use common\helpers\Strings;
 use yii\web\UploadedFile;
 
 /**
@@ -89,13 +90,37 @@ class TeacherController extends Controller
      */
     public function actionCreate()
     {
+        $school_id = Yii::$app->session->get('school_id');
         $model = new Teacher();
 
         if ($model->load(Yii::$app->request->post())) {
-            $model->school_id = Yii::$app->session->get('school_id');
+
+            // check nik guru harus unik dalam satu sekolah
+            $checkNik = Teacher::find()->where(['nik' => $model->nik, 'school_id' => $school_id])->one();
+            if ($checkNik) {
+                Yii::$app->session->setFlash('danger', 'NIK ' . $model->nik . ' sudah ada di sekolah Anda');
+                return $this->redirect(['create']);
+            }
+
+            $model->school_id = $school_id;
             $model->status = 'ACTIVE';
+            $model->nik = strtoupper(Strings::sluggify($model->nik));
 
             if ($model->save()) {
+
+                // membuat user untuk guru baru
+                $user = new User();
+                $user->username = $model->nik;
+                $user->password_hash = Yii::$app->security->generatePasswordHash($model->nik);
+                $user->name = $model->name;
+                $user->role_id = 5;
+                if ($user->save()) {
+                    $userSchool = new UserSchool();
+                    $userSchool->user_id = $user->id;
+                    $userSchool->school_id = $school_id;
+                    $userSchool->save();
+                }
+
                 return $this->redirect(['view', 'id' => $model->id]);
             } else {
                 foreach ($model->getErrors() as $error) {
@@ -113,6 +138,7 @@ class TeacherController extends Controller
 
     public function actionImport()
     {
+        $school_id = Yii::$app->session->get('school_id');
         $model = new Teacher();
 
         if ($model->load(Yii::$app->request->post())) {
@@ -137,20 +163,34 @@ class TeacherController extends Controller
                     foreach ($data as $item) {
                         $model = new Teacher();
                         $model->status = 'ACTIVE';
-                        $model->school_id = Yii::$app->session->get('school_id');
-                        $model->nik = $item['nik'];
+                        $model->school_id = $school_id;
+                        $model->nik = strtoupper(Strings::sluggify($item['nik']));
                         $model->name = $item['name'];
                         $model->gender = $item['gender'];
                         $model->class = $item['class'];
                         $model->year = $item['year'];
 
-                        if (!$model->save()) {
+                        if ($model->save()) {
+                            // membuat user untuk guru baru
+                            $user = new User();
+                            $user->username = $model->nik;
+                            $user->password_hash = Yii::$app->security->generatePasswordHash($model->nik);
+                            $user->name = $model->name;
+                            $user->role_id = 5;
+                            if ($user->save()) {
+                                $userSchool = new UserSchool();
+                                $userSchool->user_id = $user->id;
+                                $userSchool->school_id = $school_id;
+                                $userSchool->save();
+                            }
+
+                            $totalItem++;
+                        } else {
                             foreach ($model->errors as $error) {
                                 Yii::$app->session->setFlash('danger', $error[0]);
                             }
                             return $this->render('import');
                         }
-                        $totalItem++;
                     }
                 }
                 $transaction->commit();

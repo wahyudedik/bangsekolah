@@ -10,6 +10,7 @@ use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use common\helpers\Strings;
 
 /**
  * UserSchoolController implements the CRUD actions for UserSchool model.
@@ -102,6 +103,7 @@ class UserSchoolController extends Controller
                     'model' => $model,
                 ]);
             }
+            $model->username = Strings::sluggify($model->username);
             $model->password_hash = Yii::$app->security->generatePasswordHash($model->password);
 
             if ($model->save()) {
@@ -112,7 +114,9 @@ class UserSchoolController extends Controller
 
                 Yii::$app->session->setFlash('success', 'User saved successfully');
             } else {
-                foreach ($model->getErrors() as $error) { $message = $error[0]; }
+                foreach ($model->getErrors() as $error) {
+                    $message = $error[0];
+                }
                 Yii::$app->session->setFlash('danger', $message);
             }
             return $this->redirect(['index']);

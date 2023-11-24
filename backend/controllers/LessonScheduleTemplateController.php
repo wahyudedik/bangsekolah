@@ -40,6 +40,7 @@ class LessonScheduleTemplateController extends Controller
         \common\helpers\Sidebar::setActiveMenu('lesson-schedule-template', 'index');
 
         $school_id = Yii::$app->session->get('school_id');
+
         // get first class
         if ($class) {
             $schoolClass = SchoolClass::find()->where(['school_id' => $school_id, 'name' => $class])->one();
@@ -48,16 +49,11 @@ class LessonScheduleTemplateController extends Controller
             $class = $schoolClass->name;
         }
 
-        $dataProvider = new ActiveDataProvider([
-            'query' => LessonScheduleTemplate::find()->where(['class' => $schoolClass->name]),
-        ]);
-
-        $days = Day::find()->where(['school_id' => Yii::$app->session->get('school_id')])->all();
+        $days = Day::find()->where(['school_id' => $school_id])->all();
         $model = new LessonScheduleTemplate();
         $model->class = $schoolClass->name;
 
         return $this->render('index', [
-            'dataProvider' => $dataProvider,
             'class' => $class,
             'days' => $days,
             'model' => $model,

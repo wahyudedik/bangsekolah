@@ -14,7 +14,18 @@ use common\models\Lesson;
             <div class="card-body">
                 <?php $form = ActiveForm::begin(); ?>
                 <?= $form->field($model, 'class')->dropDownList(SchoolClass::getList()) ?>
-                <?= $form->field($model, 'day')->dropDownList(Day::getList()) ?>
+                <?= $form->field($model, 'day')->dropDownList(
+                    Day::getList()
+                    // [
+                    // 'Senin' => 'Senin',
+                    // 'Selasa' => 'Selasa',
+                    // 'Rabu' => 'Rabu',
+                    // 'Kamis' => 'Kamis',
+                    // 'Jumat' => 'Jumat',
+                    // 'Sabtu' => 'Sabtu',
+                    // 'Minggu' => 'Minggu',
+                    // ]
+                ) ?>
                 <?= $form->field($model, 'hour')->dropDownList([
                     '1' => '1',
                     '2' => '2',

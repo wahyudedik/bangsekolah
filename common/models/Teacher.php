@@ -8,8 +8,10 @@ use Yii;
  * This is the model class for table "teacher".
  *
  * @property int $id
+ * @property int $user_id
  * @property int $school_id
  * @property string $nik
+ * @property string $nuptk
  * @property string $name
  * @property string $gender
  * @property string $class
@@ -23,7 +25,7 @@ use Yii;
 class Teacher extends \yii\db\ActiveRecord
 {
     public $file;
-    
+
     /**
      * {@inheritdoc}
      */
@@ -36,13 +38,13 @@ class Teacher extends \yii\db\ActiveRecord
     {
         return [
             'timestamp' => [
-                 'class' => 'yii\behaviors\TimestampBehavior',
-                 'attributes' => [
-                     \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => ['created_at', 'updated_at'],
-                     \yii\db\ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_at'],
-                 ],
-                 'value' => new \yii\db\Expression('NOW()'),
-             ],
+                'class' => 'yii\behaviors\TimestampBehavior',
+                'attributes' => [
+                    \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => ['created_at', 'updated_at'],
+                    \yii\db\ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_at'],
+                ],
+                'value' => new \yii\db\Expression('NOW()'),
+            ],
         ];
     }
 
@@ -54,7 +56,7 @@ class Teacher extends \yii\db\ActiveRecord
         return [
             [['school_id'], 'integer'],
             [['created_at', 'updated_at', 'file'], 'safe'],
-            [['nik', 'name', 'gender', 'class', 'year', 'status'], 'string', 'max' => 255],
+            [['nik', 'nuptk', 'name', 'gender', 'class', 'year', 'status'], 'string', 'max' => 255],
         ];
     }
 
@@ -67,6 +69,7 @@ class Teacher extends \yii\db\ActiveRecord
             'id' => 'ID',
             'school_id' => 'School ID',
             'nik' => 'NIK',
+            'nuptk' => 'NUPTK',
             'name' => 'Nama Lengkap',
             'gender' => 'Gender',
             'class' => 'Wali Kelas',
@@ -85,11 +88,22 @@ class Teacher extends \yii\db\ActiveRecord
         return $this->hasMany(LessonSchedule::className(), ['teacher_id' => 'id']);
     }
 
+    public function getSchool()
+    {
+        return $this->hasOne(School::className(), ['id' => 'school_id']);
+    }
+
+    public function getUser()
+    {
+        return $this->hasOne(User::className(), ['id' => 'user_id']);
+    }
+
     public static function getList()
     {
         return \yii\helpers\ArrayHelper::map(
             Teacher::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'status' => 'ACTIVE'])->asArray()->all(),
-            'id', 'name'
+            'id',
+            'name'
         );
     }
 }
