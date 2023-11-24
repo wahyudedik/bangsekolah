@@ -9,6 +9,8 @@ use common\models\SchoolClass;
 
 $this->title = 'Jadwal Pelajaran';
 $this->params['breadcrumbs'][] = $this->title;
+
+$user = Yii::$app->user->identity;
 ?>
 <div class="card">
     <div class="card-header">
@@ -22,7 +24,11 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
             <div class="col-lg-6">
                 <div class="card-tools float-right">
-                    <?= Html::a('<i class="fas fa-plus fa-lg"></i> Tambah Jadwal Pelajaran', ['create'], ['class' => 'btn btn-success']) ?>
+                    <?php
+                    if ($user->role_id == 2) {
+                        echo Html::a('<i class="fas fa-plus fa-lg"></i> Tambah Jadwal Pelajaran', ['create'], ['class' => 'btn btn-success']);
+                    }
+                    ?>
                     <?= Html::a('<i class="fas fa-sync-alt fa-lg"></i>', ['index'], ['class' => 'btn btn-primary']) ?>
                 </div>
             </div>
@@ -55,7 +61,15 @@ $this->params['breadcrumbs'][] = $this->title;
                             echo '<td>' . $template->hour . '</td>';
                             echo '<td>' . $template->teacher->name . '</td>';
                             echo '<td>' . $template->lesson->name . '</td>';
-                            echo '<td>' . Html::a('<i class="fas fa-pen"></i>', ['update', 'id' => $template->id], ['class' => 'btn btn-primary']) . '</td>';
+                            if ($user->role_id == 5) {
+                                if ($template->teacher->user_id == $user->id) {
+                                    echo '<td>' . Html::a('Masuk Kelas <i class="fas fa-chalkboard-teacher"></i>', ['lesson-schedule/create', 'id' => $template->id], ['class' => 'btn btn-primary']) . '</td>';
+                                } else {
+                                    echo '<td></td>';
+                                }
+                            } else {
+                                echo '<td>' . Html::a('<i class="fas fa-pen"></i>', ['update', 'id' => $template->id], ['class' => 'btn btn-primary']) . '</td>';
+                            }
                             echo '</tr>';
                             $lessonNum++;
                         }

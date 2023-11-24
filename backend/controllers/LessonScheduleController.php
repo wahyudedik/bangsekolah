@@ -64,6 +64,54 @@ class LessonScheduleController extends Controller
         ]);
     }
 
+    public function actionSavePresence($id)
+    {
+        $schedule = LessonSchedule::findOne($id);
+        if (!$schedule) {
+            Yii::$app->session->setFlash('danger', 'Kelas pelajaran tidak ditemukan');
+            return $this->redirect(['index']);
+        }
+
+        $scheduleAttendances = null;
+        if (!empty($_POST['student'])) {
+            $scheduleAttendances = $_POST['student'];
+        }
+
+        // reset all presence
+        $oldscheduleAttendances = LessonScheduleAttendance::find()->where(['lesson_schedule_id' => $id])->all();
+        foreach ($oldscheduleAttendances as $oldscheduleAttendance) {
+            $oldscheduleAttendance->status = 'ABSEN';
+            $oldscheduleAttendance->note = $_POST['note-' . $oldscheduleAttendance->id];
+            $oldscheduleAttendance->save();
+        }
+
+        $saved = 0;
+        if ($scheduleAttendances) {
+            foreach ($scheduleAttendances as $scheduleAttendance) {
+                // check if student is already in list
+                $scheduleAttendance = LessonScheduleAttendance::findOne($scheduleAttendance);
+                if ($scheduleAttendance) {
+                    $scheduleAttendance->status = 'MASUK';
+                    if ($scheduleAttendance->save()) {
+                        $saved++;
+                    } else {
+                        foreach ($scheduleAttendance->errors as $error) {
+                            Yii::$app->session->setFlash('danger', $error[0]);
+                            return $this->redirect(['view', 'id' => $id]);
+                        }
+                    }
+                }
+            }
+        }
+
+        if ($saved > 0) {
+            Yii::$app->session->setFlash('success', $saved . ' siswa menghadiri pelajaran');
+        } else {
+            Yii::$app->session->setFlash('warning', 'Status kehadiran tersimpan. Tidak ada siswayang menghadiri pelajaran');
+        }
+        return $this->redirect(['view', 'id' => $id]);
+    }
+
     /**
      * Creates a new LessonSchedule model.
      * If creation is successful, the browser will be redirected to the 'view' page.
