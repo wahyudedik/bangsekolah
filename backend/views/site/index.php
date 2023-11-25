@@ -93,7 +93,7 @@ function formatAngka($angka)
     $digit = floor(($angka_length - 1) % 3) + 1;
 
     // Hitung nilai yang akan ditampilkan
-    $nilai = number_format($angka / pow(1000, $tingkat), $digit);
+    $nilai = number_format($angka / pow(1000, $tingkat), $digit, ',', '');
 
     // Hapus desimal dan trailing zero jika ada
     $nilai = rtrim($nilai, '0.');
