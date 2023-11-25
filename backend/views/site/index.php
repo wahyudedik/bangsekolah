@@ -1,4 +1,5 @@
 <?php
+
 use common\helpers\Strings;
 use common\models\Invoice;
 use common\models\Transaction;
@@ -67,14 +68,40 @@ for ($i = 1; $i <= 31; $i++) {
     }
 
     // add value to array
-    $jsonDay .= '"'.$dateTime->format('d').'", ';
-    $jsonTotal .= $totalInDay.', ';
+    $jsonDay .= '"' . $dateTime->format('d') . '", ';
+    $jsonTotal .= $totalInDay . ', ';
 
     // modify date -1 month
     $dateTime->modify('+1 day');
 
     // add total payment
     $totalPayment += $totalInDay;
+}
+
+function formatAngka($angka)
+{
+    // Array untuk menyimpan singkatan dari angka
+    $singkatan = ['', 'rb', 'jt', 'M', 'T'];
+
+    // Hitung panjang angka
+    $angka_length = strlen($angka);
+
+    // Tentukan tingkat (ribu, jt, M, T)
+    $tingkat = floor(($angka_length - 1) / 3);
+
+    // Hitung digit di tingkat ini
+    $digit = floor(($angka_length - 1) % 3) + 1;
+
+    // Hitung nilai yang akan ditampilkan
+    $nilai = number_format($angka / pow(1000, $tingkat), $digit);
+
+    // Hapus desimal dan trailing zero jika ada
+    $nilai = rtrim($nilai, '0.');
+
+    // Gabungkan nilai dengan singkatan tingkat
+    $hasil = $nilai . '' . $singkatan[$tingkat];
+
+    return $hasil;
 }
 ?>
 <div class="row">
@@ -93,7 +120,7 @@ for ($i = 1; $i <= 31; $i++) {
     <div class="col-lg-3 col-6">
         <div class="small-box bg-success">
             <div class="inner">
-                <h3><?= Strings::getRupiah($totalPayment) ?><sup style="font-size: 16px;"></sup></h3>
+                <h3><?= formatAngka($totalPayment) ?><sup style="font-size: 16px;"></sup></h3>
                 <p>Total Pembayaran</p>
             </div>
             <div class="icon">
@@ -142,27 +169,25 @@ for ($i = 1; $i <= 31; $i++) {
 <script src="<?= $baseUrl ?>/theme/js/jquery-1.11.2.min.js"></script>
 <script src="<?= $baseUrl ?>/theme/plugins/chart.js/Chart.min.js"></script>
 <script type="text/javascript">
-    $(function () {
+    $(function() {
         /* ChartJS
          * -------
          * Here we will create a few charts using ChartJS
          */
 
         var areaChartData = {
-          labels  : [<?= $jsonDay ?>],
-          datasets: [
-            {
-              label               : 'Total Pembayaran (Rupiah)',
-              backgroundColor     : 'rgba(60,141,188,0.9)',
-              borderColor         : 'rgba(60,141,188,0.8)',
-              pointRadius          : false,
-              pointColor          : '#3b8bba',
-              pointStrokeColor    : 'rgba(60,141,188,1)',
-              pointHighlightFill  : '#fff',
-              pointHighlightStroke: 'rgba(60,141,188,1)',
-              data                : [<?= $jsonTotal ?>]
-            },
-          ]
+            labels: [<?= $jsonDay ?>],
+            datasets: [{
+                label: 'Total Pembayaran (Rupiah)',
+                backgroundColor: 'rgba(60,141,188,0.9)',
+                borderColor: 'rgba(60,141,188,0.8)',
+                pointRadius: false,
+                pointColor: '#3b8bba',
+                pointStrokeColor: 'rgba(60,141,188,1)',
+                pointHighlightFill: '#fff',
+                pointHighlightStroke: 'rgba(60,141,188,1)',
+                data: [<?= $jsonTotal ?>]
+            }, ]
         }
 
         //-------------
@@ -174,15 +199,15 @@ for ($i = 1; $i <= 31; $i++) {
         barChartData.datasets[0] = temp0
 
         var barChartOptions = {
-          responsive              : true,
-          maintainAspectRatio     : false,
-          datasetFill             : false
+            responsive: true,
+            maintainAspectRatio: false,
+            datasetFill: false
         }
 
         new Chart(barChartCanvas, {
-          type: 'bar',
-          data: barChartData,
-          options: barChartOptions
+            type: 'bar',
+            data: barChartData,
+            options: barChartOptions
         })
     });
 </script>
