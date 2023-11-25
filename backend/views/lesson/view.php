@@ -1,4 +1,5 @@
 <?php
+
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 
@@ -13,11 +14,13 @@ $this->params['breadcrumbs'][] = $this->title;
             <header class="card-header">
                 <?= Html::a('<i class="fas fa-chevron-left"></i> Kembali', ['lesson/index'], ['class' => 'btn btn-warning']) ?>
                 <div class="filter-block float-right">
-                    <?= Html::a('<i class="fas fa-pen"></i> Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-                    <?= Html::a('<i class="fas fa-trash"></i> Hapus', ['delete', 'id' => $model->id], [
-                        'class' => 'btn btn-danger',
-                        'onclick' => 'return confirm("Apakah Anda yakin hapus data ini?");',
-                    ]) ?>
+                    <?php if (Yii::$app->user->identity->role_id == 2) : ?>
+                        <?= Html::a('<i class="fas fa-pen"></i> Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+                        <?= Html::a('<i class="fas fa-trash"></i> Hapus', ['delete', 'id' => $model->id], [
+                            'class' => 'btn btn-danger',
+                            'onclick' => 'return confirm("Apakah Anda yakin hapus data ini?");',
+                        ]) ?>
+                    <?php endif; ?>
                 </div>
             </header>
             <div class="card-body">

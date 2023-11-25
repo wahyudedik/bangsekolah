@@ -42,7 +42,7 @@ class LessonScheduleController extends Controller
         \common\helpers\Sidebar::setActiveMenu('lesson-schedule', 'index');
 
         $dataProvider = new ActiveDataProvider([
-            'query' => LessonSchedule::find(),
+            'query' => LessonSchedule::find()->orderBy(['id' => SORT_DESC]),
         ]);
 
         return $this->render('index', [

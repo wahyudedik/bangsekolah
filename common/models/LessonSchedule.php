@@ -123,8 +123,13 @@ class LessonSchedule extends \yii\db\ActiveRecord
         return $this->hasMany(LessonScheduleAttendance::className(), ['lesson_schedule_id' => 'id']);
     }
 
+    public function getPresentAttendances()
+    {
+        return $this->hasMany(LessonScheduleAttendance::className(), ['lesson_schedule_id' => 'id'])->andWhere(['status' => 'MASUK']);
+    }
+
     public function getAttendanceCount()
     {
-        return count($this->lessonScheduleAttendances);
+        return count($this->presentAttendances);
     }
 }

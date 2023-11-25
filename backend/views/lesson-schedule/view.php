@@ -1,20 +1,30 @@
 <?php
 
 use yii\helpers\Html;
-use yii\widgets\DetailView;
+use common\models\Teacher;
 use yii\widgets\ActiveForm;
 
 $this->title = $model->teacher->name . ' (' . $model->lesson->name . ')';
 $this->params['breadcrumbs'][] = ['label' => 'Presensi', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
+
+$teacher = Teacher::find()->where(['user_id' => Yii::$app->user->identity->id])->one();
+$teacher_id = null;
+if ($teacher) {
+    $teacher_id = $teacher->id;
+}
 ?>
 
 <?php $form = ActiveForm::begin(['id' => 'form-presence', 'action' => ['save-presence', 'id' => $model->id], 'method' => 'post']) ?>
 <div class="card">
     <header class="card-header">
         <div class="float-right">
-            <button id="btn-submit" class="btn btn-success"><i class="fa fa-save"></i> Simpan Presensi</button>
+            <?php
+            if (date('Y-m-d') == $model->date && $model->teacher->id == $teacher_id) {
+                echo '<button id="btn-submit" class="btn btn-success"><i class="fa fa-save"></i> Simpan Presensi</button>';
+            }
+            ?>
         </div>
         Presensi Kelas Pelajaran
     </header>
@@ -39,7 +49,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 <th>No</th>
                 <th>NIS</th>
                 <th>Nama</th>
-                <th><input type="checkbox" id="check-all"> Kehadiran</th>
+                <th>
+                    <?php
+                    if (date('Y-m-d') == $model->date && $model->teacher->id == $teacher_id) {
+                        echo '<input type="checkbox" id="check-all"> ';
+                    }
+                    ?>
+                    Kehadiran</th>
                 <th>Catatan</th>
             </tr>
             <?php
@@ -50,45 +66,47 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td><?= $i++ ?></td>
                     <td><?= $scheduleAttendance->student->nis ?></td>
                     <td><?= $scheduleAttendance->student->name ?></td>
-                    <td><input type="checkbox" name="student[]" class="check-student" value="<?= $scheduleAttendance->id ?>" <?= $scheduleAttendance->status == 'MASUK' ? 'checked' : '' ?>></td>
-                    <td>
-                        <select name="note-<?= $scheduleAttendance->id ?>">
-                            <option></option>
-                            <?php
-                            $note1 = '';
-                            $note2 = '';
-                            $note3 = '';
-                            if ($scheduleAttendance->status == 'MASUK') {
-                                if ($scheduleAttendance->note == 'IZIN') {
-                                    $note1 = 'selected';
-                                } else if ($scheduleAttendance->note == 'PULANG') {
-                                    $note2 = 'selected';
-                                } else if ($scheduleAttendance->note == 'TANPA KETERANGAN') {
-                                    $note3 = 'selected';
+                    <?php if (date('Y-m-d') == $model->date && $model->teacher->id == $teacher_id) : ?>
+                        <td><input type="checkbox" name="student[]" class="check-student" value="<?= $scheduleAttendance->id ?>" <?= $scheduleAttendance->status == 'MASUK' ? 'checked' : '' ?>></td>
+                        <td>
+                            <select name="note-<?= $scheduleAttendance->id ?>">
+                                <option></option>
+                                <?php
+                                $note1 = '';
+                                $note2 = '';
+                                $note3 = '';
+                                if ($scheduleAttendance->status == 'MASUK') {
+                                    if ($scheduleAttendance->note == 'SAKIT') {
+                                        $note1 = 'selected';
+                                    } else if ($scheduleAttendance->note == 'IZIN') {
+                                        $note2 = 'selected';
+                                    } else if ($scheduleAttendance->note == 'TANPA KETERANGAN') {
+                                        $note3 = 'selected';
+                                    }
+                                } else {
+                                    if ($scheduleAttendance->note == 'SAKIT') {
+                                        $note1 = 'selected';
+                                    } else if ($scheduleAttendance->note == 'IZIN') {
+                                        $note2 = 'selected';
+                                    } else if ($scheduleAttendance->note == 'TANPA KETERANGAN') {
+                                        $note3 = 'selected';
+                                    }
                                 }
-                            } else {
-                                if ($scheduleAttendance->note == 'IZIN') {
-                                    $note1 = 'selected';
-                                } else if ($scheduleAttendance->note == 'PULANG') {
-                                    $note2 = 'selected';
-                                } else if ($scheduleAttendance->note == 'TANPA KETERANGAN') {
-                                    $note3 = 'selected';
-                                }
-                            }
-                            ?>
-                            <option value="IZIN" <?= $note1 ?>>IZIN</option>
-                            <option value="PULANG" <?= $note2 ?>>PULANG</option>
-                            <option value="TANPA KETERANGAN" <?= $note3 ?>>TANPA KETERANGAN</option>
-                        </select>
-                    </td>
+                                ?>
+                                <option value="SAKIT" <?= $note1 ?>>SAKIT</option>
+                                <option value="IZIN" <?= $note2 ?>>IZIN</option>
+                                <option value="TANPA KETERANGAN" <?= $note3 ?>>TANPA KETERANGAN</option>
+                            </select>
+                        </td>
+                    <?php else : ?>
+                        <td><?= $scheduleAttendance->status == 'MASUK' ? '<i class="fa fa-check" style="color: green;"></i>' : '<i class="fa fa-times" style="color: red;"></i>' ?></td>
+                        <td><?= $scheduleAttendance->note ?></td>
+                    <?php endif; ?>
                 </tr>
             <?php endforeach; ?>
         </table>
     </div>
     <div class="card-footer">
-        <!-- <div class="form-group">
-            <?= Html::submitButton('Simpan', ['class' => 'btn btn-success']) ?>
-        </div> -->
     </div>
 </div>
 <?php ActiveForm::end(); ?>
