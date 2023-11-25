@@ -63,7 +63,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 }
                             },
                             'delete' => function ($url, $model) {
-                                if (Yii::$app->user->identity->role_id == 2) {
+                                if (Yii::$app->user->identity->role_id == 2 && count($model->lessonScheduleTemplates) == 0) {
                                     return Html::a('<i class="fas fa-trash"></i>', $url, ['class' => 'btn btn-danger', 'data-confirm' => 'Are you sure?', 'data-method' => 'post']) . ' ';
                                 }
                             },

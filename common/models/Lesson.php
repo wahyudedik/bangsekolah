@@ -32,13 +32,13 @@ class Lesson extends \yii\db\ActiveRecord
     {
         return [
             'timestamp' => [
-                 'class' => 'yii\behaviors\TimestampBehavior',
-                 'attributes' => [
-                     \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => ['created_at', 'updated_at'],
-                     \yii\db\ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_at'],
-                 ],
-                 'value' => new \yii\db\Expression('NOW()'),
-             ],
+                'class' => 'yii\behaviors\TimestampBehavior',
+                'attributes' => [
+                    \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => ['created_at', 'updated_at'],
+                    \yii\db\ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_at'],
+                ],
+                'value' => new \yii\db\Expression('NOW()'),
+            ],
         ];
     }
 
@@ -87,11 +87,20 @@ class Lesson extends \yii\db\ActiveRecord
         return $this->hasMany(LessonSchedule::className(), ['lesson_id' => 'id']);
     }
 
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getLessonScheduleTemplates()
+    {
+        return $this->hasMany(LessonScheduleTemplate::className(), ['lesson_id' => 'id']);
+    }
+
     public static function getList()
     {
         return \yii\helpers\ArrayHelper::map(
             Lesson::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'status' => 'ACTIVE'])->asArray()->all(),
-            'id', 'name'
+            'id',
+            'name'
         );
     }
 }
