@@ -239,6 +239,7 @@ class LessonScheduleController extends Controller
                     $data = $result['data'];
 
                     foreach ($data as $item) {
+
                         $schedule = LessonSchedule::find()
                             ->where(['school_id' => $school_id, 'class' => $item['class'], 'date' => $item['date'], 'teacher_id' => $item['teacher_id'], 'status' => 'ACTIVE'])
                             ->one();
@@ -302,7 +303,13 @@ class LessonScheduleController extends Controller
 
                     // check NIK teacher
                     $teacher = Teacher::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'nik' => $rowExcelData[3], 'status' => 'ACTIVE'])->one();
-                    if (!$teacher) {
+                    if ($teacher) {
+                        $user_id = Yii::$app->user->identity->id;
+                        if ($teacher->user_id !== $user_id) {
+                            $error = 'Anda hanya diperbolehkan import presensi Anda sendiri';
+                            break;
+                        }
+                    } else {
                         $error = 'NIK ' . $rowExcelData[3] . ' guru pada baris ' . $row_number . ' tidak ditemukan';
                         break;
                     }
