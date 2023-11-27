@@ -4,25 +4,30 @@ use yii\helpers\Url;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\grid\GridView;
+use common\models\Teacher;
 
 $this->title = 'Presensi';
 $this->params['breadcrumbs'][] = $this->title;
+
+
 ?>
 <div class="card">
     <div class="card-header">
         <div class="row">
             <div class="col-lg-6">
-                <?php $form = ActiveForm::begin(['method' => 'get', 'action' => Url::to(['index']), 'options' => ['class' => 'form-inline']]) ?>
+                Riwayat Presensi
+                <!-- <?php $form = ActiveForm::begin(['method' => 'get', 'action' => Url::to(['index']), 'options' => ['class' => 'form-inline']]) ?>
                 <div class="input-group input-group-sm">
                     <input type="text" name="q" class="form-control" placeholder="Search ..." value="<?= $q ?>">
                     <span class="input-group-append">
                         <button type="button" class="btn btn-info btn-flat"><i class="fas fa-search search-icon"></i></button>
                     </span>
                 </div>
-                <?php ActiveForm::end() ?>
+                <?php ActiveForm::end() ?> -->
             </div>
             <div class="col-lg-6">
                 <div class="card-tools float-right">
+                    <?= Html::a('<i class="fas fa-file-excel"></i> Import Excel', ['import'], ['class' => 'btn btn-success']) ?>
                     <?= Html::a('<i class="fas fa-sync-alt fa-lg"></i>', ['index'], ['class' => 'btn btn-primary']) ?>
                 </div>
             </div>
@@ -40,7 +45,9 @@ $this->params['breadcrumbs'][] = $this->title;
                     ['class' => 'yii\grid\SerialColumn'],
 
                     // 'schoolClass.name',
-                    'date',
+                    ['label' => 'Tanggal', 'value' => function ($model) {
+                        return date('d-m-Y', strtotime($model->date));
+                    }],
                     'hour',
                     'class',
                     'lesson.name',
@@ -59,11 +66,20 @@ $this->params['breadcrumbs'][] = $this->title;
                         'contentOptions' => ['style' => 'width:150px;'],
                         'buttons' => [
                             'view' => function ($url, $model) {
-                                return Html::a('<i class="fas fa-eye"></i>', $url, ['class' => 'btn btn-success']) . ' ';
+                                $teacher = Teacher::find()->where(['user_id' => Yii::$app->user->identity->id])->one();
+                                $teacher_id = null;
+                                if ($teacher) {
+                                    $teacher_id = $teacher->id;
+                                }
+                                $btnClass = 'btn btn-success';
+                                if (date('Y-m-d') == $model->date && $model->teacher->id == $teacher_id) {
+                                    $btnClass = 'btn btn-warning';
+                                }
+                                return Html::a('<i class="fas fa-eye"></i>', $url, ['class' => $btnClass]) . ' ';
                             },
-                            'delete' => function ($url, $model) {
-                                return Html::a('<i class="fas fa-trash"></i>', $url, ['class' => 'btn btn-danger', 'data-confirm' => 'Are you sure?', 'data-method' => 'post']) . ' ';
-                            },
+                            // 'delete' => function ($url, $model) {
+                            //     return Html::a('<i class="fas fa-trash"></i>', $url, ['class' => 'btn btn-danger', 'data-confirm' => 'Are you sure?', 'data-method' => 'post']) . ' ';
+                            // },
                         ]
                     ],
                 ],

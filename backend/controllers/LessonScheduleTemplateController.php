@@ -25,7 +25,7 @@ class LessonScheduleTemplateController extends Controller
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
-                    'delete' => ['POST'],
+                    // 'delete' => ['POST'],
                 ],
             ],
         ];
@@ -127,7 +127,11 @@ class LessonScheduleTemplateController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        $model = $this->findModel($id);
+        if ($model) {
+            $model->status = 'NONACTIVE';
+            $model->save();
+        }
 
         return $this->redirect(['index']);
     }

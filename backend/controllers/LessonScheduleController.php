@@ -5,6 +5,8 @@ namespace backend\controllers;
 use Yii;
 use common\models\Teacher;
 use common\models\Student;
+use common\models\Lesson;
+use common\models\SchoolClass;
 use common\models\LessonSchedule;
 use common\models\LessonScheduleAttendance;
 use common\models\LessonScheduleTemplate;
@@ -12,6 +14,7 @@ use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\web\UploadedFile;
 
 /**
  * LessonScheduleController implements the CRUD actions for LessonSchedule model.
@@ -143,6 +146,7 @@ class LessonScheduleController extends Controller
         $model->hour = $template->hour;
         $model->teacher_id = $template->teacher_id;
         $model->lesson_id = $template->lesson_id;
+        $model->status = 'ACTIVE';
 
         if ($model->save()) {
             // menambahkan semua siswa pada kelas tersebut ke kelas
@@ -208,5 +212,147 @@ class LessonScheduleController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    public function actionImport()
+    {
+        $school_id = Yii::$app->session->get('school_id');
+        $model = new Teacher();
+
+        if ($model->load(Yii::$app->request->post())) {
+
+            $import = UploadedFile::getInstance($model, 'file');
+            if (isset($import)) {
+                $exploded_name = explode('.', $import->name);
+                $extension = end($exploded_name);
+                $model->file = Yii::$app->security->generateRandomString() . ".{$extension}";
+                $path = Yii::getAlias('@uploads/import/') . $model->file;
+                $import->saveAs($path);
+
+                $totalItem = 0;
+                $transaction = Yii::$app->db->beginTransaction();
+
+                $result = $this->populateDataExcel($path, 0);
+                if ($result['status'] == 'ERROR') {
+                    Yii::$app->session->setFlash('danger', $result['data']);
+                } else {
+                    $data = $result['data'];
+
+                    foreach ($data as $item) {
+                        $schedule = LessonSchedule::find()
+                            ->where(['school_id' => $school_id, 'class' => $item['class'], 'date' => $item['date'], 'teacher_id' => $item['teacher_id'], 'status' => 'ACTIVE'])
+                            ->one();
+                        if ($schedule) {
+                            $scheduleAttendance = LessonScheduleAttendance::find()
+                                ->where(['lesson_schedule_id' => $schedule->id, 'student_id' => $item['student_id']])
+                                ->one();
+                            if ($scheduleAttendance) {
+                                $scheduleAttendance->status = $item['status'];
+                                $scheduleAttendance->note = $item['note'];
+                                if ($scheduleAttendance->save()) {
+                                    $totalItem++;
+                                } else {
+                                    foreach ($model->errors as $error) {
+                                        Yii::$app->session->setFlash('danger', $error[0]);
+                                    }
+                                    return $this->render('import');
+                                }
+                            }
+                        }
+                    }
+                }
+                $transaction->commit();
+                Yii::$app->session->setFlash('success', $totalItem . ' data presensi berhasil diimport');
+                return $this->redirect(['index']);
+            }
+        }
+
+        return $this->render('import', [
+            'model' => $model,
+        ]);
+    }
+
+    private function populateDataExcel($fileName, $sheet = 0)
+    {
+
+        // PHP Excel init        
+        $phpexcel = \PHPExcel_IOFactory::load($fileName);
+        $worksheet = $phpexcel->getSheet($sheet);
+        $dataExcel = $worksheet->toArray();
+        $error = null;
+        $itemArray = [];
+        $row_number = 0;
+        if ($sheet == 0) {
+            foreach ($dataExcel as $rowExcelData) {
+                if ($row_number++ > 0 && $rowExcelData[0] !== null) {
+
+                    // cek kelas
+                    $schoolClass = SchoolClass::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'name' => $rowExcelData[1], 'status' => 'ACTIVE'])->one();
+                    if (!$schoolClass) {
+                        $error = 'Kelas ' . $rowExcelData[1] . ' pada baris ' . $row_number . ' tidak ditemukan';
+                        break;
+                    }
+
+                    // cek mata pelajaran
+                    $lesson = Lesson::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'name' => $rowExcelData[2], 'status' => 'ACTIVE'])->one();
+                    if (!$lesson) {
+                        $error = 'Pelajaran "' . $rowExcelData[2] . '" pada baris ' . $row_number . ' tidak ditemukan';
+                        break;
+                    }
+
+                    // check NIK teacher
+                    $teacher = Teacher::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'nik' => $rowExcelData[3], 'status' => 'ACTIVE'])->one();
+                    if (!$teacher) {
+                        $error = 'NIK ' . $rowExcelData[3] . ' guru pada baris ' . $row_number . ' tidak ditemukan';
+                        break;
+                    }
+
+                    // check NIS student
+                    $student = Student::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'nis' => $rowExcelData[4], 'status' => 'ACTIVE'])->one();
+                    if (!$student) {
+                        $error = 'NIS ' . $rowExcelData[4] . ' siswa pada baris ' . $row_number . ' tidak ditemukan';
+                        break;
+                    }
+
+                    // check kolom status
+                    $arrStatus = ['MASUK', 'ABSEN'];
+                    if (in_array($rowExcelData[5], $arrStatus)) {
+                    } else {
+                        $error = 'Kolom status pada baris ' . $row_number . ' tidak valid. Pilihan: MASUK, ABSEN';
+                        break;
+                    }
+
+                    // check kolom keterangan
+                    $arrStatus = ['SAKIT', 'IZIN', 'TANPA KETERANGAN', ''];
+                    if (in_array($rowExcelData[6], $arrStatus)) {
+                    } else {
+                        $error = 'Kolom keterangan pada baris ' . $row_number . ' tidak valid. Pilihan: SAKIT, IZIN, TANPA KETERANGAN';
+                        break;
+                    }
+
+                    $itemArray[] = [
+                        'date' => date('Y-m-d', strtotime($rowExcelData[0])),
+                        'class' => $rowExcelData[1],
+                        'lesson' => $rowExcelData[2],
+                        'teacher_id' => $teacher->id,
+                        'student_id' => $student->id,
+                        'status' => $rowExcelData[5],
+                        'note' => $rowExcelData[6],
+                    ];
+                }
+            }
+        }
+        @unlink($fileName);
+        if ($error != NULL) {
+            return [
+                'status' => 'ERROR',
+                'data' => $error
+            ];
+        } else {
+            return [
+                'status' => 'OK',
+                'data' => $itemArray
+            ];
+        }
     }
 }
