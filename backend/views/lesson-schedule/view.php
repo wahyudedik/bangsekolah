@@ -5,7 +5,7 @@ use common\models\Teacher;
 use yii\widgets\ActiveForm;
 
 $this->title = $model->teacher->name . ' (' . $model->lesson->name . ')';
-$this->params['breadcrumbs'][] = ['label' => 'Presensi', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Presensi Pelajaran', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 

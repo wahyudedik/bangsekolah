@@ -7,8 +7,9 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use common\models\School;
 use common\models\Student;
+use common\models\Presence;
 
-$this->title = 'Rekapitulasi Presensi';
+$this->title = 'Presensi Harian';
 $this->params['breadcrumbs'][] = $this->title;
 
 $school_id = School::findOne(Yii::$app->session->get('school_id'));
@@ -61,7 +62,7 @@ $school_id = School::findOne(Yii::$app->session->get('school_id'));
                     <tr style="background: #efefef;">
                         <th>MASUK</th>
                         <th>ABSEN</th>
-                        <th>JUMLAH KELAS</th>
+                        <th>JUMLAH HARI</th>
                     </tr>
                     <?php
                     $i = 1;
@@ -69,13 +70,7 @@ $school_id = School::findOne(Yii::$app->session->get('school_id'));
                     $totalPersentase = 0;
                     $totalSiswa = 0;
 
-                    // menghitung total masuk
-                    $lessonSchedules = LessonSchedule::find()
-                        ->where(['school_id' => $school_id, 'class' => $class])
-                        ->andWhere(['>=', 'date', $startdate])
-                        ->andWhere(['<=', 'date', $enddate])
-                        ->all();
-                    $totalJadwal = count($lessonSchedules);
+                    // $totalHari = $startdate - $enddate;
 
                     foreach ($students as $student) {
                         $totalSiswa++;
@@ -87,19 +82,24 @@ $school_id = School::findOne(Yii::$app->session->get('school_id'));
                         echo '<td>' . $i++ . '</td>';
                         echo '<td>' . $student->name . '</td>';
 
-                        // foreach ($lessonSchedules as $schedule) {
-                        $jumlahMasuk = LessonScheduleAttendance::find()->where(['student_id' => $student->id, 'status' => 'MASUK'])->count();
-                        $jumlahAbsen = LessonScheduleAttendance::find()->where(['student_id' => $student->id, 'status' => 'ABSEN'])->count();
-                        // }
+                        // menghitung total masuk
+                        $jumlahMasuk = Presence::find()
+                            ->where(['school_id' => $school_id, 'class' => $class])
+                            ->andWhere(['student_id' => $student->id])
+                            ->andWhere(['>=', 'date', $startdate])
+                            ->andWhere(['<=', 'date', $enddate])
+                            ->count();
+                        $jumlahAbsen = $totalHari - $jumlahMasuk;
+
 
                         // kolom jumlah
                         echo '<td>' . $jumlahMasuk . '</td>';
                         echo '<td>' . $jumlahAbsen . '</td>';
-                        echo '<td>' . $totalJadwal . '</td>';
+                        echo '<td>' . $totalHari . '</td>';
 
                         // persentase
-                        if ($totalJadwal > 0) {
-                            $persentase = round(($jumlahMasuk / $totalJadwal) * 100);
+                        if ($totalHari > 0) {
+                            $persentase = round(($jumlahMasuk / $totalHari) * 100);
                         } else {
                             $persentase = 0;
                         }

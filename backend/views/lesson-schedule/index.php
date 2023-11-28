@@ -6,7 +6,7 @@ use yii\widgets\ActiveForm;
 use yii\grid\GridView;
 use common\models\Teacher;
 
-$this->title = 'Presensi';
+$this->title = 'Presensi Pelajaran';
 $this->params['breadcrumbs'][] = $this->title;
 
 
