@@ -21,13 +21,13 @@ use common\models\SchoolClass;
                     <div class="card-body">
 
                         <?= $form->field($model, 'nis')->textInput() ?>
-
                         <?= $form->field($model, 'nisn')->textInput() ?>
+                        <?= $form->field($model, 'finger_code')->textInput() ?>
 
                         <?= $form->field($model, 'name')->textInput() ?>
                         <?= $form->field($model, 'gender')->dropDownList(
-                                ['L' => 'Laki - Laki', 'P' => 'Perempuan']
-                            ) ?>
+                            ['L' => 'Laki - Laki', 'P' => 'Perempuan']
+                        ) ?>
                         <?= $form->field($model, 'year')->dropDownList(Year::getList()) ?>
                         <?= $form->field($model, 'class')->dropDownList(SchoolClass::getList()) ?>
 
@@ -45,7 +45,7 @@ use common\models\SchoolClass;
                 </div>
             </div>
         </div>
-        
+
         <?php ActiveForm::end(); ?>
     </div>
 </div>

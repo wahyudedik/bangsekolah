@@ -21,35 +21,36 @@ $user = Yii::$app->user->identity;
                 <div class="filter-block float-right">
                     <?php
                     // if ($user->role_id == 2) {
-                        // echo Html::a('<i class="nav-icon fas fa-sign-in-alt"></i> Pindah Kelas', ['change-class', 'id' => $model->id], ['class' => 'btn btn-warning']);
+                    // echo Html::a('<i class="nav-icon fas fa-sign-in-alt"></i> Pindah Kelas', ['change-class', 'id' => $model->id], ['class' => 'btn btn-warning']);
                     // }                     
                     ?>
                     <?= Html::a('<i class="fas fa-pen"></i> Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
                     <?= Html::a('<i class="fas fa-trash"></i> Hapus / Mutasi', ['delete', 'id' => $model->id], [
-                            'class' => 'btn btn-danger',
-                            'onclick' => 'return confirm("Apakah Anda yakin hapus / mutasi siswa ini?");',
+                        'class' => 'btn btn-danger',
+                        'onclick' => 'return confirm("Apakah Anda yakin hapus / mutasi siswa ini?");',
                     ]) ?>
                 </div>
             </header>
-            
+
             <div class="card-body">
-            <?= DetailView::widget([
-                'model' => $model,
-                'attributes' => [
-                    //'id',
-                    //'school_id',
-                    'nis',
-                    'nisn',
-                    'name',
-                    'class',
-                    'gender',
-                    'year',
-                    //'status',
-                    'created_at',
-                    'updated_at',
-                ],
-            ]) ?>
+                <?= DetailView::widget([
+                    'model' => $model,
+                    'attributes' => [
+                        //'id',
+                        //'school_id',
+                        'nis',
+                        'nisn',
+                        'name',
+                        'class',
+                        'gender',
+                        'year',
+                        'finger_code',
+                        //'status',
+                        'created_at',
+                        'updated_at',
+                    ],
+                ]) ?>
             </div>
         </div>
-    </div>  
+    </div>
 </div>

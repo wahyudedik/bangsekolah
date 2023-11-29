@@ -4,8 +4,10 @@ namespace backend\controllers;
 
 use Yii;
 use common\models\Presence;
+use common\models\Student;
 use common\models\SchoolClass;
 use yii\data\ActiveDataProvider;
+use yii\web\Response;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -48,7 +50,7 @@ class PresenceController extends Controller
         $end_timestamp = strtotime($enddate);
 
         // Menghitung selisih hari
-        $totalHari = ($end_timestamp - $start_timestamp) / (60 * 60 * 24);
+        $totalHari = (($end_timestamp - $start_timestamp) / (60 * 60 * 24)) + 1;
 
         $classes = SchoolClass::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'status' => 'ACTIVE'])->all();
 
@@ -140,5 +142,46 @@ class PresenceController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    public function actionSavePresence()
+    {
+        \Yii::$app->response->format = Response::FORMAT_JSON;
+
+        // Menerima data presensi dari POST request
+        // $student_id = Yii::$app->request->post('student_id');
+        $date = Yii::$app->request->post('date');
+        $check_in_time = Yii::$app->request->post('check_in_time');
+        $check_out_time = Yii::$app->request->post('check_out_time');
+
+        // mencari data siswa
+        $student = Student::find()->where(['finger_code' => $pin])->one();
+        if (!$student) {
+            return ['status' => 'error', 'message' => 'Siswa dengan kode ' . $pin . ' tidak ditemukan.'];
+        }
+        $student_id = $student->id;
+
+        // Mengecek apakah data presensi sudah ada di tabel Presence
+        $presence = Presence::find()
+            ->where(['student_id' => $student_id, 'date' => $date])
+            ->one();
+
+        if (!$presence) {
+            // Jika data presensi belum ada, membuat row baru
+            $presence = new Presence();
+            $presence->student_id = $student_id;
+            $presence->date = $date;
+        }
+
+        // Mengupdate check_in_time dan check_out_time
+        $presence->check_in_time = $check_in_time;
+        $presence->check_out_time = $check_out_time;
+
+        // Menyimpan data presensi
+        if ($presence->save()) {
+            return ['status' => 'success', 'message' => 'Data presensi berhasil disimpan.'];
+        } else {
+            return ['status' => 'error', 'message' => 'Gagal menyimpan data presensi.'];
+        }
     }
 }
