@@ -23,6 +23,15 @@ class PresenceController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => \yii\filters\AccessControl::className(),
+                'rules' => [
+                    [
+                        'actions' => ['save-presence'],
+                        'allow' => true,
+                    ],
+                ],
+            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
@@ -30,6 +39,16 @@ class PresenceController extends Controller
                 ],
             ],
         ];
+    }
+
+    public function beforeAction($action)
+    {
+        if ($action->id === 'save-presence' && Yii::$app->getRequest()->getIsPost()) {
+            // Menonaktifkan validasi CSRF untuk tindakan save-presence dengan metode POST
+            $this->enableCsrfValidation = false;
+        }
+
+        return parent::beforeAction($action);
     }
 
     /**
@@ -150,38 +169,47 @@ class PresenceController extends Controller
 
         // Menerima data presensi dari POST request
         // $student_id = Yii::$app->request->post('student_id');
+        $pin = Yii::$app->request->post('pin');
         $date = Yii::$app->request->post('date');
-        $check_in_time = Yii::$app->request->post('check_in_time');
-        $check_out_time = Yii::$app->request->post('check_out_time');
+        $check_in = Yii::$app->request->post('check_in');
+        $check_out = Yii::$app->request->post('check_out');
+
+        // Memeriksa apakah salah satu parameter kosong
+        if (empty($pin) || empty($date) || empty($check_in) || empty($check_out)) {
+            // Mengembalikan pesan JSON jika ada parameter yang kosong
+            return ['status' => 400, 'message' => 'Parameter tidak lengkap'];
+        }
 
         // mencari data siswa
         $student = Student::find()->where(['finger_code' => $pin])->one();
         if (!$student) {
-            return ['status' => 'error', 'message' => 'Siswa dengan kode ' . $pin . ' tidak ditemukan.'];
+            return ['status' => '404', 'message' => 'Siswa dengan kode ' . $pin . ' tidak ditemukan.'];
         }
-        $student_id = $student->id;
+        // $student_id = $student->id;
 
         // Mengecek apakah data presensi sudah ada di tabel Presence
         $presence = Presence::find()
-            ->where(['student_id' => $student_id, 'date' => $date])
+            ->where(['student_id' => $student->id, 'date' => $date])
             ->one();
 
         if (!$presence) {
             // Jika data presensi belum ada, membuat row baru
             $presence = new Presence();
-            $presence->student_id = $student_id;
+            $presence->school_id = $student->school_id;
+            $presence->student_id = $student->id;
+            $presence->class = $student->class;
             $presence->date = $date;
         }
 
-        // Mengupdate check_in_time dan check_out_time
-        $presence->check_in_time = $check_in_time;
-        $presence->check_out_time = $check_out_time;
+        // Mengupdate check_in dan check_out
+        $presence->check_in = $check_in;
+        $presence->check_out = $check_out;
 
         // Menyimpan data presensi
         if ($presence->save()) {
-            return ['status' => 'success', 'message' => 'Data presensi berhasil disimpan.'];
+            return ['status' => 200, 'message' => 'Data presensi berhasil disimpan.'];
         } else {
-            return ['status' => 'error', 'message' => 'Gagal menyimpan data presensi.'];
+            return ['status' => 500, 'message' => 'Gagal menyimpan data presensi.'];
         }
     }
 }
