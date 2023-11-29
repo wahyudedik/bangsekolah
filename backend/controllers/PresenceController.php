@@ -178,7 +178,7 @@ class PresenceController extends Controller
 
         // Pastikan data yang diperlukan ada
         if (!is_array($data) || empty($data)) {
-            return $this->asJson(['status' => 200, 'message' => 'Data tidak lengkap']);
+            return $this->asJson(['status' => 400, 'message' => 'Data tidak lengkap']);
         }
 
         $successCount = 0;
@@ -197,7 +197,7 @@ class PresenceController extends Controller
             // mencari data siswa
             $student = Student::find()->where(['finger_code' => $id])->one();
             if (!$student) {
-                return ['status' => '404', 'message' => 'Siswa dengan kode ' . $id . ' tidak ditemukan.'];
+                return ['status' => 404, 'message' => 'Siswa dengan kode ' . $id . ' tidak ditemukan.'];
             }
 
             // Mengecek apakah data presensi sudah ada di tabel Presence
@@ -223,6 +223,6 @@ class PresenceController extends Controller
             }
         }
 
-        return ['status' => '200', 'message' => "$successCount data berhasil disimpan"];
+        return ['status' => 200, 'message' => "$successCount data berhasil disimpan"];
     }
 }
