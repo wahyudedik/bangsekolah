@@ -30,6 +30,10 @@ class PresenceController extends Controller
                         'actions' => ['save'],
                         'allow' => true,
                     ],
+                    [
+                        'actions' => ['index'],
+                        'allow' => '@',
+                    ],
                 ],
             ],
             'verbs' => [
@@ -167,49 +171,58 @@ class PresenceController extends Controller
     {
         \Yii::$app->response->format = Response::FORMAT_JSON;
 
-        // Menerima data presensi dari POST request
-        // $student_id = Yii::$app->request->post('student_id');
-        $pin = Yii::$app->request->post('pin');
-        $date = Yii::$app->request->post('date');
-        $check_in = Yii::$app->request->post('check_in');
-        $check_out = Yii::$app->request->post('check_out');
+        // $request = Yii::$app->request;
+        // $data = $request->getBodyParams();
+        $rawData = Yii::$app->request->getRawBody();
+        $data = json_decode($rawData, true);
 
-        // Memeriksa apakah salah satu parameter kosong
-        if (empty($pin) || empty($date) || empty($check_in) || empty($check_out)) {
-            // Mengembalikan pesan JSON jika ada parameter yang kosong
-            return ['status' => 400, 'message' => 'Parameter tidak lengkap'];
+        // Pastikan data yang diperlukan ada
+        if (!is_array($data) || empty($data)) {
+            return $this->asJson(['status' => 200, 'message' => 'Data tidak lengkap']);
         }
 
-        // mencari data siswa
-        $student = Student::find()->where(['finger_code' => $pin])->one();
-        if (!$student) {
-            return ['status' => '404', 'message' => 'Siswa dengan kode ' . $pin . ' tidak ditemukan.'];
+        $successCount = 0;
+
+        foreach ($data as $item) {
+            // Pastikan setiap elemen array memiliki properti 'id' dan 'timestamp'
+            if (!isset($item['id']) || !isset($item['timestamp'])) {
+                continue; // Lewatkan data yang tidak lengkap
+            }
+
+            // Lakukan operasi simpan data ke database atau proses lainnya
+            $id = $item['id'];
+            $timestamp = $item['timestamp'];
+            $date = date('Y-m-d', strtotime($timestamp));
+
+            // mencari data siswa
+            $student = Student::find()->where(['finger_code' => $id])->one();
+            if (!$student) {
+                return ['status' => '404', 'message' => 'Siswa dengan kode ' . $id . ' tidak ditemukan.'];
+            }
+
+            // Mengecek apakah data presensi sudah ada di tabel Presence
+            $presence = Presence::find()
+                ->where(['student_id' => $student->id, 'date' => $date])
+                ->one();
+
+            if (!$presence) {
+                // Jika data presensi belum ada, membuat row baru
+                $presence = new Presence();
+                $presence->school_id = $student->school_id;
+                $presence->student_id = $student->id;
+                $presence->class = $student->class;
+                $presence->date = $date;
+            }
+
+            // Mengupdate check_in dan check_out
+            $presence->check_in = $timestamp;
+
+            // Menyimpan data presensi
+            if ($presence->save()) {
+                $successCount++;
+            }
         }
-        // $student_id = $student->id;
 
-        // Mengecek apakah data presensi sudah ada di tabel Presence
-        $presence = Presence::find()
-            ->where(['student_id' => $student->id, 'date' => $date])
-            ->one();
-
-        if (!$presence) {
-            // Jika data presensi belum ada, membuat row baru
-            $presence = new Presence();
-            $presence->school_id = $student->school_id;
-            $presence->student_id = $student->id;
-            $presence->class = $student->class;
-            $presence->date = $date;
-        }
-
-        // Mengupdate check_in dan check_out
-        $presence->check_in = $check_in;
-        $presence->check_out = $check_out;
-
-        // Menyimpan data presensi
-        if ($presence->save()) {
-            return ['status' => 200, 'message' => 'Data presensi berhasil disimpan.'];
-        } else {
-            return ['status' => 500, 'message' => 'Gagal menyimpan data presensi.'];
-        }
+        return ['status' => '200', 'message' => "$successCount data berhasil disimpan"];
     }
 }

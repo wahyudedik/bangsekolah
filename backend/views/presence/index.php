@@ -14,6 +14,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 $school_id = School::findOne(Yii::$app->session->get('school_id'));
 ?>
+<meta http-equiv="refresh" content="300"> <!-- Refresh setiap 300 detik (5 menit) -->
 <div class="card">
     <?php $form = ActiveForm::begin(['method' => 'get', 'action' => Url::to(['index'])]) ?>
     <div class="card-header">
