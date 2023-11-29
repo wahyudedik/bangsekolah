@@ -27,7 +27,7 @@ class PresenceController extends Controller
                 'class' => \yii\filters\AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['save-presence'],
+                        'actions' => ['save'],
                         'allow' => true,
                     ],
                 ],
@@ -43,7 +43,7 @@ class PresenceController extends Controller
 
     public function beforeAction($action)
     {
-        if ($action->id === 'save-presence' && Yii::$app->getRequest()->getIsPost()) {
+        if ($action->id === 'save' && Yii::$app->getRequest()->getIsPost()) {
             // Menonaktifkan validasi CSRF untuk tindakan save-presence dengan metode POST
             $this->enableCsrfValidation = false;
         }
@@ -163,7 +163,7 @@ class PresenceController extends Controller
         throw new NotFoundHttpException('The requested page does not exist.');
     }
 
-    public function actionSavePresence()
+    public function actionSave()
     {
         \Yii::$app->response->format = Response::FORMAT_JSON;
 
