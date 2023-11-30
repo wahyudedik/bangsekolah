@@ -42,7 +42,7 @@ $user = Yii::$app->user->identity;
                 <?php
                 $no = 1;
                 foreach ($days as $day) {
-                    $templates = LessonScheduleTemplate::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'class' => $class, 'day' => $day->name])->all();
+                    $templates = LessonScheduleTemplate::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'class' => $class, 'day' => $day->name, 'status' => 'ACTIVE'])->all();
                     if (count($templates) > 0) {
                         $lessonNum = 1;
                         foreach ($templates as $template) {
