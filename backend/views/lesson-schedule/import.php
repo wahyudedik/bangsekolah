@@ -6,8 +6,8 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model common\models\Teacher */
 
-$this->title = 'Import Presensi';
-$this->params['breadcrumbs'][] = ['label' => 'Presensi', 'url' => ['index']];
+$this->title = 'Import Kehadiran';
+$this->params['breadcrumbs'][] = ['label' => 'Kehadiran', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 
 $baseUrl = Yii::$app->request->baseUrl;
@@ -26,9 +26,9 @@ $baseUrl = Yii::$app->request->baseUrl;
                             Berikut adalah tampilan template excel untuk import data presensi:</p>
                         </p>
                         <p>
-                            <img src="<?= $baseUrl ?>/images/template-preview-presensi.png" width="100%">
+                            <img src="<?= $baseUrl ?>/images/template-preview-kehadiran.png" width="100%">
                         </p>
-                        <p>Download template import data presensi di sini: <br><a href="<?= $baseUrl ?>/template/template-import-presensi.xlsx" download="template-import-presensi.xlsx" style="color: #007bff;">TEMPLATE IMPORT PresensiNSI.xlsx</a></p>
+                        <p>Download template import data kehadiran di sini: <br><a href="<?= $baseUrl ?>/template/template-import-kehadiran.xlsx" download="template-import-kehadiran.xlsx" style="color: #007bff;">TEMPLATE IMPORT KEHADIRAN.xlsx</a></p>
                     </div>
 
                     <?= $form->field($model, 'file')->fileInput() ?>

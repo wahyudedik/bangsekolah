@@ -11,6 +11,7 @@ use yii\web\Response;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\web\UploadedFile;
 
 /**
  * PresenceController implements the CRUD actions for Presence model.
@@ -31,7 +32,7 @@ class PresenceController extends Controller
                         'allow' => true,
                     ],
                     [
-                        'actions' => ['index'],
+                        'actions' => ['index', 'import'],
                         'allow' => '@',
                     ],
                 ],
@@ -76,7 +77,7 @@ class PresenceController extends Controller
 
         // query
         $school_id = Yii::$app->session->get('school_id');
-        $query = Presence::find()->where(['school_id' => $school_id])->orderBy(['id' => SORT_DESC]);
+        $query = Presence::find()->where(['school_id' => $school_id])->orderBy(['updated_at' => SORT_DESC]);
         if ($startdate && $enddate) {
             $query->andFilterWhere([
                 'or',
@@ -245,5 +246,114 @@ class PresenceController extends Controller
         }
 
         return ['status' => 200, 'message' => "$successCount data berhasil disimpan"];
+    }
+
+    public function actionImport()
+    {
+        $school_id = Yii::$app->session->get('school_id');
+        $model = new Presence();
+
+        if ($model->load(Yii::$app->request->post())) {
+
+            $import = UploadedFile::getInstance($model, 'file');
+            if (isset($import)) {
+                $exploded_name = explode('.', $import->name);
+                $extension = end($exploded_name);
+                $model->file = Yii::$app->security->generateRandomString() . ".{$extension}";
+                $path = Yii::getAlias('@uploads/import/') . $model->file;
+                $import->saveAs($path);
+
+                $totalItem = 0;
+                $transaction = Yii::$app->db->beginTransaction();
+
+                $result = $this->populateDataExcel($path, 0);
+                if ($result['status'] == 'ERROR') {
+                    Yii::$app->session->setFlash('danger', $result['data']);
+                } else {
+                    $data = $result['data'];
+
+                    foreach ($data as $item) {
+                        $presence = Presence::find()
+                            ->where(['school_id' => $school_id, 'date' => $item['date'], 'status' => 'ACTIVE'])
+                            ->one();
+                        if (!$presence) {
+                            $student = $data['student'];
+                            $presence = new Presence();
+                            $presence->school_id = $school_id;
+                            $presence->student_id = $student->id;
+                            $presence->class = $student->class;
+                            $presence->date = $data['date'];
+                        }
+                        $presence->check_in = $data['check_in'];
+                        $presence->check_out = $data['check_out'];
+                        if ($presence->save()) {
+                            $totalItem++;
+                        }
+                    }
+                }
+                $transaction->commit();
+                Yii::$app->session->setFlash('success', $totalItem . ' data presensi berhasil diimport');
+                return $this->redirect(['index']);
+            }
+        }
+
+        return $this->render('import', [
+            'model' => $model,
+        ]);
+    }
+
+    private function populateDataExcel($fileName, $sheet = 0)
+    {
+
+        // PHP Excel init        
+        $phpexcel = \PHPExcel_IOFactory::load($fileName);
+        $worksheet = $phpexcel->getSheet($sheet);
+        $dataExcel = $worksheet->toArray();
+        $error = null;
+        $itemArray = [];
+        $row_number = 0;
+        if ($sheet == 0) {
+            foreach ($dataExcel as $rowExcelData) {
+                if ($row_number++ > 0 && $rowExcelData[0] !== null) {
+
+                    // check NIS student
+                    $student = Student::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'nis' => $rowExcelData[1], 'status' => 'ACTIVE'])->one();
+                    if (!$student) {
+                        $error = 'NIS ' . $rowExcelData[1] . ' siswa pada baris ' . $row_number . ' tidak ditemukan';
+                        break;
+                    }
+
+                    // Cek apakah format waktu valid
+                    // Coba membuat objek DateTime dari string dengan format H:i
+                    $dateTimeCheckIn = \DateTime::createFromFormat('H:i', $rowExcelData[2]);
+                    $dateTimeCheckOut = \DateTime::createFromFormat('H:i', $rowExcelData[2]);
+
+                    // Periksa apakah berhasil dan apakah nilai yang diberikan sesuai dengan format H:i
+                    if ($dateTimeCheckIn->format('H:i') !== $rowExcelData[2] && $dateTimeCheckOut->format('H:i') !== $rowExcelData[3]) {
+                        $error = 'Format waktu checkin dan checkout pada baris ' . $row_number . ' tidak valid';
+                        break;
+                    }
+
+                    $itemArray[] = [
+                        'date' => date('Y-m-d', strtotime($rowExcelData[0])),
+                        'student' => $student,
+                        'check_in' => $rowExcelData[2],
+                        'check_out' => $rowExcelData[3],
+                    ];
+                }
+            }
+        }
+        @unlink($fileName);
+        if ($error != NULL) {
+            return [
+                'status' => 'ERROR',
+                'data' => $error
+            ];
+        } else {
+            return [
+                'status' => 'OK',
+                'data' => $itemArray
+            ];
+        }
     }
 }
