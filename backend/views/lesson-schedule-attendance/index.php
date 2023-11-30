@@ -8,7 +8,7 @@ use yii\widgets\ActiveForm;
 use common\models\School;
 use common\models\Student;
 
-$this->title = 'Rekapitulasi Presensi';
+$this->title = 'Rekapitulasi Kehadiran';
 $this->params['breadcrumbs'][] = $this->title;
 
 $school_id = School::findOne(Yii::$app->session->get('school_id'));

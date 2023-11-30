@@ -72,17 +72,34 @@ class PresenceController extends Controller
         $start_timestamp = strtotime($startdate);
         $end_timestamp = strtotime($enddate);
 
-        // Menghitung selisih hari
-        $totalHari = (($end_timestamp - $start_timestamp) / (60 * 60 * 24)) + 1;
-
         $classes = SchoolClass::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'status' => 'ACTIVE'])->all();
 
+        // query
+        $school_id = Yii::$app->session->get('school_id');
+        $query = Presence::find()->where(['school_id' => $school_id])->orderBy(['id' => SORT_DESC]);
+        if ($startdate && $enddate) {
+            $query->andFilterWhere([
+                'or',
+                ['>=', 'date(check_in)', $startdate],
+                ['>=', 'date(check_out)', $enddate],
+            ]);
+        }
+        if ($class) {
+            $query->andFilterWhere([
+                'or',
+                ['like', 'class', $class],
+            ]);
+        }
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
+
         return $this->render('index', [
+            'dataProvider' => $dataProvider,
             'startdate' => $startdate,
             'enddate' => $enddate,
             'classes' => $classes,
             'class' => $class,
-            'totalHari' => $totalHari,
         ]);
     }
 
@@ -215,7 +232,11 @@ class PresenceController extends Controller
             }
 
             // Mengupdate check_in dan check_out
-            $presence->check_in = $timestamp;
+            if ($presence->check_in == null) {
+                $presence->check_in = $timestamp;
+            } else {
+                $presence->check_out = $timestamp;
+            }
 
             // Menyimpan data presensi
             if ($presence->save()) {
