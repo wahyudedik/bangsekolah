@@ -119,6 +119,9 @@ class TeacherController extends Controller
                     $userSchool->user_id = $user->id;
                     $userSchool->school_id = $school_id;
                     $userSchool->save();
+
+                    $model->user_id = $user->id;
+                    $model->save();
                 }
 
                 return $this->redirect(['view', 'id' => $model->id]);
@@ -182,6 +185,9 @@ class TeacherController extends Controller
                                 $userSchool->user_id = $user->id;
                                 $userSchool->school_id = $school_id;
                                 $userSchool->save();
+
+                                $model->user_id = $user->id;
+                                $model->save();
                             }
 
                             $totalItem++;
