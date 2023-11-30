@@ -24,10 +24,12 @@ use common\models\SchoolClass;
 
                         <?= $form->field($model, 'name')->textInput() ?>
                         <?= $form->field($model, 'gender')->dropDownList(
-                                ['L' => 'Laki - Laki', 'P' => 'Perempuan']
-                            ) ?>
+                            ['L' => 'Laki - Laki', 'P' => 'Perempuan']
+                        ) ?>
                         <?= $form->field($model, 'year')->dropDownList(Year::getList()) ?>
-                        <?= $form->field($model, 'class')->dropDownList(SchoolClass::getList()) ?>
+                        <?= $form->field($model, 'class')->dropDownList(SchoolClass::getList(), [
+                            'prompt' => 'Pilih kelas',
+                        ]) ?>
 
                         <div class="form-group">
                             <?php
@@ -43,7 +45,7 @@ use common\models\SchoolClass;
                 </div>
             </div>
         </div>
-        
+
         <?php ActiveForm::end(); ?>
     </div>
 </div>
