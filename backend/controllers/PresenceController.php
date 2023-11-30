@@ -273,19 +273,17 @@ class PresenceController extends Controller
                     $data = $result['data'];
 
                     foreach ($data as $item) {
-                        $presence = Presence::find()
-                            ->where(['school_id' => $school_id, 'date' => $item['date'], 'status' => 'ACTIVE'])
-                            ->one();
+                        $presence = Presence::find()->where(['school_id' => $school_id, 'date' => $item['date']])->one();
                         if (!$presence) {
-                            $student = $data['student'];
+                            $student = $item['student'];
                             $presence = new Presence();
                             $presence->school_id = $school_id;
                             $presence->student_id = $student->id;
                             $presence->class = $student->class;
-                            $presence->date = $data['date'];
+                            $presence->date = $item['date'];
                         }
-                        $presence->check_in = $data['check_in'];
-                        $presence->check_out = $data['check_out'];
+                        $presence->check_in = $item['date'] . ' ' . $item['check_in'];
+                        $presence->check_out = $item['date'] . ' ' . $item['check_out'];
                         if ($presence->save()) {
                             $totalItem++;
                         }
