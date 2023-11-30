@@ -44,8 +44,9 @@ class LessonScheduleController extends Controller
     {
         \common\helpers\Sidebar::setActiveMenu('lesson-schedule', 'index');
 
+        $school_id = Yii::$app->session->get('school_id');
         $dataProvider = new ActiveDataProvider([
-            'query' => LessonSchedule::find()->orderBy(['id' => SORT_DESC]),
+            'query' => LessonSchedule::find()->where(['school_id' => $school_id])->orderBy(['id' => SORT_DESC]),
         ]);
 
         return $this->render('index', [
