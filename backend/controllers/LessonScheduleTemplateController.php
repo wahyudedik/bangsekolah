@@ -78,22 +78,25 @@ class LessonScheduleTemplateController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate()
+    public function actionCreate($class = null)
     {
         $model = new LessonScheduleTemplate();
         $model->school_id = Yii::$app->session->get('school_id');
         $model->status = 'ACTIVE';
+        if ($class) {
+            $model->class = $class;
+        }
 
         // $classes = SchoolClass::find()->where(['school_id' => Yii::$app->session->get('school_id')])->all();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             // return $this->redirect(['view', 'id' => $model->id]);
-            return $this->redirect(['index']);
+            return $this->redirect(['index', 'class' => $class]);
         }
 
         return $this->render('create', [
             'model' => $model,
-            // 'classes' => $classes,
+            'class' => $class,
         ]);
     }
 
@@ -110,11 +113,12 @@ class LessonScheduleTemplateController extends Controller
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             // return $this->redirect(['view', 'id' => $model->id]);
-            return $this->redirect(['index']);
+            return $this->redirect(['index', 'class' => $model->class]);
         }
 
         return $this->render('update', [
             'model' => $model,
+            'class' => $model->class,
         ]);
     }
 
@@ -128,12 +132,15 @@ class LessonScheduleTemplateController extends Controller
     public function actionDelete($id)
     {
         $model = $this->findModel($id);
+        $class = null;
         if ($model) {
+            $class = $model->class;
+
             $model->status = 'NONACTIVE';
             $model->save();
         }
 
-        return $this->redirect(['index']);
+        return $this->redirect(['index', 'class' => $class]);
     }
 
     /**
