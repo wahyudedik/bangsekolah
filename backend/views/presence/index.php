@@ -10,6 +10,7 @@ use yii\grid\GridView;
 $this->title = 'Presensi';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
+<meta http-equiv="refresh" content="600"> <!-- Refresh setiap 600 detik (10 menit) -->
 <div class="card">
     <?php $form = ActiveForm::begin(['method' => 'get', 'action' => Url::to(['index'])]) ?>
     <div class="card-header">
