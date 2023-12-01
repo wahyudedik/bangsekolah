@@ -238,6 +238,8 @@ class PresenceController extends Controller
             } else {
                 if ($presence->check_in !== $timestamp) {
                     $presence->check_out = $timestamp;
+                } else {
+                    $presence->check_out = null;
                 }
             }
 
