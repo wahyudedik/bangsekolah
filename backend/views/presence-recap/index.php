@@ -40,7 +40,12 @@ $school_id = School::findOne(Yii::$app->session->get('school_id'));
                 </div>
             </div>
             <div class="col-lg-4" style="padding-top: 31px;">
-                <?= Html::submitButton('<i class="fas fa-search"></i> Tampilkan', ['class' => 'btn btn-success']) ?>
+                <?php
+                echo Html::submitButton('<i class="fas fa-search"></i> Tampilkan', ['class' => 'btn btn-success mr-1']);
+                if ($class) {
+                    echo Html::a('<i class="fas fa-file-excel"></i> Download Excel', ['presence-recap/export', 'startdate' => $startdate, 'enddate' => $enddate, 'class' => $class], ['class' => 'btn btn-info']) . ' ';
+                }
+                ?>
                 <?php //= Html::a('<i class="fas fa-file-excel"></i> Download Excel', ['export-excel', 'startdate' => $startdate, 'enddate' => $enddate, 'class' => $class], ['class' => 'btn btn-default']) 
                 ?>
                 <?php //= Html::submitButton('<i class="fas fa-file-pdf"></i> Download PDF', ['class' => 'btn btn-default', 'onclick' => 'alert("Fitur download PDF belum bisa digunakan, menunggu final revisi");']) 
