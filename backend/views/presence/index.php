@@ -37,7 +37,11 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
             <div class="col-lg-4" style="padding-top: 31px;">
                 <?= Html::submitButton('<i class="fas fa-search"></i> Tampilkan', ['class' => 'btn btn-success']) ?>
-                <?= Html::a('<i class="fas fa-plus fa-lg"></i> Import Presensi', ['import'], ['class' => 'btn btn-primary']) ?>
+                <?php
+                if (Yii::$app->user->identity->role_id == 2) {
+                    echo Html::a('<i class="fas fa-plus fa-lg"></i> Import Presensi', ['import'], ['class' => 'btn btn-primary']);
+                }
+                ?>
                 <?php //= Html::a('<i class="fas fa-file-excel"></i> Download Excel', ['export-excel', 'startdate' => $startdate, 'enddate' => $enddate, 'class' => $class], ['class' => 'btn btn-default']) 
                 ?>
                 <?php //= Html::submitButton('<i class="fas fa-file-pdf"></i> Download PDF', ['class' => 'btn btn-default', 'onclick' => 'alert("Fitur download PDF belum bisa digunakan, menunggu final revisi");']) 
