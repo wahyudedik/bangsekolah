@@ -236,7 +236,9 @@ class PresenceController extends Controller
             if ($presence->check_in == null) {
                 $presence->check_in = $timestamp;
             } else {
-                $presence->check_out = $timestamp;
+                if ($presence->check_in !== $timestamp) {
+                    $presence->check_out = $timestamp;
+                }
             }
 
             // Menyimpan data presensi
