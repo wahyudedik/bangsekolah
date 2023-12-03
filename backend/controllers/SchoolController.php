@@ -84,7 +84,9 @@ class SchoolController extends Controller
         $model->transaction_number = 0;
         $model->status = 'ACTIVE';
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($model->load(Yii::$app->request->post())) {
+            $model->number = strtoupper($model->number);
+            $model->save();
             return $this->redirect(['view', 'id' => $model->id]);
         }
 

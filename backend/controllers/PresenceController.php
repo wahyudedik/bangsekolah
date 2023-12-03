@@ -5,6 +5,7 @@ namespace backend\controllers;
 use Yii;
 use common\models\Presence;
 use common\models\Student;
+use common\models\School;
 use common\models\SchoolClass;
 use yii\data\ActiveDataProvider;
 use yii\web\Response;
@@ -203,17 +204,22 @@ class PresenceController extends Controller
 
         foreach ($data as $item) {
             // Pastikan setiap elemen array memiliki properti 'id' dan 'timestamp'
-            if (!isset($item['id']) || !isset($item['timestamp'])) {
+            if (!isset($item['school'])  || !isset($item['id']) || !isset($item['timestamp'])) {
                 continue; // Lewatkan data yang tidak lengkap
             }
 
             // Lakukan operasi simpan data ke database atau proses lainnya
+            $school = $item['school'];
             $id = $item['id'];
             $timestamp = $item['timestamp'];
             $date = date('Y-m-d', strtotime($timestamp));
 
             // mencari data siswa
-            $student = Student::find()->where(['finger_code' => $id])->one();
+            $school = School::find()->where(['number' => $school])->one();
+            if (!$school) {
+                return ['status' => 404, 'message' => 'Sekolah dengan kode ' . $school . ' tidak ditemukan.'];
+            }
+            $student = Student::find()->where(['school_id' => $school->id, 'finger_code' => $id])->one();
             if (!$student) {
                 return ['status' => 404, 'message' => 'Siswa dengan kode ' . $id . ' tidak ditemukan.'];
             }
