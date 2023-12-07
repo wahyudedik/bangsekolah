@@ -211,7 +211,7 @@ class PresenceTeacherController extends Controller
             }
             $teacher = Teacher::find()->where(['school_id' => $school->id, 'finger_code' => $id])->one();
             if (!$teacher) {
-                return ['status' => 404, 'message' => 'Siswa dengan kode ' . $id . ' tidak ditemukan.'];
+                return ['status' => 404, 'message' => 'Guru dengan kode ' . $id . ' tidak ditemukan.'];
             }
 
             // Mengecek apakah data presensi sudah ada di tabel Presence
