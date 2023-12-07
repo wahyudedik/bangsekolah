@@ -7,7 +7,7 @@ use common\models\Student;
 use common\models\Presence;
 use yii\grid\GridView;
 
-$this->title = 'Presensi';
+$this->title = 'Presensi Siswa';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <meta http-equiv="refresh" content="600"> <!-- Refresh setiap 600 detik (10 menit) -->
@@ -35,8 +35,9 @@ $this->params['breadcrumbs'][] = $this->title;
                     </select>
                 </div>
             </div>
-            <div class="col-lg-4" style="padding-top: 31px;">
+            <div class="col-lg-6" style="padding-top: 31px;">
                 <?= Html::submitButton('<i class="fas fa-search"></i> Tampilkan', ['class' => 'btn btn-success']) ?>
+                <?= Html::a('<i class="fas fa-file-alt"></i> Rekapitulasi Presensi', ['presence-recap/index'], ['class' => 'btn btn-info']) ?>
                 <?php
                 if (Yii::$app->user->identity->role_id == 2) {
                     echo Html::a('<i class="fas fa-plus fa-lg"></i> Import Presensi', ['import'], ['class' => 'btn btn-primary']);

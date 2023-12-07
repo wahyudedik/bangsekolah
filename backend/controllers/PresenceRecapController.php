@@ -43,7 +43,7 @@ class PresenceRecapController extends Controller
      */
     public function actionIndex($startdate = null, $enddate = null, $class = null)
     {
-        \common\helpers\Sidebar::setActiveMenu('presence-recap', 'index');
+        \common\helpers\Sidebar::setActiveMenu('presence', 'index');
 
         if ($startdate == null && $enddate == null) {
             $startdate = date('Y-m-d', strtotime('-1 week'));
@@ -166,7 +166,7 @@ class PresenceRecapController extends Controller
                 ->where(['school_id' => $school_id, 'class' => $class])
                 ->andWhere(['student_id' => $student->id])
                 ->andWhere(['>=', 'date', $startdate])
-                ->andWhere(['<=', 'date', $enddate])
+                ->andWhere(['>=', 'date', $enddate])
                 ->count();
             $jumlahAbsen = $totalHari - $jumlahMasuk;
 

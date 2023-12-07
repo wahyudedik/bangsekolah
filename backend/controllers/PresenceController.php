@@ -78,12 +78,12 @@ class PresenceController extends Controller
 
         // query
         $school_id = Yii::$app->session->get('school_id');
-        $query = Presence::find()->where(['school_id' => $school_id])->orderBy(['id' => SORT_DESC]);
+        $query = Presence::find()->where(['school_id' => $school_id])->andWhere(['not', ['student_id' => null]])->orderBy(['id' => SORT_DESC]);
         if ($startdate && $enddate) {
             $query->andFilterWhere([
-                'or',
+                'and',
                 ['>=', 'date(check_in)', $startdate],
-                ['>=', 'date(check_out)', $enddate],
+                ['>=', 'date(check_in)', $enddate],
             ]);
         }
         if ($class) {

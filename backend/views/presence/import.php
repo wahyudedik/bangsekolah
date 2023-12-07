@@ -28,7 +28,7 @@ $baseUrl = Yii::$app->request->baseUrl;
                         <p>
                             <img src="<?= $baseUrl ?>/images/template-preview-presensi.png" width="100%">
                         </p>
-                        <p>Download template import data presensi di sini: <br><a href="<?= $baseUrl ?>/template/template-import-presensi.xlsx" download="template-import-presensi.xlsx" style="color: #007bff;">TEMPLATE IMPORT KEHADIRAN.xlsx</a></p>
+                        <p>Download template import data presensi di sini: <br><a href="<?= $baseUrl ?>/template/template-import-presensi.xlsx" download="template-import-presensi.xlsx" style="color: #007bff;">TEMPLATE IMPORT PRESENSI.xlsx</a></p>
                     </div>
 
                     <?= $form->field($model, 'file')->fileInput() ?>
