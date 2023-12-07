@@ -15,6 +15,7 @@ use Yii;
  * @property string $name
  * @property string $gender
  * @property string $class
+ * @property string $finger_code
  * @property string $year
  * @property string $status ACTIVE, NONACTIVE
  * @property string $created_at
@@ -56,7 +57,7 @@ class Teacher extends \yii\db\ActiveRecord
         return [
             [['school_id'], 'integer'],
             [['created_at', 'updated_at', 'file'], 'safe'],
-            [['nik', 'nuptk', 'name', 'gender', 'class', 'year', 'status'], 'string', 'max' => 255],
+            [['nik', 'nuptk', 'name', 'gender', 'class', 'year', 'status', 'finger_code'], 'string', 'max' => 255],
         ];
     }
 
@@ -75,6 +76,7 @@ class Teacher extends \yii\db\ActiveRecord
             'class' => 'Wali Kelas',
             'year' => 'Tahun Ajaran',
             'status' => 'Status',
+            'finger_code' => 'Kode Fingerprint',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
         ];
