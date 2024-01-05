@@ -23,6 +23,7 @@ use common\models\SchoolClass;
                         <?= $form->field($model, 'nik')->textInput() ?>
 
                         <?= $form->field($model, 'name')->textInput() ?>
+                        <?= $form->field($model, 'finger_code')->textInput() ?>
                         <?= $form->field($model, 'gender')->dropDownList(
                             ['L' => 'Laki - Laki', 'P' => 'Perempuan']
                         ) ?>
