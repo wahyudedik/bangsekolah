@@ -1,4 +1,5 @@
 <?php
+
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 
@@ -11,7 +12,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="col-lg-6">
         <div class="card">
             <header class="card-header">
-                <?= Html::a('<i class="fas fa-chevron-left"></i> Kembali', ['effective-day/index'], ['class' => 'btn btn-warning']) ?>
+                <?= Html::a('<i class="fas fa-chevron-left"></i> Kembali', ['day/index'], ['class' => 'btn btn-warning']) ?>
                 <div class="filter-block float-right">
                     <?= Html::a('<i class="fas fa-pen"></i> Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
                     <?= Html::a('<i class="fas fa-trash"></i> Hapus', ['delete', 'id' => $model->id], [
@@ -27,9 +28,9 @@ $this->params['breadcrumbs'][] = $this->title;
                         'class' => 'table table-striped table-hover'
                     ],
                     'attributes' => [
-                    'name',
-                    'created_at',
-                    'updated_at',
+                        'name',
+                        'created_at',
+                        'updated_at',
                     ],
                 ]) ?>
             </div>

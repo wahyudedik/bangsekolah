@@ -38,7 +38,7 @@ class DayController extends Controller
         \common\helpers\Sidebar::setActiveMenu('day', 'index');
 
         $dataProvider = new ActiveDataProvider([
-            'query' => Day::find(),
+            'query' => Day::find()->where(['school_id' => Yii::$app->session->get('school_id')]),
         ]);
 
         return $this->render('index', [
