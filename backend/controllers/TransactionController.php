@@ -44,17 +44,29 @@ class TransactionController extends Controller
             ->joinWith(['student', 'schoolPayment'])
             ->where(['student.school_id' => Yii::$app->session->get('school_id')]);
 
-        if($startdate == null && $enddate == null){
+        if ($startdate == null && $enddate == null) {
             $startdate = date('Y-m-d', strtotime('-1 month'));
             $enddate = date('Y-m-d');
         }
 
-        if ($startdate) { $query->andFilterWhere(['and', ['>=', 'DATE(transaction.date)', $startdate]]); }
-        if ($enddate) { $query->andFilterWhere(['and', ['<=', 'DATE(transaction.date)', $enddate]]); }
-        if($class) { $query->andFilterWhere(['student.class' => $class]); }
-        if($nis) { $query->andFilterWhere(['student.nis' => $nis]); }
-        if($name) { $query->andFilterWhere(['or', ['like', 'student.name', $name]]); }
-        if($payment) { $query->andFilterWhere(['or', ['like', 'school_payment.name', $payment]]); }
+        if ($startdate) {
+            $query->andFilterWhere(['and', ['>=', 'DATE(transaction.date)', $startdate]]);
+        }
+        if ($enddate) {
+            $query->andFilterWhere(['and', ['<=', 'DATE(transaction.date)', $enddate]]);
+        }
+        if ($class) {
+            $query->andFilterWhere(['student.class' => $class]);
+        }
+        if ($nis) {
+            $query->andFilterWhere(['student.nis' => $nis]);
+        }
+        if ($name) {
+            $query->andFilterWhere(['or', ['like', 'student.name', $name]]);
+        }
+        if ($payment) {
+            $query->andFilterWhere(['or', ['like', 'school_payment.name', $payment]]);
+        }
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query->orderBy(['id' => SORT_DESC]),
@@ -109,7 +121,7 @@ class TransactionController extends Controller
             $nota_format = $school->nota_format;
         }
 
-        $content = $this->renderPartial('@app/views/pdf-template/'.$nota_format, [
+        $content = $this->renderPartial('@app/views/pdf-template/' . $nota_format, [
             'transaction' => $transaction,
             'transactions' => $transactions,
         ]);
@@ -118,7 +130,7 @@ class TransactionController extends Controller
 
         $pdf = new Pdf([
             'mode' => Pdf::MODE_CORE,
-            'filename' => 'Bukti Pembayaran - '.$transaction->student->nis.' - '.$transaction->student->name.'.pdf',
+            'filename' => 'Bukti Pembayaran - ' . $transaction->student->nis . ' - ' . $transaction->student->name . '.pdf',
             'format' => [215, 330],
             // 'format' => [330, 215],
             'orientation' => Pdf::ORIENT_PORTRAIT,
@@ -141,13 +153,13 @@ class TransactionController extends Controller
             .large{font-size:17px;}
 
             ',
-            
+
             'options' => [
                 'showWatermarkText' => true,
                 'showWatermarkImage' => true,
             ],
             'methods' => [
-                'SetTitle' => 'Bukti Pembayaran - '.$transaction->student->nis.' - '.$transaction->student->name,
+                'SetTitle' => 'Bukti Pembayaran - ' . $transaction->student->nis . ' - ' . $transaction->student->name,
             ]
         ]);
 
@@ -174,7 +186,7 @@ class TransactionController extends Controller
 
         $pdf = new Pdf([
             'mode' => Pdf::MODE_CORE,
-            'filename' => 'Riwayat Pembayaran Invoice - '.$invoice->number.'.pdf',
+            'filename' => 'Riwayat Pembayaran Invoice - ' . $invoice->number . '.pdf',
             'format' => [215, 330],
             // 'format' => [330, 215],
             'orientation' => Pdf::ORIENT_PORTRAIT,
@@ -197,13 +209,13 @@ class TransactionController extends Controller
             .large{font-size:17px;}
 
             ',
-            
+
             'options' => [
                 'showWatermarkText' => true,
                 'showWatermarkImage' => true,
             ],
             'methods' => [
-                'SetTitle' => 'Riwayat Pembayaran Invoice - '.$invoice->number,
+                'SetTitle' => 'Riwayat Pembayaran Invoice - ' . $invoice->number,
             ]
         ]);
 
@@ -236,7 +248,8 @@ class TransactionController extends Controller
         }
         if ($student) {
             $invoices = Invoice::find()->where(['student_id' => $student->id, 'school_id' => $student->school_id])->orderBy(['id' => SORT_DESC])->all();
-            $histories = Transaction::find()->where(['student_id' => $student->id, 'school_id' => $student->school_id, 'year(date)' => $student->year])->orderBy(['id' => SORT_DESC])->limit(5)->all();
+            // $histories = Transaction::find()->where(['student_id' => $student->id, 'school_id' => $student->school_id, 'year(date)' => $student->year])->orderBy(['id' => SORT_DESC])->limit(5)->all();
+            $histories = Transaction::find()->where(['student_id' => $student->id, 'school_id' => $student->school_id])->orderBy(['id' => SORT_DESC])->limit(5)->all();
         }
 
         if (isset($_POST['submit'])) {
@@ -249,7 +262,7 @@ class TransactionController extends Controller
             // generate transaction number
             $school = School::findOne($school_id);
             $lastNumber = $school->transaction_number;
-            $transactionNumber = str_pad($lastNumber+1, 5, '0', STR_PAD_LEFT).'/TRX/'.$school->number.'/'.date('m/Y');
+            $transactionNumber = str_pad($lastNumber + 1, 5, '0', STR_PAD_LEFT) . '/TRX/' . $school->number . '/' . date('m/Y');
             $lastNumber++;
             $school->transaction_number = $lastNumber;
             $school->save();
@@ -280,12 +293,12 @@ class TransactionController extends Controller
                     $invoice->paid_amount = $invoice->paid_amount + $amount;
                     $invoice->save();
                     if ($invoice->paid_amount == $invoice->amount) {
-                         $invoice->status = 'PAID';
-                         $invoice->save();
+                        $invoice->status = 'PAID';
+                        $invoice->save();
                     }
 
                     // activity log
-                    Activities::log('Transaksi Pembayaran', $invoice->student->nis.' '.$invoice->student->name.' ('.Strings::getRupiah($amount).')');
+                    Activities::log('Transaksi Pembayaran', $invoice->student->nis . ' ' . $invoice->student->name . ' (' . Strings::getRupiah($amount) . ')');
 
                     $saved++;
                 }
@@ -294,7 +307,7 @@ class TransactionController extends Controller
 
             if ($saved > 0) {
 
-                Yii::$app->session->setFlash('success', $saved.' transaksi berhasil disimpan. Klik detail transaksi untuk mencetak bukti bayar');
+                Yii::$app->session->setFlash('success', $saved . ' transaksi berhasil disimpan. Klik detail transaksi untuk mencetak bukti bayar');
             } else {
                 Yii::$app->session->setFlash('danger', 'Tidak ada transaksi yang tersimpan');
             }
@@ -317,7 +330,7 @@ class TransactionController extends Controller
         if ($model->load(Yii::$app->request->post())) {
 
             $import = UploadedFile::getInstance($model, 'file');
-            if(isset($import)){
+            if (isset($import)) {
                 $exploded_name = explode('.', $import->name);
                 $extension = end($exploded_name);
                 $model->file = Yii::$app->security->generateRandomString() . ".{$extension}";
@@ -367,7 +380,7 @@ class TransactionController extends Controller
                     }
                 }
                 $transaction->commit();
-                Yii::$app->session->setFlash('success', $totalItem.' transaksi berhasil diimport');
+                Yii::$app->session->setFlash('success', $totalItem . ' transaksi berhasil diimport');
                 return $this->redirect(['index']);
             }
         }
@@ -467,7 +480,7 @@ class TransactionController extends Controller
             // generate transaction number
             $school = School::findOne(Yii::$app->session->get('school_id'));
             $lastNumber = $school->transaction_number;
-            $transactionNumber = str_pad($lastNumber+1, 5, '0', STR_PAD_LEFT).'/TRX/'.$school->number.'/'.date('m/Y');
+            $transactionNumber = str_pad($lastNumber + 1, 5, '0', STR_PAD_LEFT) . '/TRX/' . $school->number . '/' . date('m/Y');
             $lastNumber++;
             $school->transaction_number = $lastNumber;
             $school->save();
@@ -475,9 +488,9 @@ class TransactionController extends Controller
             foreach ($dataExcel as $rowExcelData) {
                 if ($row_number++ > 0 && $rowExcelData[0] !== null) {
                     // check nisn student
-                    $student = Student::find()->where(['school_id' => Yii::$app->session->get('school_id'),'nisn' => trim((string)$rowExcelData[1])])->one();
+                    $student = Student::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'nisn' => trim((string)$rowExcelData[1])])->one();
                     if (!$student) {
-                        $error = 'NISN '.$student->nisn.' belum terdaftar ';
+                        $error = 'NISN ' . $student->nisn . ' belum terdaftar ';
                         break;
                     }
 
@@ -490,11 +503,12 @@ class TransactionController extends Controller
 
                     // check invoice
                     $invoice = Invoice::find()->where([
-                        'school_id' => Yii::$app->session->get('school_id'), 
-                        'student_id' => $student->id, 
-                        'month' => trim((string)$rowExcelData[3]) == '' ? NULL : trim((string)$rowExcelData[3]), 
-                        'year' => trim((string)$rowExcelData[4]), 
-                        'description' => $schoolPayment->name])
+                        'school_id' => Yii::$app->session->get('school_id'),
+                        'student_id' => $student->id,
+                        'month' => trim((string)$rowExcelData[3]) == '' ? NULL : trim((string)$rowExcelData[3]),
+                        'year' => trim((string)$rowExcelData[4]),
+                        'description' => $schoolPayment->name
+                    ])
                         ->one();
 
                     if (!$invoice) {
@@ -517,7 +531,7 @@ class TransactionController extends Controller
                             'year' => trim((string)$rowExcelData[4]),
                         ];
                     } else {
-                        $error = 'Data tidak valid pada baris ke '.$row_number;
+                        $error = 'Data tidak valid pada baris ke ' . $row_number;
                         break;
                     }
                 }
