@@ -38,9 +38,9 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="col-lg-6" style="padding-top: 31px;">
                 <?= Html::submitButton('<i class="fas fa-search"></i> Tampilkan', ['class' => 'btn btn-success']) ?>
                 <?= Html::a('<i class="fas fa-file-alt"></i> Rekapitulasi Presensi', ['presence-recap/index'], ['class' => 'btn btn-info']) ?>
+                <?= Html::a('<i class="fas fa-plus fa-lg"></i> Presensi Manual', ['manual', 'class' => $class], ['class' => 'btn btn-primary mr-1']) ?>
                 <?php
                 if (Yii::$app->user->identity->role_id == 2) {
-                    echo Html::a('<i class="fas fa-plus fa-lg"></i> Presensi Manual', ['manual', 'class' => $class], ['class' => 'btn btn-primary mr-1']);
                     echo Html::a('<i class="fas fa-plus fa-lg"></i> Import Presensi', ['import'], ['class' => 'btn btn-primary mr-1']);
                 }
                 ?>
