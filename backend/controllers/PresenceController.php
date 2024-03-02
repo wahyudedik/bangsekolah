@@ -3,6 +3,7 @@
 namespace backend\controllers;
 
 use Yii;
+use common\models\Day;
 use common\models\Presence;
 use common\models\Student;
 use common\models\School;
@@ -33,7 +34,7 @@ class PresenceController extends Controller
                         'allow' => true,
                     ],
                     [
-                        'actions' => ['index', 'import'],
+                        'actions' => ['index', 'import', 'manual'],
                         'allow' => '@',
                     ],
                 ],
@@ -184,6 +185,83 @@ class PresenceController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    public function actionManual($class = null)
+    {
+        $school_id = Yii::$app->session->get('school_id');
+        $date = date('Y-m-d');
+        $classes = SchoolClass::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'status' => 'ACTIVE'])->all();
+        $model = new Presence();
+        $model->school_id = $school_id;
+
+        // jika class kosong
+        if ($class) {
+            $class = SchoolClass::find()->where(['school_id' => $school_id, 'status' => 'ACTIVE', 'name' => $class])->one();
+        } else {
+            $class = SchoolClass::find()->where(['school_id' => $school_id, 'status' => 'ACTIVE'])->one();
+        }
+
+        // get check_in time
+        $check_in = '07:00';
+        $check_out = '13:00';
+        $arrNamaHari = array("Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu");
+        $hariIni = date('w');
+        $day = Day::find()->where(['school_id' => $school_id, 'name' => $arrNamaHari[$hariIni]])->one();
+        if ($day) {
+            $check_in = $day->check_in;
+            $check_out = $day->check_out;
+        }
+
+        $students = null;
+        if (!empty($_POST['students'])) {
+            $class = $_POST['class'];
+            $students = $_POST['students'];
+
+            // reset all presence
+            Presence::deleteAll(['class' => $class, 'date' => date('Y-m-d')]);
+
+            $saved = 0;
+            if ($students) {
+                foreach ($students as $student_id) {
+                    $presence = new Presence();
+                    $presence->school_id = $school_id;
+                    $presence->student_id = $student_id;
+                    $presence->class = $class;
+                    $presence->date = $date;
+                    $presence->check_in = date('Y-m-d') . ' ' . $check_in;
+                    $presence->check_out = date('Y-m-d') . ' ' . $check_in;
+                    $presence->status_check_in = 'ONTIME';
+                    $presence->status_check_out = 'ONTIME';
+                    if ($presence->save()) {
+                        $saved++;
+                    } else {
+                        foreach ($presence->errors as $error) {
+                            Yii::$app->session->setFlash('danger', $error[0]);
+                            return $this->redirect(['event/view', 'id' => $id]);
+                        }
+                    }
+                }
+            }
+
+            if ($saved == 0) {
+                Yii::$app->session->setFlash('warning', 'Status kehadiran tersimpan. Tidak ada siswa yang masuk hari ini.');
+            }
+            return $this->redirect(['manual', 'class' => $class]);
+        }
+
+        // $presences = Presence::find()->where(['class' => $class, 'date' => date('Y-m-d')])->all();
+        $students = Student::find()->where(['class' => $class, 'status' => 'ACTIVE'])->all();
+
+        return $this->render('manual', [
+            'model' => $model,
+            'classes' => $classes,
+            'class' => $class,
+            'check_in' => $check_in,
+            'check_out' => $check_out,
+            'students' => $students,
+            'date' => $date,
+        ]);
     }
 
     public function actionSave()

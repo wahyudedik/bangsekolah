@@ -10,6 +10,8 @@ use Yii;
  * @property int $id
  * @property int $school_id
  * @property string $name
+ * @property string $check_in
+ * @property string $check_out
  * @property string $status
  * @property string $created_at
  * @property string $updated_at
@@ -30,13 +32,13 @@ class Day extends \yii\db\ActiveRecord
     {
         return [
             'timestamp' => [
-                 'class' => 'yii\behaviors\TimestampBehavior',
-                 'attributes' => [
-                     \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => ['created_at', 'updated_at'],
-                     \yii\db\ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_at'],
-                 ],
-                 'value' => new \yii\db\Expression('NOW()'),
-             ],
+                'class' => 'yii\behaviors\TimestampBehavior',
+                'attributes' => [
+                    \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => ['created_at', 'updated_at'],
+                    \yii\db\ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_at'],
+                ],
+                'value' => new \yii\db\Expression('NOW()'),
+            ],
         ];
     }
 
@@ -49,7 +51,7 @@ class Day extends \yii\db\ActiveRecord
             [['name'], 'required'],
             [['school_id'], 'integer'],
             [['created_at', 'updated_at'], 'safe'],
-            [['name', 'status'], 'string', 'max' => 255],
+            [['name', 'status', 'check_in', 'check_out'], 'string', 'max' => 255],
             [['school_id'], 'exist', 'skipOnError' => true, 'targetClass' => School::className(), 'targetAttribute' => ['school_id' => 'id']],
         ];
     }
@@ -81,7 +83,8 @@ class Day extends \yii\db\ActiveRecord
     {
         return \yii\helpers\ArrayHelper::map(
             Day::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'status' => 'ACTIVE'])->asArray()->all(),
-            'name', 'name'
+            'name',
+            'name'
         );
     }
 }

@@ -29,6 +29,8 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                     'attributes' => [
                         'name',
+                        'check_in',
+                        'check_out',
                         'created_at',
                         'updated_at',
                     ],

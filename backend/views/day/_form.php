@@ -1,4 +1,5 @@
 <?php
+
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 ?>
@@ -9,6 +10,8 @@ use yii\widgets\ActiveForm;
             <div class="card-body">
                 <?php $form = ActiveForm::begin(); ?>
                 <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
+                <?= $form->field($model, 'check_in')->textInput(['maxlength' => true]) ?>
+                <?= $form->field($model, 'check_out')->textInput(['maxlength' => true]) ?>
                 <div class="form-group">
                     <?php
                     if ($model->isNewRecord) {

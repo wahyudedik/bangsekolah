@@ -40,7 +40,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?= Html::a('<i class="fas fa-file-alt"></i> Rekapitulasi Presensi', ['presence-recap/index'], ['class' => 'btn btn-info']) ?>
                 <?php
                 if (Yii::$app->user->identity->role_id == 2) {
-                    echo Html::a('<i class="fas fa-plus fa-lg"></i> Import Presensi', ['import'], ['class' => 'btn btn-primary']);
+                    echo Html::a('<i class="fas fa-plus fa-lg"></i> Presensi Manual', ['manual', 'class' => $class], ['class' => 'btn btn-primary mr-1']);
+                    echo Html::a('<i class="fas fa-plus fa-lg"></i> Import Presensi', ['import'], ['class' => 'btn btn-primary mr-1']);
                 }
                 ?>
                 <?php //= Html::a('<i class="fas fa-file-excel"></i> Download Excel', ['export-excel', 'startdate' => $startdate, 'enddate' => $enddate, 'class' => $class], ['class' => 'btn btn-default']) 
@@ -63,7 +64,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ['class' => 'yii\grid\SerialColumn'],
 
                 ['label' => 'Tanggal', 'value' => function ($model) {
-                    return date('d-m-Y', strtotime($model->check_in));
+                    return date('d-m-Y', strtotime($model->date));
                 }],
                 ['label' => 'NIS', 'attribute' => 'student.nis'],
                 ['label' => 'Nama Siswa', 'attribute' => 'student.name'],
