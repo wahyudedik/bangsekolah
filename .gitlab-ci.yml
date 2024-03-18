@@ -4,17 +4,18 @@ stages:
    - deploy
 
 image: tetraweb/php:7.0
+
 before_script:
   - mkdir -p ~/.ssh
-  - echo -e "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+  - echo -e "$PRIVATE_KEY" > ~/.ssh/id_rsa
   - chmod 600 ~/.ssh/id_rsa
   - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
 
-deploy-master:
+deploy-main:
   stage: deploy
   script:
-    - ssh -i ~/.ssh/id_rsa root@$IP_SERVER "bash /home/arief/deploy-thesmedia.sh"
+    - ssh -i ~/.ssh/id_rsa root@$HOST_NAME "bash /home/grafikaprinting/deploy.sh"
   environment:
     name: production
   only:
-    - master
+    - main
