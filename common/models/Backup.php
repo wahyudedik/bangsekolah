@@ -33,13 +33,13 @@ class Backup extends \yii\db\ActiveRecord
         return [
             // TimestampBehavior::className(),
             'timestamp' => [
-                 'class' => 'yii\behaviors\TimestampBehavior',
-                 'attributes' => [
-                     \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => ['created_at', 'updated_at'],
-                     \yii\db\ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_at'],
-                 ],
-                 'value' => new \yii\db\Expression('NOW()'),
-             ],
+                'class' => 'yii\behaviors\TimestampBehavior',
+                'attributes' => [
+                    \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => ['created_at', 'updated_at'],
+                    \yii\db\ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_at'],
+                ],
+                'value' => new \yii\db\Expression('NOW()'),
+            ],
         ];
     }
 
@@ -97,7 +97,9 @@ class Backup extends \yii\db\ActiveRecord
 
     public function getDownload()
     {
+        return '';
+
         $downloadUrl = "https://banksekolah.com/backend/web/uploads/database/$this->filename";
-        return Html::a('<i class="fas fa-download"></i> '.$this->filename, $downloadUrl, ['class' => 'btn btn-primary btn-xs', 'download' => $this->filename]);
+        return Html::a('<i class="fas fa-download"></i> ' . $this->filename, $downloadUrl, ['class' => 'btn btn-primary btn-xs', 'download' => $this->filename]);
     }
 }
