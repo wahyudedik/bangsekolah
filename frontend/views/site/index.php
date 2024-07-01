@@ -1,4 +1,7 @@
-<?php 
+<?php
+
+use yii\helpers\Url;
+
 $baseUrl = Yii::$app->request->baseUrl;
 ?>
 
@@ -14,8 +17,10 @@ $baseUrl = Yii::$app->request->baseUrl;
             <ul>
                 <li><a class="nav-link scrollto active" href="#hero">Home</a></li>
                 <li><a class="nav-link scrollto" href="#about">Tentang Kami</a></li>
+                <li><a class="nav-link scrollto" href="#post">Artikel</a></li>
                 <li><a class="nav-link scrollto" href="#features">Fitur</a></li>
                 <li><a class="nav-link scrollto" href="#pricing">Harga</a></li>
+                <li><a class="nav-link" href="<?= Yii::getAlias('@fronturl') ?>/school-register">Daftar Sekolah</a></li>
                 <li><a class="nav-link scrollto" href="#contact">Hubungi Kami</a></li>
                 <li><a class="getstarted scrollto" href="https://banksekolah.com/backend/web">LOGIN</a></li>
             </ul>
@@ -82,6 +87,44 @@ $baseUrl = Yii::$app->request->baseUrl;
         </div>
     </section>
     <!-- End About Section -->
+
+    <!-- ======= Artikel Section ======= -->
+<section id="post" class="post">
+    <div class="container">
+        <div class="row justify-content-center" data-aos="fade-up" data-aos-delay="100">
+            <div class="col-lg-8">
+                <div class="content text-center">
+                    <h3>Artikel Terbaru</h3>
+                    <h2><strong>Temukan Informasi Terkini Seputar Bank Sekolah</strong></h2>
+                    <p>
+                        Kami menyajikan artikel-artikel terbaru seputar solusi pembayaran sekolah dan pengelolaan keuangan institusi pendidikan. Simak artikel-artikel berikut untuk mengetahui lebih lanjut.
+                    </p>
+                    <div class="text-center">
+                        <a href="<?= Yii::getAlias('@fronturl') ?>/post" class="btn-read-more d-inline-flex align-items-center justify-content-center" data-aos="fade-up" data-aos-delay="200">
+                            <span>Baca Selengkapnya</span>
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row gy-4 mt-4 justify-content-center" data-aos="fade-up" data-aos-delay="300">
+            <?php foreach ($posts as $post) : ?>
+                <div class="col-md-4 col-lg-4">
+                    <div class="card">
+                        <img src="<?= Yii::getAlias('@fronturl') ?>/uploads/posts/small-<?= $post->image ?>" class="img img-responsive post-image" onerror="this.onerror=null; this.src='<?= Yii::getAlias('@fronturl') ?>/images/default-post.webp';">
+                        <div class="card-body">
+                            <h5 class="card-title"><strong><?= $post->title ?></strong></h5>
+                            <p class="card-text"><?= substr($post->content, 0, 100) . '...' ?></p>
+                            <a href="<?= Yii::getAlias('@fronturl') ?>/post/<?= $post->slug ?>" class="btn btn-primary">Baca Selengkapnya</a>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</section>
+<!-- End Artkel Section -->
 
     <!-- ======= Counts Section ======= -->
     <section id="counts" class="counts">
@@ -282,12 +325,8 @@ $baseUrl = Yii::$app->request->baseUrl;
                             <li>X</li>
                             <li>X</li>
                         </ul>
-                        <a
-                            href="https://api.whatsapp.com/send?phone=6285649400339&text=Hallo%20Bank%20Sekolah,%20Request%20Demo%20Paket%20Gratis
-"
-                            target="_blank"
-                            class="btn-buy"
-                        >
+                        <a href="https://api.whatsapp.com/send?phone=6285649400339&text=Hallo%20Bank%20Sekolah,%20Request%20Demo%20Paket%20Gratis
+" target="_blank" class="btn-buy">
                             DAFTAR SEKARANG
                         </a>
                     </div>

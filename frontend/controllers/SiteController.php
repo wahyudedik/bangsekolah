@@ -12,7 +12,10 @@ class SiteController extends Controller
     {
         // return $this->redirect(Yii::getAlias('@backurl'));
         // return 'WELCOME TO BANKSEKOLAH';
-        return $this->render('index');
+        $posts = Post::find()->limit(3)->all();
+        return $this->render('index', [
+            'posts' => $posts,
+        ]);
         
     }
 

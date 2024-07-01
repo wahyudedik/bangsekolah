@@ -5,6 +5,7 @@ use Yii;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
+use yii\helpers\ArrayHelper;
 use yii\web\IdentityInterface;
 use yii\helpers\Html;
 
@@ -90,6 +91,7 @@ class User extends ActiveRecord implements IdentityInterface
             [['confirm_password'], 'compare', 'compareAttribute'=>'password', 'skipOnEmpty' => false, 'when' => function($model) {
                 return $model->mode_change_password == true;
             }, 'message'=>"Passwords don't match"],
+            // ['captcha', CaptchaValidator::class, 'captchaAction' => 'school-register/captcha'],
 
             [['role_id'], 'integer'],
             [['email'], 'email', 'message' => 'Email tidak valid'],
@@ -351,6 +353,16 @@ class User extends ActiveRecord implements IdentityInterface
             return '<label class="label label-success">Exists</i>';
         }
     }
+
+    public static function getUser()
+    {
+        return ArrayHelper::map(
+            User::find()->where(['status' => 'ACTIVE'])->asArray()->all(),
+            'id', 'name'
+        );
+    }
+
+
 
     public function getConfirmationStatus()
     {

@@ -5,7 +5,9 @@ Yii::setAlias('@backend', dirname(dirname(__DIR__)) . '/backend');
 Yii::setAlias('@console', dirname(dirname(__DIR__)) . '/console');
 
 Yii::setAlias('@uploads', dirname(dirname(__DIR__)) . '/backend/web/uploads');
+Yii::setAlias('@posts', dirname(dirname(__DIR__)) . '/frontend/web/uploads');
 Yii::setAlias('@backurl', 'http://localhost/food-factory/backend/web');
+// Yii::setAlias('@fronturl', 'http://localhost/banksekolah');
 
 // Yii::setAlias('@fronturl', 'http://156.67.218.246/');
 
