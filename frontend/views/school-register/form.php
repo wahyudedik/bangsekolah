@@ -10,7 +10,7 @@ use yii\validators\EmailValidator;
 /* @var $school common\models\School */
 /* @var $admin common\models\User */
 /* @var $form yii\widgets\ActiveForm */
-
+$this->title = 'Register Sekolah';
 $today = new \DateTime();
 $expiredDate = $today->modify('+1 month')->format('Y-m-d');
 $baseUrl = Yii::$app->request->baseUrl;
