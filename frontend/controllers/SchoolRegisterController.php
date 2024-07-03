@@ -7,6 +7,7 @@ use common\models\School;
 use common\models\User;
 use common\models\UserSchool;
 use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -27,6 +28,33 @@ class SchoolRegisterController extends Controller
                 'actions' => [
                     'delete' => ['POST'],
                 ],
+            ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'actions' => ['login', 'error', 'captcha', 'create'],
+                        'allow' => true,
+                    ],
+                    [
+                        'actions' => ['logout', 'index'],
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                ],
+            ],
+        ];
+    }
+
+    public function actions()
+    {
+        return [
+            'error' => [
+                'class' => 'yii\web\ErrorAction',
+            ],
+            'captcha' => [
+                'class' => 'yii\captcha\CaptchaAction',
+                // 'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
             ],
         ];
     }
@@ -85,22 +113,27 @@ class SchoolRegisterController extends Controller
         $user = new UserSchool();
 
         if ($school->load(Yii::$app->request->post()) && $admin->load(Yii::$app->request->post())) {
+            
             $school->expired_date = date('Y-m-d', strtotime('+1 month'));
             $school->invoice_number = 0;
             $school->transaction_number = 0;
             $school->status = 'ACTIVE';
-            $school->save(false);
+            if ($school->save()) {
+                $admin->role_id = 1;
+                $admin->username = strtolower(str_replace(' ', '', $admin->name));
+                $admin->setPassword($admin->password);
+                $admin->generateAuthKey();
 
-            $admin->role_id = 1;
-            $admin->username = strtolower(str_replace(' ', '', $admin->name));
-            $admin->setPassword($admin->password);
-            $admin->generateAuthKey();
-            $admin->save(false);
-
-            $user->school_id = $school->id;
-            $user->user_id = $admin->id;
-            $user->save(false);
-            return $this->redirect('https://banksekolah.com/backend/web');
+                $user->school_id = $school->id;
+                $user->user_id = $admin->id;
+                
+                return $this->redirect('https://banksekolah.com/backend/web');
+            } else {
+                foreach ($school->getErrors() as $error) {
+                    $message = $error[0];
+                    Yii::$app->session->setFlash('danger', $message);
+                }
+            }
         }
 
         return $this->render('form', [

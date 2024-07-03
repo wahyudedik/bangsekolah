@@ -1,5 +1,6 @@
 <?php
 
+use yii\captcha\Captcha;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\helpers\Url;
@@ -10,6 +11,7 @@ use yii\validators\EmailValidator;
 /* @var $school common\models\School */
 /* @var $admin common\models\User */
 /* @var $form yii\widgets\ActiveForm */
+
 $this->title = 'Register Sekolah';
 $today = new \DateTime();
 $expiredDate = $today->modify('+1 month')->format('Y-m-d');
@@ -23,21 +25,27 @@ $baseUrl = Yii::$app->request->baseUrl;
             <img src="<?= $baseUrl ?>/img/logo.png" alt="" />
             <span>BANK SEKOLAH</span>
         </a>
+
+        <nav id="navbar" class="navbar">
+            <i class="bi bi-list mobile-nav-toggle"></i>
+        </nav>
     </div>
 </header>
 <!-- End Header -->
-<section id="hero" class="hero d-flex align-items-center">
+
+<section class="hero d-flex align-items-center">
     <div class="container">
         <div class="row">
             <div class="col-lg-6">
                 <div class="card">
                     <div class="card-body">
-                        <?php $form = ActiveForm::begin(); ?>
+                        <?php $form = ActiveForm::begin(['id' => 'login-form',]); ?>
                         <h3>Data Sekolah</h3>
                         <?= $form->field($school, 'name')->textInput() ?>
                         <?= $form->field($school, 'number')
-                            ->textInput()
-                            ->hint('Hanya boleh terdiri dari huruf kapital, tanpa spasi dan simbol.') ?>
+                            ->textInput([
+                                'placeholder' => 'Hanya boleh terdiri dari huruf kapital, tanpa spasi dan simbol.'
+                            ]) ?>
                         <?= $form->field($school, 'address')->textArea() ?>
                         <?= $form->field($school, 'city')->textInput() ?>
                         <?= $form->field($school, 'phone')->textInput() ?>
@@ -53,14 +61,26 @@ $baseUrl = Yii::$app->request->baseUrl;
                         <h3>Data User</h3>
                         <?= $form->field($admin, 'name')->textInput() ?>
                         <?= $form->field($admin, 'email')
-                            ->textInput()
-                            ->hint('Format email harus valid.') ?>
+                            ->textInput([
+                                'placeholder' => 'Format email harus valid.'
+                            ]) ?>
                         <?= $form->field($admin, 'username')
-                            ->textInput()
-                            ->hint('Hanya boleh terdiri dari huruf kecil, tanpa spasi.') ?>
+                            ->textInput([
+                                'placeholder' => 'Hanya boleh terdiri dari huruf kecil, tanpa spasi.'
+                            ]) ?>
                         <?= $form->field($admin, 'password')->passwordInput() ?>
                         <?= $form->field($admin, 'confirm_password')->passwordInput(['label' => 'Ulangi Password']) ?>
- 
+
+                        <div class="input-group">
+                            <?= $form->field($school, 'captcha')->widget(Captcha::className(), [
+                                'attribute' => ['autocomplete' => 'off', 'autocorrect' => 'off'],
+                                'options' => [
+                                    'placeholder' => 'Masukkan kode captcha',
+                                    'class' => 'form-control'
+                                ],
+                            ])->label(false) ?>
+                        </div>
+        
                         <div class="form-group">
                             <?= Html::submitButton('<i class="fas fa-save"></i> Simpan', ['class' => 'btn btn-success mt-3']) ?>
                         </div>
@@ -72,3 +92,13 @@ $baseUrl = Yii::$app->request->baseUrl;
         </div>
     </div>
 </section>
+
+<script type="text/javascript">
+    $('#refresh-captcha').click(function() {
+        event.preventDefault();
+        $('#user-captcha-image').trigger('click');
+    });
+
+    $('#loginform-captcha').attr('autocomplete', 'off');
+    $('#loginform-captcha').attr('autocorrect', 'off');
+</script>
