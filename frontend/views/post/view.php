@@ -26,20 +26,20 @@ Yii::$app->view->registerMetaTag(['property' => 'twitter:image', 'content' => Yi
 $baseUrl = Yii::$app->request->baseUrl;
 $this->title = $post->title;
 ?>
-
+<section>
 <div class="container">
     <div class="spacer-50"></div>
     <div class="row">
         <div class="col-md-9">
             <!-- Title & Info -->
-            <div style="margin-bottom: 15px;font-size: 18pt;"><?= strtoupper($post->category->name) ?></div>
+            <div style="margin-bottom: 15px;font-size: 18pt;"><?= strtoupper($post->postCategory->name) ?></div>
             <h1 style="margin-top: 5px; overflow-wrap: break-word;"><?= $post->title ?></h1>
             <h3 style="margin-top: 0px;"><?= $post->description ?></h3>
             <!-- <div class="card-share-button">
                 <svg viewBox="0 0 18 18" width="19" height="19" class="" fill="none" stroke="#000"><g fill-rule="evenodd"><path d="M.5.5h17v17H.5z"></path><g stroke-linecap="square"><path d="M9.19 13.762V4.238M4.238 9h9.524"></path></g></g></svg>
             </div> -->
             <div style="margin-bottom: 0px;"><?= date('d.m.Y', strtotime($post->created_at)) ?></div>
-            <div style="margin-bottom: 0px;">BY <?= strtoupper($post->user->name) ?></div>
+            <div style="margin-bottom: 0px;">BY <?= strtoupper($post->createdBy->name) ?></div>
 
             <!-- Image -->
             <?php
@@ -127,3 +127,4 @@ $this->title = $post->title;
         <div class="spacer-30"></div>
     </div>
 </div>
+</section>

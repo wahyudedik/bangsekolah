@@ -3,9 +3,6 @@
 use yii\captcha\Captcha;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
-use yii\helpers\Url;
-use yii\validators\RegularExpressionValidator;
-use yii\validators\EmailValidator;
 
 /* @var $this yii\web\View */
 /* @var $school common\models\School */
@@ -18,81 +15,63 @@ $expiredDate = $today->modify('+1 month')->format('Y-m-d');
 $baseUrl = Yii::$app->request->baseUrl;
 
 ?>
-<!-- ======= Header ======= -->
-<header id="header" class="header fixed-top">
-    <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
-        <a href="#" class="logo d-flex align-items-center">
-            <img src="<?= $baseUrl ?>/img/logo.png" alt="" />
-            <span>BANK SEKOLAH</span>
-        </a>
 
-        <nav id="navbar" class="navbar">
-            <i class="bi bi-list mobile-nav-toggle"></i>
-        </nav>
-    </div>
-</header>
-<!-- End Header -->
+<main id="main">
+    <section class="d-flex justify-content-center align-items-center">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 mx-auto">
+                    <div class="card">
+                        <div class="card-body">
+                            <?php $form = ActiveForm::begin(['id' => 'login-form',]); ?>
+                            <h3>Data Sekolah</h3>
+                            <?= $form->field($school, 'name')->textInput() ?>
+                            <?= $form->field($school, 'number')
+                                ->textInput([
+                                    'placeholder' => 'Hanya boleh terdiri dari huruf kapital, tanpa spasi dan simbol.'
+                                ]) ?>
+                            <?= $form->field($school, 'address')->textArea() ?>
+                            <?= $form->field($school, 'city')->textInput() ?>
+                            <?= $form->field($school, 'phone')->textInput() ?>
+                            <?= $form->field($school, 'expired_date')
+                                ->hiddenInput(['value' => $expiredDate])
+                                ->label(false); ?>
 
-<section class="hero d-flex align-items-center">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-6">
-                <div class="card">
-                    <div class="card-body">
-                        <?php $form = ActiveForm::begin(['id' => 'login-form',]); ?>
-                        <h3>Data Sekolah</h3>
-                        <?= $form->field($school, 'name')->textInput() ?>
-                        <?= $form->field($school, 'number')
-                            ->textInput([
-                                'placeholder' => 'Hanya boleh terdiri dari huruf kapital, tanpa spasi dan simbol.'
-                            ]) ?>
-                        <?= $form->field($school, 'address')->textArea() ?>
-                        <?= $form->field($school, 'city')->textInput() ?>
-                        <?= $form->field($school, 'phone')->textInput() ?>
-                        <?= $form->field($school, 'expired_date')
-                            ->hiddenInput(['value' => $expiredDate])
-                            ->label(false); ?>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-6">
-                <div class="card">
-                    <div class="card-body">
-                        <h3>Data User</h3>
-                        <?= $form->field($admin, 'name')->textInput() ?>
-                        <?= $form->field($admin, 'email')
-                            ->textInput([
-                                'placeholder' => 'Format email harus valid.'
-                            ]) ?>
-                        <?= $form->field($admin, 'username')
-                            ->textInput([
-                                'placeholder' => 'Hanya boleh terdiri dari huruf kecil, tanpa spasi.'
-                            ]) ?>
-                        <?= $form->field($admin, 'password')->passwordInput() ?>
-                        <?= $form->field($admin, 'confirm_password')->passwordInput(['label' => 'Ulangi Password']) ?>
+                            <h3>Data User</h3>
+                            <?= $form->field($admin, 'name')->textInput() ?>
+                            <?= $form->field($admin, 'email')
+                                ->textInput([
+                                    'placeholder' => 'Format email harus valid.'
+                                ]) ?>
+                            <?= $form->field($admin, 'username')
+                                ->textInput([
+                                    'placeholder' => 'Hanya boleh terdiri dari huruf kecil, tanpa spasi.'
+                                ]) ?>
+                            <?= $form->field($admin, 'password')->passwordInput() ?>
+                            <?= $form->field($admin, 'confirm_password')->passwordInput(['label' => 'Ulangi Password']) ?>
 
-                        <div class="input-group">
-                            <?= $form->field($school, 'captcha')->widget(Captcha::className(), [
-                                'attribute' => ['autocomplete' => 'off', 'autocorrect' => 'off'],
-                                'options' => [
-                                    'placeholder' => 'Masukkan kode captcha',
-                                    'class' => 'form-control'
-                                ],
-                            ])->label(false) ?>
+                            <div class="input-group">
+                                <?= $form->field($school, 'captcha')->widget(Captcha::className(), [
+                                    'attribute' => ['autocomplete' => 'off', 'autocorrect' => 'off'],
+                                    'options' => [
+                                        'placeholder' => 'Masukkan kode captcha',
+                                        'class' => 'form-control'
+                                    ],
+                                ])->label(false) ?>
+                            </div>
+
+                            <div class="form-group">
+                                <?= Html::submitButton('<i class="fas fa-save"></i> Simpan', ['class' => 'btn btn-success mt-3']) ?>
+                            </div>
+
+                            <?php ActiveForm::end(); ?>
                         </div>
-        
-                        <div class="form-group">
-                            <?= Html::submitButton('<i class="fas fa-save"></i> Simpan', ['class' => 'btn btn-success mt-3']) ?>
-                        </div>
-
-                        <?php ActiveForm::end(); ?>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
-
+    </section>
+</main>
 <script type="text/javascript">
     $('#refresh-captcha').click(function() {
         event.preventDefault();

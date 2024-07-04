@@ -33,6 +33,7 @@ $baseUrl = Yii::$app->request->baseUrl;
 </head>
 <body>
     <?php $this->beginBody() ?>
+    <?= $this->render('@app/views/layouts/navbar') ?>
     <?= $content ?>
     <?= $this->render('@app/views/layouts/footer') ?>
     <?= $this->render('@app/views/layouts/js-footer') ?>
