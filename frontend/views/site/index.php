@@ -91,7 +91,7 @@ $this->title = 'BANK SEKOLAH';
                             <div class="card-body">
                                 <h5 class="card-title"><strong><?= $post->title ?></strong></h5>
                                 <p class="card-text"><?= substr($post->content, 0, 100) . '...' ?></p>
-                                <a href="post/<?= $post->slug ?>" class="btn btn-primary">Baca Selengkapnya</a>
+                                <a href="post/view?slug=<?= $post->slug ?>" class="btn btn-primary">Baca Selengkapnya</a>
                             </div>
                         </div>
                     </div>
