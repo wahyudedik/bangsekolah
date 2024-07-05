@@ -19,32 +19,24 @@ $baseUrl = Yii::$app->request->baseUrl;
         <div class="card">
             <div class="card-body card-content">
                 <?= $form->field($model, 'status')->hiddenInput()->label(false) ?>
-                <?= $form->field($model, 'title')->textInput(['placeholder' => 'Enter title here'])->label('<span class="text-red">*</span>Title') ?>
-                <?= $form->field($model, 'slug')->textInput(['placeholder' => 'enter-title-here'])->label(false) ?>
+                <?= $form->field($model, 'title')->textInput(['placeholder' => 'Masukkan Judul Disini'])->label('<span class="text-red">*</span>Judul') ?>
+                <?= $form->field($model, 'slug')->textInput(['placeholder' => 'masukkan-judul-disini'])->label(false) ?>
                 <button id="btn-edit-slug" class="btn-edit-slug" type="button"><i class="fas fa-pen"></i></button>
                 <span id="span-post-slug" style="margin-top: -10px; margin-left:  5px; margin-bottom: 10px; color: grey; font-style: italic;">Slug: <?= $model->slug ?></span>
                 <br><br>
                 <?= $form->field($model, 'content')->textarea(['id' => 'content', 'rows' => 15])->label(false) ?>
                 <p>
-                    <strong>EDITOR NOTE:</strong> approved image extension: jpg, jpeg, png. max file name: 20 characters
+                    <strong>CATATAN:</strong> ekstensi gambar yang disetujui: jpg, jpeg, png. nama file maksimal: 20 karakter
                 </p>
-                <?= $form->field($model, 'description')->textarea(['rows' => 2])->label('<span class="text-red">*</span>Description / Excerpt') ?>
+                <?= $form->field($model, 'description')->textarea(['rows' => 2])->label('<span class="text-red">*</span>Deskripsi / Kutipan') ?>
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                         <?= $form->field($model, 'image')->widget(FileInput::classname(), [
                             'options' => ['accept' => 'jpg/jpeg/png'],
                             'pluginOptions' => [
                                 'showPreview' => true,
                             ],
-                        ])->label('<span class="text-red">*</span>Image (jpg/jpeg/png) - Resolution: 1240x892') ?>
-                    </div>
-                    <div class="col-md-6">
-                        <?= $form->field($model, 'video')->widget(FileInput::classname(), [
-                            'options' => ['accept' => 'mp4'],
-                            'pluginOptions' => [
-                                'showPreview' => true,
-                            ],
-                        ])->label('Video (mp4) - Optional, 3 MB max file size') ?>
+                        ])->label('<span class="text-red">*</span>Gambar (jpg/jpeg/png) - Resolusi: 1240x892') ?>
                     </div>
                 </div>
             </div>
@@ -54,7 +46,7 @@ $baseUrl = Yii::$app->request->baseUrl;
         <?php if (!$model->isNewRecord) : ?>
             <?php if ($model->status == 1) : ?>
                 <div class="alert alert-success">
-                    <h5 style="margin-bottom: 0px;"><i class="icon fas fa-check"></i> Published</h5>
+                    <h5 style="margin-bottom: 0px;"><i class="icon fas fa-check"></i> Diterbitkan</h5>
                 </div>
             <?php else : ?>
                 <div class="alert alert-warning">
@@ -69,12 +61,12 @@ $baseUrl = Yii::$app->request->baseUrl;
             <div class="card-body">
                 <?php
                 if ($model->status == 'ACTIVE') {
-                    echo $form->field($model, 'published_at')->textInput(['value' => $model->published_at])->label('Published Date');
+                    echo $form->field($model, 'published_at')->textInput(['value' => $model->published_at])->label('Tanggal Penerbitan');
                 } else {
-                    echo $form->field($model, 'scheduled_at')->textInput(['placeholder' => 'Fill schedule datetime'])->label('Scheduled Post');
+                    echo $form->field($model, 'scheduled_at')->textInput(['placeholder' => 'Fill schedule datetime'])->label('Posting Terjadwal');
                 }
                 ?>
-                <button id="btn-draft" class="btn btn-lg btn-warning"><i class="fas fa-save"></i> Save Draft</button>
+                <button id="btn-draft" class="btn btn-lg btn-warning"><i class="fas fa-save"></i> Simpan Draft</button>
                 <?php
                 if ($model->status == 1) {
                     echo '<button id="btn-publish" class="btn btn-lg btn-success"><i class="fas fa-save"></i> Update Post</button>';
@@ -93,9 +85,9 @@ $baseUrl = Yii::$app->request->baseUrl;
                     echo $form->field($model, 'created_by')->hiddenInput(['value' => $user->id])->label(false);
                 }
                 ?>
-                <?= $form->field($model, 'post_category_id')->dropDownList(PostCategory::getListTree())->label('<i class="fas fa-tags"></i> Category') ?>
+                <?= $form->field($model, 'post_category_id')->dropDownList(PostCategory::getListTree())->label('<i class="fas fa-tags"></i> Kategori') ?>
                 <?= $form->field($model, 'tags')->widget(Select2::classname(), [
-                    'options' => ['placeholder' => 'Input some tags, separate with comma ...', 'multiple' => true],
+                    'options' => ['placeholder' => 'Masukkan beberapa tag, pisahkan dengan koma ...', 'multiple' => true],
                     'pluginOptions' => [
                         'tags' => true,
                         'tokenSeparators' => [','],
@@ -103,10 +95,7 @@ $baseUrl = Yii::$app->request->baseUrl;
                     ],
                 ])->label('<i class="fas fa-hashtag"></i> Tags'); ?>
                 <div class="form-group">
-                    <?= $model->image ? '<label><i class="fas fa-image"></i> Image</label>' . $model->imageLarge : '' ?>
-                </div>
-                <div class="form-group">
-                    <?= $model->video ? '<label><i class="fas fa-video"></i> Video</label>' . $model->videoEmbed : '' ?>
+                    <?= $model->image ? '<label><i class="fas fa-image"></i> Gambar</label>' . $model->imageLarge : '' ?>
                 </div>
             </div>
         </div>

@@ -21,7 +21,7 @@ $baseUrl = Yii::$app->request->baseUrl;
         <div class="container">
             <div class="row">
                 <div class="col-lg-6 mx-auto">
-                    <div class="card">
+                    <div class="card mt-4">
                         <div class="card-body">
                             <?php $form = ActiveForm::begin(['id' => 'login-form',]); ?>
                             <h3>Data Sekolah</h3>

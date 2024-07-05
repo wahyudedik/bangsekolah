@@ -17,6 +17,8 @@ class PostController extends Controller
             ->where(['status' => 'ACTIVE'])
             ->orderBy(['published_at' => SORT_DESC]);
 
+        $categories = PostCategory::find()->all();
+
         $category = $category ? PostCategory::find()->where(['slug' => $category])->one() : null;
 
         if ($category) {
@@ -45,6 +47,7 @@ class PostController extends Controller
 
         return $this->render('index', [
             'category' => $category,
+            'categories' => $categories,
             'posts' => $posts,
             'pagination' => $pagination,
             'q' => $q,
@@ -88,8 +91,8 @@ class PostController extends Controller
             $arrCategoryId[] = $child->id;
         }
 
-        $relateds = Post::find()->where(['not in', 'id', $post->id])->andWhere(['in', 'post_category_id', $arrCategoryId])->andWhere(['status' => 1])->orderBy(['id' => SORT_DESC])->offset(1)->limit(4)->all();
-        $recommended = Post::find()->where(['not in', 'id', $post->id])->andWhere(['in', 'post_category_id', $arrCategoryId])->andWhere(['status' => 1])->orderBy(['id' => SORT_DESC])->limit(1)->one();
+        $relateds = Post::find()->where(['not in', 'id', $post->id])->andWhere(['in', 'post_category_id', $arrCategoryId])->andWhere(['status' => 'ACTIVE'])->orderBy(['id' => SORT_DESC])->offset(1)->limit(4)->all();
+        $recommended = Post::find()->where(['not in', 'id', $post->id])->andWhere(['in', 'post_category_id', $arrCategoryId])->andWhere(['status' => 'ACTIVE'])->orderBy(['id' => SORT_DESC])->limit(1)->one();
 
         return $this->render('view', [
             'post' => $post,

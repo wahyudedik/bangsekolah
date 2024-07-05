@@ -15,11 +15,23 @@ $this->title = 'Article';
             <div class="row">
                 <div class="col-md-8">
                     <?php if ($category) { ?>
-                        <h1 style="margin-top: 5px; overflow-wrap: break-word;"><?= $category->name ?></h1>
+                        <!-- <h3 style="margin-top: 20px; overflow-wrap: break-word;"><?= $category->name ?></h3> -->
                         <p style="overflow-wrap: break-word;">
                             <?php
                             foreach ($category->childs as $child) {
                                 echo Html::a('<span style="font-size: 20px; margin-right: 20px;">' . $child->name . '</span>', ['post/index', 'category' => $child->slug], ['class' => 'child-category']);
+                            }
+                            ?>
+                        </p>
+                        <div class="spacer-30"></div>
+                        <h5 class="text-muted">Menampilkan artikel dengan kategori "<?= $category->name ?>"</h5>
+                    <?php } else { ?>
+                        <!-- <h3 class="mt-3">All Categories</h3> -->
+                        <br>
+                        <p>
+                            <?php
+                            foreach ($categories as $cat) {
+                                echo Html::a('<span style="font-size: 17px; margin-right: 20px; margin-top: ">' . $cat->name . '</span>', ['post/index', 'category' => $cat->slug], ['class' => 'child-category']);
                             }
                             ?>
                         </p>
@@ -29,15 +41,7 @@ $this->title = 'Article';
                         <div class="row mt-4">
                             <div class="col-md-6">
                                 <!-- Image -->
-                                <?php
-                                if ($post->video && Visitor::getBrowser() !== 'Safari') {
-                                    echo '<video type="video/mp4" autoplay="autoplay" loop="loop" muted="muted" width="100%" poster="' . Yii::getAlias('@fronturl/images/default-video.webp') . '">
-                                <source src="' . $baseUrl . '/uploads/posts/' . $post->video . '" type="video/mp4" />
-                            </video>';
-                                } else {
-                                    echo Html::a('<img src="' . $baseUrl . '/uploads/posts/small-' . $post->image . '" class="img img-responsive post-image" onerror="this.onerror=null; this.src=\'' . Yii::getAlias('@fronturl') . '/images/default-post.webp\';">', ['post/view', 'slug' => $post->slug]);
-                                }
-                                ?>
+                                <?= Html::a('<img src="' . $baseUrl . '/uploads/posts/small-' . $post->image . '" class="img img-responsive post-image" onerror="this.onerror=null; this.src=\'' . Yii::getAlias('@fronturl') . '/images/default-post.webp\';">', ['post/view', 'slug' => $post->slug]); ?>
                             </div>
                             <div class="col-md-6">
                                 <!-- Title & Info -->

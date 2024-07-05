@@ -20,14 +20,14 @@ $this->params['breadcrumbs'][] = $this->title;
                         <?php $form = ActiveForm::begin(['method' => 'get', 'action' => Url::to(['index']), 'options' => ['class' => 'form-inline']]) ?>
                         <div class="input-group input-group-sm">
                             <select class="form-control" name="status">
-                                <option value="all" <?= $status == 'all' ? 'selected' : '' ?>>All Status</option>
-                                <option value="published" <?= $status == 'published' ? 'selected' : '' ?>>Published</option>
+                                <option value="all" <?= $status == 'all' ? 'selected' : '' ?>>Semua Status</option>
+                                <option value="published" <?= $status == 'published' ? 'selected' : '' ?>>Diterbitkan</option>
                                 <option value="draft" <?= $status == 'draft' ? 'selected' : '' ?>>Draft</option>
-                                <option value="scheduled" <?= $status == 'scheduled' ? 'selected' : '' ?>>Scheduled</option>
+                                <option value="scheduled" <?= $status == 'scheduled' ? 'selected' : '' ?>>Terjadwal</option>
                             </select>
                             <?php if ($role_id !== 2): ?>
                             <select class="form-control" name="author">
-                                <option value="" <?= $author == '' ? 'selected' : '' ?>>All Author</option>
+                                <option value="" <?= $author == '' ? 'selected' : '' ?>>Semua Author</option>
                                 <?php
                                 foreach (User::find()->where(['status' => 'ACTIVE'])->all() as $user) {
                                     echo '<option value="'.$user->name.'" '.($author == $user->name ? 'selected' : '').'>'.$user->name.'</option>';
@@ -35,7 +35,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 ?>
                             </select>
                             <?php endif; ?>        
-                            <input type="text" name="title" class="form-control" placeholder="Title" value="<?=  $title ?>">
+                            <input type="text" name="title" class="form-control" placeholder="Judul" value="<?=  $title ?>">
                             <span class="input-group-append">
                                 <button type="submit" class="btn btn-info btn-flat"><i class="fas fa-search search-icon"></i></button>
                             </span>
@@ -44,8 +44,8 @@ $this->params['breadcrumbs'][] = $this->title;
                     </div>
                     <div class="col-lg-4">
                         <div class="card-tools float-right">
-                            <?= Html::a('<i class="fas fa-cubes fa-lg"></i> Post Category', ['post-category/index'], ['class' => 'btn btn-primary']); ?>
-                            <?= Html::a('<i class="fas fa-plus fa-lg"></i> Add New Post', ['create'], ['class' => 'btn btn-success']) ?>
+                            <?= Html::a('<i class="fas fa-cubes fa-lg"></i> Kategori Post', ['post-category/index'], ['class' => 'btn btn-primary']); ?>
+                            <?= Html::a('<i class="fas fa-plus fa-lg"></i> Tambah Post Baru', ['create'], ['class' => 'btn btn-success']) ?>
                             <?=  Html::a('<i class="fas fa-sync-alt fa-lg"></i>', ['index'], ['class' => 'btn btn-primary']) ?> 
                         </div>
                     </div>
