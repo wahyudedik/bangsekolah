@@ -29,24 +29,27 @@ $this->title = $post->title;
 ?>
 <section>
     <div class="container">
-        <div class="spacer-50"></div>
         <div class="row">
             <div class="col-lg-8">
-                <!-- <div class="col-md-9"> -->
                 <!-- Title & Info -->
-                <div style="margin-bottom: 15px;font-size: 18pt;"><?= strtoupper($post->postCategory->name) ?></div>
-                <h1 style="margin-top: 5px; overflow-wrap: break-word;"><?= $post->title ?></h1>
-                <h3 style="margin-top: 0px;"><?= $post->description ?></h3>
-                <!-- <div class="card-share-button">
-                <svg viewBox="0 0 18 18" width="19" height="19" class="" fill="none" stroke="#000"><g fill-rule="evenodd"><path d="M.5.5h17v17H.5z"></path><g stroke-linecap="square"><path d="M9.19 13.762V4.238M4.238 9h9.524"></path></g></g></svg>
-                </div> -->
-                <div style="margin-bottom: 0px;"><?= date('d.m.Y', strtotime($post->created_at)) ?></div>
-                <div style="margin-bottom: 0px;">BY <?= strtoupper($post->createdBy->name) ?></div>
+                <div class="post-category"><?= strtoupper($post->postCategory->name) ?></div>
+                <h1 class="post-title"><?= $post->title ?></h1>
+                <div class="post-meta">
+                    <div class="post-date"><?= date('d M Y', strtotime($post->created_at)) ?></div>
+                    <div class="post-author">BY <?= strtoupper($post->createdBy->name) ?></div>
+                </div>
 
                 <!-- Image -->
-                <?= '<img src="' . $baseUrl . '/uploads/posts/large-' . $post->image . '" class="img img-responsive post-image" onerror="this.onerror=null; this.src=\'' . Yii::getAlias('@fronturl') . '/images/default-post.webp\';">';
-                ?>
-                <div class="card-share-button">
+                <div class="post-image">
+                    <?= '<img src="' . $baseUrl . '/uploads/posts/large-' . $post->image . '" class="img-fluid" onerror="this.onerror=null; this.src=\'' . Yii::getAlias('@fronturl') . '/images/default-post.webp\';">';
+                    ?>
+                </div>
+
+                <!-- Description -->
+                <div class="post-description"><?= $post->description ?></div>
+
+                <!-- Share Buttons -->
+                <div class="post-share">
                     <span class="caption-share-story">SHARE THE STORY</span>
                     <a href="https://api.whatsapp.com/send?text=<?= 'See this interesting post: ' . $post->title . '. Click here ' . Yii::getAlias('@fronturl') ?>/posts/<?= $post->slug ?>" target="_blank" rel="noopener" aria-label="Whatsapp">
                         <img src="<?= $baseUrl ?>/images/icons8-whatsapp-48.png" class="img-share-story">
@@ -67,22 +70,26 @@ $this->title = $post->title;
             </div>
             <div class="col-lg-4">
                 <div class="related-post">
-                    <div class="container">
-                        <div class="spacer-30"></div>
-                        <h2>RELATED POSTS</h2>
-                        <div class="row">
-                            <?php
-                            foreach ($relateds as $post) : ?>
-                                <div class="col-md-3">
-                                    <?= Html::a('<img src="' . $baseUrl . '/uploads/posts/small-' . $post->image . '" class="img img-responsive post-image" onerror="this.onerror=null; this.src=\'' . Yii::getAlias('@fronturl') . '/images/default-post.webp\';">', ['post/view', 'slug' => $post->slug]);
-                                    ?>
-                                    <div class="card-subtitle"><?= strtoupper($post->user->name) ?> | <?= date('d.m.Y', strtotime($post->created_at)) ?>
+                    <h3 class="related-post-title mt-4">RELATED POSTS</h3>
+                    <hr style="border-top: 3px solid #0000ff; margin: 20px 0;">
+                    <div class="row">
+                        <?php foreach ($relateds as $relate) : ?>
+                            <div class="col-md-12 mb-4">
+                                <div class="row no-gutters">
+                                    <div class="col-md-6">
+                                        <!-- Image -->
+                                        <?= Html::a('<img src="' . $baseUrl . '/uploads/posts/small-' . $relate->image . '" class="img-fluid card-img" onerror="this.onerror=null; this.src=\'' . Yii::getAlias('@fronturl') . '/images/default-post.webp\';">', ['post/view', 'slug' => $relate->slug]); ?>
                                     </div>
-                                    <h2 class="card-title"> <?= Html::a($post->title, ['post/view', 'slug' => $post->slug]) ?> </h2>
+                                    <div class="col-md-6">
+                                        <div class="card-body">
+                                            <!-- Title & Info -->
+                                            <h4 class="card-title"><?= Html::a($relate->title, ['post/view', 'slug' => $relate->slug]) ?></h4>
+                                        </div>
+                                    </div>
                                 </div>
-                            <?php endforeach; ?>
-                        </div>
-                        <div class="spacer-30"></div>
+                                <hr>
+                            </div>
+                        <?php endforeach; ?>
                     </div>
                 </div>
             </div>

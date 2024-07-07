@@ -50,7 +50,10 @@ $this->title = 'Article';
                                     <?= Html::a($post->title, ['post/view', 'slug' => $post->slug]) ?>
                                 </h2>
                                 <div style="margin-bottom: 0px;font-size: 12pt;" class="hidden-mobile"><?= substr($post->description, 0, 100) . '...' ?></div>
-                                <div style="margin-bottom: 0px;"><?= strtoupper($post->createdBy ? $post->createdBy->name : 'SMedia Newsdesk') ?> | <?= date('d.m.Y', strtotime($post->created_at)) ?></div>
+                                <div style="margin-bottom: 0px;">
+                                    <?= strtoupper($post->createdBy ? $post->createdBy->name : 'SMedia Newsdesk') ?> |
+                                    <?= date('d M Y', strtotime($post->created_at)) ?>
+                                </div>
                             </div>
                         </div>
                         <div class="spacer-10"></div>

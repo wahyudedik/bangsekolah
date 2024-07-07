@@ -91,7 +91,13 @@ class PostController extends Controller
             $arrCategoryId[] = $child->id;
         }
 
-        $relateds = Post::find()->where(['not in', 'id', $post->id])->andWhere(['in', 'post_category_id', $arrCategoryId])->andWhere(['status' => 'ACTIVE'])->orderBy(['id' => SORT_DESC])->offset(1)->limit(4)->all();
+        $relateds = Post::find()
+            ->where(['not in', 'id', $post->id])
+            ->andWhere(['in', 'post_category_id', $arrCategoryId])
+            ->andWhere(['status' => 'ACTIVE'])
+            ->orderBy(['id' => SORT_DESC])
+            ->limit(3)
+            ->all();
         $recommended = Post::find()->where(['not in', 'id', $post->id])->andWhere(['in', 'post_category_id', $arrCategoryId])->andWhere(['status' => 'ACTIVE'])->orderBy(['id' => SORT_DESC])->limit(1)->one();
 
         return $this->render('view', [
