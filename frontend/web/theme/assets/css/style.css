@@ -465,6 +465,17 @@ section {
   transition: 0.3s;
 }
 
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group .form-control {
+    margin-bottom: 0;
+}
+
+.form-group:last-child {
+    margin-bottom: 0;
+}
 .hero .btn-get-started:hover i {
   transform: translateX(5px);
 }

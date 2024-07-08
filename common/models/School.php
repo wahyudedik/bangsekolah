@@ -21,6 +21,8 @@ use Yii;
  */
 class School extends \yii\db\ActiveRecord
 {
+
+    public $captcha;
     /**
      * {@inheritdoc}
      */
@@ -53,6 +55,9 @@ class School extends \yii\db\ActiveRecord
             [['number', 'name', 'status', 'address', 'city', 'phone', 'image', 'expired_date', 'nota_format'], 'string', 'max' => 255],
             // [['invoice_number', 'transaction_number'], 'integer'],
             [['number', 'name', 'address', 'city', 'phone'], 'required'],
+            [['captcha'], 'required'],
+            [['captcha'], 'captcha'],
+
         ];
     }
 

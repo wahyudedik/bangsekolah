@@ -5,6 +5,7 @@ use Yii;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
+use yii\helpers\ArrayHelper;
 use yii\web\IdentityInterface;
 use yii\helpers\Html;
 
@@ -27,6 +28,8 @@ class User extends ActiveRecord implements IdentityInterface
     const STATUS_DELETED = 'NONACTIVE';
     const STATUS_ACTIVE = 'ACTIVE';
 
+    public $reCaptcha;
+    public $captcha;
     public $mode;
     public $password;
     public $confirm_password;
@@ -68,6 +71,8 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return [
             [['name', 'image', 'username', 'password', 'logo'], 'string', 'max' => 255],
+            [['captcha'], 'required'],
+            [['captcha'], 'captcha'],
 
             /**
              * Role pada saat buat user baru, yang required hanya:
@@ -90,7 +95,6 @@ class User extends ActiveRecord implements IdentityInterface
             [['confirm_password'], 'compare', 'compareAttribute'=>'password', 'skipOnEmpty' => false, 'when' => function($model) {
                 return $model->mode_change_password == true;
             }, 'message'=>"Passwords don't match"],
-
             [['role_id'], 'integer'],
             [['email'], 'email', 'message' => 'Email tidak valid'],
             [['register', 'mode_create', 'mode_add_user'], 'safe'],
@@ -111,6 +115,9 @@ class User extends ActiveRecord implements IdentityInterface
             'profileStatus' => 'Profile',
             'experienceStatus' => 'Experience',
             'trainingStatus' => 'Training',
+
+            'reCaptcha' => 'Google ReCaptcha',
+            'captcha' => 'Verification Code',
         ];
     }
 
@@ -351,6 +358,16 @@ class User extends ActiveRecord implements IdentityInterface
             return '<label class="label label-success">Exists</i>';
         }
     }
+
+    public static function getUser()
+    {
+        return ArrayHelper::map(
+            User::find()->where(['status' => 'ACTIVE'])->asArray()->all(),
+            'id', 'name'
+        );
+    }
+
+
 
     public function getConfirmationStatus()
     {
