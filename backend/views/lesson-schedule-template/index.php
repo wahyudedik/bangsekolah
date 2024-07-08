@@ -25,7 +25,7 @@ $user = Yii::$app->user->identity;
             <div class="col-lg-6">
                 <div class="card-tools float-right">
                     <?php
-                    if ($user->role_id == 2) {
+                    if ($user->role_id == 5) {
                         echo Html::a('<i class="fas fa-plus fa-lg"></i> Tambah Jadwal Pelajaran', ['create', 'class' => $class], ['class' => 'btn btn-success']);
                     }
                     ?>
