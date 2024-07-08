@@ -23,7 +23,7 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
             <div class="col-lg-6">
                 <div class="card-tools float-right">
-                    <?php if (Yii::$app->user->identity->role_id == 2) : ?>
+                    <?php if (Yii::$app->user->identity->role_id == 5) : ?>
                         <?= Html::a('<i class="fas fa-plus fa-lg"></i> Tambah Pelajaran', ['create'], ['class' => 'btn btn-success']) ?>
                     <?php endif; ?>
                     <?= Html::a('<i class="fas fa-sync-alt fa-lg"></i>', ['index'], ['class' => 'btn btn-primary']) ?>
