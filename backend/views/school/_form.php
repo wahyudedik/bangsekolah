@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use yii\captcha\Captcha;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\School */
@@ -19,6 +20,13 @@ use yii\widgets\ActiveForm;
                 <?= $form->field($model, 'city')->textInput() ?>
                 <?= $form->field($model, 'phone')->textInput() ?>
                 <?= $form->field($model, 'expired_date')->textInput() ?>
+                <?= $form->field($model, 'captcha')->widget(Captcha::className(), [
+                    'attribute' => ['autocomplete' => 'off', 'autocorrect' => 'off'],
+                    'options' => [
+                        'placeholder' => 'Masukkan kode captcha',
+                        'class' => 'form-control'
+                    ],
+                ])->label(false) ?>
 
                 <div class="form-group">
                     <?php
