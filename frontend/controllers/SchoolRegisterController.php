@@ -119,7 +119,7 @@ class SchoolRegisterController extends Controller
             $school->transaction_number = 0;
             $school->status = 'ACTIVE';
             if ($school->save()) {
-                $admin->role_id = 1;
+                $admin->role_id = 2;
                 $admin->username = strtolower(str_replace(' ', '', $admin->name));
                 $admin->setPassword($admin->password);
                 $admin->generateAuthKey();
