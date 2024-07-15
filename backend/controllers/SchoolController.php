@@ -86,8 +86,14 @@ class SchoolController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
             $model->number = strtoupper($model->number);
-            $model->save();
-            return $this->redirect(['view', 'id' => $model->id]);
+            if ($model->save()) {
+                return $this->redirect(['view', 'id' => $model->id]);
+            } else {
+                foreach ($model->errors as $error) {
+                    Yii::$app->setFlash('danger', $error[0]);
+                }
+                return $this->redirect(['create']);
+            }
         }
 
         return $this->render('create', [
