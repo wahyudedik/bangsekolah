@@ -86,9 +86,18 @@ class SchoolController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
             $model->number = strtoupper($model->number);
+
+            // Check if captcha is empty
+            $captchaEmpty = empty($model->captcha);
+
             if ($model->save()) {
                 return $this->redirect(['view', 'id' => $model->id]);
             } else {
+                // If captcha is empty, remove captcha related errors
+                if ($captchaEmpty) {
+                    unset($model->errors['captcha']);
+                }
+
                 foreach ($model->errors as $error) {
                     Yii::$app->session->setFlash('danger', $error[0]);
                 }

@@ -35,13 +35,13 @@ class School extends \yii\db\ActiveRecord
     {
         return [
             'timestamp' => [
-                 'class' => 'yii\behaviors\TimestampBehavior',
-                 'attributes' => [
-                     \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => ['created_at', 'updated_at'],
-                     \yii\db\ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_at'],
-                 ],
-                 'value' => new \yii\db\Expression('NOW()'),
-             ],
+                'class' => 'yii\behaviors\TimestampBehavior',
+                'attributes' => [
+                    \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => ['created_at', 'updated_at'],
+                    \yii\db\ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_at'],
+                ],
+                'value' => new \yii\db\Expression('NOW()'),
+            ],
         ];
     }
 
@@ -55,7 +55,7 @@ class School extends \yii\db\ActiveRecord
             [['number', 'name', 'status', 'address', 'city', 'phone', 'image', 'expired_date', 'nota_format'], 'string', 'max' => 255],
             // [['invoice_number', 'transaction_number'], 'integer'],
             [['number', 'name', 'address', 'city', 'phone'], 'required'],
-            [['captcha'], 'required'],
+            // [['captcha'], 'required'],
             [['captcha'], 'captcha'],
 
         ];
