@@ -90,7 +90,7 @@ class SchoolController extends Controller
                 return $this->redirect(['view', 'id' => $model->id]);
             } else {
                 foreach ($model->errors as $error) {
-                    Yii::$app->setFlash('danger', $error[0]);
+                    Yii::$app->session->setFlash('danger', $error[0]);
                 }
                 return $this->redirect(['create']);
             }
