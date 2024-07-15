@@ -28,8 +28,8 @@ class User extends ActiveRecord implements IdentityInterface
     const STATUS_DELETED = 'NONACTIVE';
     const STATUS_ACTIVE = 'ACTIVE';
 
-    public $reCaptcha;
-    public $captcha;
+    // public $reCaptcha;
+    // public $captcha;
     public $mode;
     public $password;
     public $confirm_password;
@@ -71,8 +71,8 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return [
             [['name', 'image', 'username', 'password', 'logo'], 'string', 'max' => 255],
-            [['captcha'], 'required'],
-            [['captcha'], 'captcha'],
+            // [['captcha'], 'required'],
+            // [['captcha'], 'captcha'],
 
             /**
              * Role pada saat buat user baru, yang required hanya:
@@ -116,8 +116,8 @@ class User extends ActiveRecord implements IdentityInterface
             'experienceStatus' => 'Experience',
             'trainingStatus' => 'Training',
 
-            'reCaptcha' => 'Google ReCaptcha',
-            'captcha' => 'Verification Code',
+            // 'reCaptcha' => 'Google ReCaptcha',
+            // 'captcha' => 'Verification Code',
         ];
     }
 
