@@ -51,12 +51,12 @@ class School extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
+            [['captcha'], 'required'],
+            [['captcha'], 'captcha'],
             [['created_at', 'updated_at'], 'safe'],
             [['number', 'name', 'status', 'address', 'city', 'phone', 'image', 'expired_date', 'nota_format'], 'string', 'max' => 255],
             // [['invoice_number', 'transaction_number'], 'integer'],
             [['number', 'name', 'address', 'city', 'phone'], 'required'],
-            [['captcha'], 'required'],
-            [['captcha'], 'captcha'],
 
         ];
     }
@@ -79,6 +79,9 @@ class School extends \yii\db\ActiveRecord
             'status' => 'Status',
             'created_at' => 'Tanggal Daftar',
             'updated_at' => 'Terakhir Diupdate',
+
+            // 'reCaptcha' => 'Google ReCaptcha',
+            'captcha' => 'Verification Code',
         ];
     }
 

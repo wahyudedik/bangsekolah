@@ -110,10 +110,9 @@ class SchoolRegisterController extends Controller
     {
         $school = new School();
         $admin = new User();
-        $user = new UserSchool();
 
         if ($school->load(Yii::$app->request->post()) && $admin->load(Yii::$app->request->post())) {
-            
+
             $school->expired_date = date('Y-m-d', strtotime('+1 month'));
             $school->invoice_number = 0;
             $school->transaction_number = 0;
@@ -123,10 +122,18 @@ class SchoolRegisterController extends Controller
                 $admin->username = strtolower(str_replace(' ', '', $admin->name));
                 $admin->setPassword($admin->password);
                 $admin->generateAuthKey();
+                if ($admin->save()) {
+                    $user = new UserSchool();
 
-                $user->school_id = $school->id;
-                $user->user_id = $admin->id;
-                
+                    $user->school_id = $school->id;
+                    $user->user_id = $admin->id;
+                    $user->save();
+                } else {
+                    foreach ($admin->getErrors() as $error) {
+                        $message = $error[0];
+                        Yii::$app->session->setFlash('danger', $message);
+                    }
+                }
                 return $this->redirect('https://banksekolah.com/backend/web');
             } else {
                 foreach ($school->getErrors() as $error) {
