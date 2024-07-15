@@ -1,4 +1,5 @@
 <?php
+
 namespace frontend\controllers;
 
 use Yii;
@@ -20,6 +21,7 @@ class SiteController extends Controller
             ],
         ];
     }
+
     public function actionIndex()
     {
         // return $this->redirect(Yii::getAlias('@backurl'));
@@ -28,7 +30,6 @@ class SiteController extends Controller
         return $this->render('index', [
             'posts' => $posts,
         ]);
-        
     }
 
     public function actionError()
@@ -44,7 +45,7 @@ class SiteController extends Controller
             if ($article) {
                 return $this->redirect(['article/detail', 'slug' => $article->slug]);
             }
-    
+
             return $this->redirect(['article/alternative', 'slug' => $articleSlug]);
         }
 
@@ -52,7 +53,7 @@ class SiteController extends Controller
         if ($exception !== null) {
             // $this->layout = 'yourNewLayout';
             return $this->render('error', [
-            	'exception' => $exception
+                'exception' => $exception
             ]);
         }
     }
