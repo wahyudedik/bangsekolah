@@ -128,13 +128,13 @@ class SchoolRegisterController extends Controller
                     $user->school_id = $school->id;
                     $user->user_id = $admin->id;
                     $user->save();
+                    return $this->redirect('https://banksekolah.com/backend/web');
                 } else {
                     foreach ($admin->getErrors() as $error) {
                         $message = $error[0];
                         Yii::$app->session->setFlash('danger', $message);
                     }
                 }
-                return $this->redirect('https://banksekolah.com/backend/web');
             } else {
                 foreach ($school->getErrors() as $error) {
                     $message = $error[0];
