@@ -51,7 +51,7 @@ class School extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['captcha'], 'required'],
+            // [['captcha'], 'required'],
             [['captcha'], 'captcha'],
             [['created_at', 'updated_at'], 'safe'],
             [['number', 'name', 'status', 'address', 'city', 'phone', 'image', 'expired_date', 'nota_format'], 'string', 'max' => 255],
