@@ -31,7 +31,6 @@ class ProfileController extends \yii\web\Controller
                 'model' => $model,
             ]);
         }
-
     }
 
     public function actionUpdate($id_user = null)
@@ -47,40 +46,44 @@ class ProfileController extends \yii\web\Controller
                 $exploded_image = explode('.', $image->name);
                 $extension = end($exploded_image);
                 $temporary_image = Yii::$app->security->generateRandomString() . ".{$extension}";
-                $path = Yii::getAlias('@uploads/school/'.$temporary_image);
+                $path = Yii::getAlias('@uploads/school/' . $temporary_image);
                 $image->saveAs($path);
 
                 // memastikan thumbnail besar memiliki rasio 1:1 (square) dan maksimal 800x800
                 // jika ukuran kurang dari 800x800, maka dipilih ukuran terkecil agar rasionya tetap square
                 $imageSize = getimagesize($path);
                 if ($imageSize[0] >= 800 && $imageSize[1] >= 800) {
-                    Image::thumbnail($path, 800, 800)->save(Yii::getAlias('@uploads/school/large-'.$temporary_image), ['quality' => 100]);
+                    Image::thumbnail($path, 800, 800)->save(Yii::getAlias('@uploads/school/large-' . $temporary_image), ['quality' => 100]);
                 } else if ($imageSize[0] <= 800 || $imageSize[1] <= 800) {
                     if ($imageSize[0] < $imageSize[1]) {
-                        Image::thumbnail($path, $imageSize[0], $imageSize[0])->save(Yii::getAlias('@uploads/school/large-'.$temporary_image), ['quality' => 100]);
+                        Image::thumbnail($path, $imageSize[0], $imageSize[0])->save(Yii::getAlias('@uploads/school/large-' . $temporary_image), ['quality' => 100]);
                     } else {
-                        Image::thumbnail($path, $imageSize[1], $imageSize[1])->save(Yii::getAlias('@uploads/school/large-'.$temporary_image), ['quality' => 100]);
+                        Image::thumbnail($path, $imageSize[1], $imageSize[1])->save(Yii::getAlias('@uploads/school/large-' . $temporary_image), ['quality' => 100]);
                     }
                 }
 
-                $school->image = 'large-'.$temporary_image;
+                $school->image = 'large-' . $temporary_image;
 
                 @unlink($path);
                 if (!$old_image == '') {
-                    @unlink(Yii::getAlias('@uploads/school/'.$old_image));
+                    @unlink(Yii::getAlias('@uploads/school/' . $old_image));
                 }
-                
             }
 
             if ($model->save()) {
-                if(!$school->save()){
-                    foreach ($school->getErrors() as $error) { $message = $error[0]; }
+                $school->captcha = 'abc';
+                if (!$school->save()) {
+                    foreach ($school->getErrors() as $error) {
+                        $message = $error[0];
+                    }
                     Yii::$app->session->setFlash('danger', $message);
                 }
 
-                Yii::$app->session->setFlash('success', 'Berhasil diperbarui'. $school->image);
+                Yii::$app->session->setFlash('success', 'Berhasil diperbarui' . $school->image);
             } else {
-                foreach ($model->getErrors() as $error) { $message = $error[0]; }
+                foreach ($model->getErrors() as $error) {
+                    $message = $error[0];
+                }
                 Yii::$app->session->setFlash('danger', $message);
             }
             return $this->redirect(['index']);
@@ -96,9 +99,9 @@ class ProfileController extends \yii\web\Controller
     public function actionChangePassword($id = null)
     {
         if ($id == null) {
-            $id = Yii::$app->user->identity->id;            
+            $id = Yii::$app->user->identity->id;
         }
-        
+
         $model = User::findOne($id);
         $model->mode_change_password = true;
         if ($model->load(Yii::$app->request->post())) {
@@ -116,6 +119,4 @@ class ProfileController extends \yii\web\Controller
             'model' => $model,
         ]);
     }
-
-
 }
