@@ -71,7 +71,7 @@ class ProfileController extends \yii\web\Controller
             }
 
             if ($model->save()) {
-                $school->captcha = 'abc';
+                $model->scenario = 'update';
                 if (!$school->save()) {
                     foreach ($school->getErrors() as $error) {
                         $message = $error[0];
