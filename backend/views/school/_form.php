@@ -20,13 +20,13 @@ use yii\captcha\Captcha;
                 <?= $form->field($model, 'city')->textInput() ?>
                 <?= $form->field($model, 'phone')->textInput() ?>
                 <?= $form->field($model, 'expired_date')->textInput() ?>
-                <?= $form->field($model, 'captcha')->widget(Captcha::className(), [
+                <?php /*= $form->field($model, 'captcha')->widget(Captcha::className(), [
                     'attribute' => ['autocomplete' => 'off', 'autocorrect' => 'off'],
                     'options' => [
                         'placeholder' => 'Masukkan kode captcha',
                         'class' => 'form-control'
                     ],
-                ])->label(false) ?>
+                ])->label(false) */ ?>
 
                 <div class="form-group">
                     <?php
