@@ -33,7 +33,8 @@ class SchoolRegisterController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['login', 'error', 'captcha', 'create'],
+                        // 'actions' => ['login', 'error', 'captcha', 'create'],
+                        'actions' => ['login', 'error', 'create'],
                         'allow' => true,
                     ],
                     [
@@ -52,10 +53,9 @@ class SchoolRegisterController extends Controller
             'error' => [
                 'class' => 'yii\web\ErrorAction',
             ],
-            'captcha' => [
-                'class' => 'yii\captcha\CaptchaAction',
-                // 'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
-            ],
+            // 'captcha' => [
+            //     'class' => 'yii\captcha\CaptchaAction',
+            // ],
         ];
     }
 
@@ -109,7 +109,6 @@ class SchoolRegisterController extends Controller
     public function actionCreate()
     {
         $school = new School();
-        $school->scenario = 'register';
 
         $admin = new User();
 

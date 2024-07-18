@@ -22,7 +22,7 @@ use Yii;
 class School extends \yii\db\ActiveRecord
 {
 
-    public $captcha;
+    // public $captcha;
     /**
      * {@inheritdoc}
      */
@@ -52,8 +52,8 @@ class School extends \yii\db\ActiveRecord
     {
         return [
             // [['captcha'], 'required'],
-            [['captcha'], 'captcha', 'on' => 'register'],
-            [['captcha'], 'safe', 'on' => 'update'],
+            // [['captcha'], 'captcha', 'on' => 'register'],
+            // [['captcha'], 'safe', 'on' => 'update'],
             [['created_at', 'updated_at'], 'safe'],
             [['number', 'name', 'status', 'address', 'city', 'phone', 'image', 'expired_date', 'nota_format'], 'string', 'max' => 255],
             // [['invoice_number', 'transaction_number'], 'integer'],
@@ -82,7 +82,7 @@ class School extends \yii\db\ActiveRecord
             'updated_at' => 'Terakhir Diupdate',
 
             // 'reCaptcha' => 'Google ReCaptcha',
-            'captcha' => 'Verification Code',
+            // 'captcha' => 'Verification Code',
         ];
     }
 

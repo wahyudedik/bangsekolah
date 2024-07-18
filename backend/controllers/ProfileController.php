@@ -71,7 +71,6 @@ class ProfileController extends \yii\web\Controller
             }
 
             if ($model->save()) {
-                $model->scenario = 'update';
                 if (!$school->save()) {
                     foreach ($school->getErrors() as $error) {
                         $message = $error[0];

@@ -1,6 +1,6 @@
 <?php
 
-use yii\captcha\Captcha;
+// use yii\captcha\Captcha;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
@@ -47,13 +47,13 @@ $baseUrl = Yii::$app->request->baseUrl;
                                         ->hiddenInput(['value' => $expiredDate])
                                         ->label(false); ?>
                                     <div class="input-group">
-                                        <?= $form->field($school, 'captcha')->widget(Captcha::className(), [
+                                        <?php /*= $form->field($school, 'captcha')->widget(Captcha::className(), [
                                             'attribute' => ['autocomplete' => 'off', 'autocorrect' => 'off'],
                                             'options' => [
                                                 'placeholder' => 'Masukkan kode captcha',
                                                 'class' => 'form-control'
                                             ],
-                                        ])->label(false) ?>
+                                        ])->label(false) */ ?>
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
@@ -75,8 +75,8 @@ $baseUrl = Yii::$app->request->baseUrl;
 
                             <div class="col-lg-12">
                                 <div class="form-group">
-                                    <?= Html::submitButton('<i class="fas fa-save"></i> Simpan', ['style'=> 'width:100%;background-color:#17a2b8' ,'class' => 'btn btn-success mt-3']) ?>
-                                </div>  
+                                    <?= Html::submitButton('<i class="fas fa-save"></i> Simpan', ['style' => 'width:100%;background-color:#17a2b8', 'class' => 'btn btn-success mt-3']) ?>
+                                </div>
                             </div>
 
                             <?php ActiveForm::end(); ?>
@@ -87,6 +87,8 @@ $baseUrl = Yii::$app->request->baseUrl;
         </div>
     </section>
 </main>
+
+<!--
 <script type="text/javascript">
     $('#refresh-captcha').click(function() {
         event.preventDefault();
@@ -96,3 +98,4 @@ $baseUrl = Yii::$app->request->baseUrl;
     $('#loginform-captcha').attr('autocomplete', 'off');
     $('#loginform-captcha').attr('autocorrect', 'off');
 </script>
+-->
