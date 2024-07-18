@@ -108,7 +108,7 @@ class SchoolController extends Controller
         $model->invoice_number = 0;
         $model->transaction_number = 0;
         $model->status = 'ACTIVE';
-        $model->scenario = 'create';
+        // $model->scenario = 'create';
 
         if ($model->load(Yii::$app->request->post())) {
             $model->number = strtoupper($model->number);
@@ -146,7 +146,7 @@ class SchoolController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-        $model->scenario = 'update';
+        // $model->scenario = 'update';
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
