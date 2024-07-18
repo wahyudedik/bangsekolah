@@ -79,7 +79,7 @@ class ProfileController extends \yii\web\Controller
                     Yii::$app->session->setFlash('danger', $message);
                 }
 
-                Yii::$app->session->setFlash('success', 'Berhasil diperbarui' . $school->image);
+                Yii::$app->session->setFlash('success', 'Profil berhasil disimpan');
             } else {
                 foreach ($model->getErrors() as $error) {
                     $message = $error[0];
