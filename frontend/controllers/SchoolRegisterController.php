@@ -109,6 +109,8 @@ class SchoolRegisterController extends Controller
     public function actionCreate()
     {
         $school = new School();
+        $school->scenario = 'register';
+
         $admin = new User();
 
         if ($school->load(Yii::$app->request->post()) && $admin->load(Yii::$app->request->post())) {
