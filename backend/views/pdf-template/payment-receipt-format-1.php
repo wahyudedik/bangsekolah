@@ -12,32 +12,6 @@ foreach ($transactions as $trx) {
 }
 $baseUrl = Yii::$app->request->baseUrl;
 
-
-function downloadImageWithCurl($url)
-{
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Disable SSL verification
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false); // Disable SSL verification
-    $data = curl_exec($ch);
-
-    // Handle error
-    if (curl_errno($ch)) {
-        echo 'Curl error: ' . curl_error($ch);
-    }
-
-    curl_close($ch);
-    return $data;
-}
-
-function base64EncodeImage($url)
-{
-    $imageData = downloadImageWithCurl($url);
-    $type = pathinfo($url, PATHINFO_EXTENSION);
-    $base64 = 'data:image/' . $type . ';base64,' . base64_encode($imageData);
-    return $base64;
-}
 ?>
 <div style="color: #000000;">
 
@@ -48,7 +22,7 @@ function base64EncodeImage($url)
                 <?php if ($transaction->invoice->school->image == null) { ?>
                     <img src="<?= $baseUrl ?>/images/banksekolah-logo.png" alt="BANKSEKOLAH" class="brand-image img-circle elevation-3" style="width: 60px; height: 60px;" />
                 <?php } else { ?>
-                    <img src="<?= base64EncodeImage(Yii::getAlias('@backurl') . '/uploads/school/' . $transaction->invoice->school->image) ?>" alt="BANKSEKOLAH" class="brand-image img-circle elevation-3" style="width: 60px; height: 60px;" />
+                    <img src="<?= $logo ?>" alt="BANKSEKOLAH" class="brand-image img-circle elevation-3" style="width: 60px; height: 60px;" />
                 <?php } ?>
             </td>
             <td style="text-align: left;">

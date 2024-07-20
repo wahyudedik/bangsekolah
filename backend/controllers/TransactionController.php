@@ -121,9 +121,23 @@ class TransactionController extends Controller
             $nota_format = $school->nota_format;
         }
 
+        // generate image logo
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, Yii::getAlias('@backurl') . '/uploads/school/' . $transaction->invoice->school->image);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Disable SSL verification
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false); // Disable SSL verification
+        $imageData = curl_exec($ch);
+        if (curl_errno($ch)) {
+            echo 'Curl error: ' . curl_error($ch);
+        }
+        curl_close($ch);
+        $logo = 'data:image/jpeg;base64,' . base64_encode($imageData);
+
         $content = $this->renderPartial('@app/views/pdf-template/' . $nota_format, [
             'transaction' => $transaction,
             'transactions' => $transactions,
+            'logo' => $logo,
         ]);
 
         // return $content;
