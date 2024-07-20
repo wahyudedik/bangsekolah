@@ -12,11 +12,22 @@ foreach ($transactions as $trx) {
 }
 $baseUrl = Yii::$app->request->baseUrl;
 
+
 // Fungsi untuk meng-encode gambar ke Base64
 function base64EncodeImage($path)
 {
+
+    $options = [
+        "ssl" => [
+            "verify_peer" => false,
+            "verify_peer_name" => false,
+        ],
+    ];
+
+    $context = stream_context_create($options);
+
     $type = pathinfo($path, PATHINFO_EXTENSION);
-    $data = file_get_contents($path);
+    $data = file_get_contents($path, false, $context);
     $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
     return $base64;
 }
