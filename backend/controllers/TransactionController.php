@@ -140,7 +140,7 @@ class TransactionController extends Controller
             'logo' => $logo,
         ]);
 
-        return $content;
+        // return $content;
 
         $pdf = new Pdf([
             'mode' => Pdf::MODE_CORE,
