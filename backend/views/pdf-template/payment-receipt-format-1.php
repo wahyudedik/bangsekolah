@@ -11,6 +11,15 @@ foreach ($transactions as $trx) {
     break;
 }
 $baseUrl = Yii::$app->request->baseUrl;
+
+// Fungsi untuk meng-encode gambar ke Base64
+function base64EncodeImage($path)
+{
+    $type = pathinfo($path, PATHINFO_EXTENSION);
+    $data = file_get_contents($path);
+    $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+    return $base64;
+}
 ?>
 <div style="color: #000000;">
 
@@ -21,7 +30,7 @@ $baseUrl = Yii::$app->request->baseUrl;
                 <?php if ($transaction->invoice->school->image == null) { ?>
                     <img src="<?= $baseUrl ?>/images/banksekolah-logo.png" alt="BANKSEKOLAH" class="brand-image img-circle elevation-3" style="width: 60px; height: 60px;" />
                 <?php } else { ?>
-                    <img src="<?= Yii::getAlias('@backurl') ?>/uploads/school/<?= $transaction->invoice->school->image ?>" alt="BANKSEKOLAH" class="brand-image img-circle elevation-3" style="width: 60px; height: 60px;" />
+                    <img src="<?= base64EncodeImage(Yii::getAlias('@backurl') . '/uploads/school/' . $transaction->invoice->school->image) ?>" alt="BANKSEKOLAH" class="brand-image img-circle elevation-3" style="width: 60px; height: 60px;" />
                 <?php } ?>
             </td>
             <td style="text-align: left;">
