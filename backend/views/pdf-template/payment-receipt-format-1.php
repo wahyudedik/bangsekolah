@@ -21,7 +21,6 @@ $baseUrl = Yii::$app->request->baseUrl;
                 <?php if ($transaction->invoice->school->image == null) { ?>
                     <img src="<?= $baseUrl ?>/images/banksekolah-logo.png" alt="BANKSEKOLAH" class="brand-image img-circle elevation-3" style="width: 60px; height: 60px;" />
                 <?php } else { ?>
-                    <pre><?= Yii::getAlias('@backurl') ?>/uploads/school/<?= $transaction->invoice->school->image ?></pre>
                     <img src="<?= Yii::getAlias('@backurl') ?>/uploads/school/<?= $transaction->invoice->school->image ?>" alt="BANKSEKOLAH" class="brand-image img-circle elevation-3" style="width: 60px; height: 60px;" />
                 <?php } ?>
             </td>
