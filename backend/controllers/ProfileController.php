@@ -64,6 +64,11 @@ class ProfileController extends \yii\web\Controller
 
                 $school->image = 'large-' . $temporary_image;
 
+                // base64
+                $imageData = file_get_contents($path);
+                $imageBase64 = 'data:' . $image->type . ';base64,' . base64_encode($imageData);
+                $school->image_base64 = $imageBase64;
+
                 @unlink($path);
                 if (!$old_image == '') {
                     @unlink(Yii::getAlias('@uploads/school/' . $old_image));
