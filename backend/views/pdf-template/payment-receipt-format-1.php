@@ -13,22 +13,29 @@ foreach ($transactions as $trx) {
 $baseUrl = Yii::$app->request->baseUrl;
 
 
-// Fungsi untuk meng-encode gambar ke Base64
-function base64EncodeImage($path)
+function downloadImageWithCurl($url)
 {
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Disable SSL verification
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false); // Disable SSL verification
+    $data = curl_exec($ch);
 
-    $options = [
-        "ssl" => [
-            "verify_peer" => false,
-            "verify_peer_name" => false,
-        ],
-    ];
+    // Handle error
+    if (curl_errno($ch)) {
+        echo 'Curl error: ' . curl_error($ch);
+    }
 
-    $context = stream_context_create($options);
+    curl_close($ch);
+    return $data;
+}
 
-    $type = pathinfo($path, PATHINFO_EXTENSION);
-    $data = file_get_contents($path, false, $context);
-    $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+function base64EncodeImage($url)
+{
+    $imageData = downloadImageWithCurl($url);
+    $type = pathinfo($url, PATHINFO_EXTENSION);
+    $base64 = 'data:image/' . $type . ';base64,' . base64_encode($imageData);
     return $base64;
 }
 ?>
