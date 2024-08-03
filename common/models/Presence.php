@@ -56,8 +56,8 @@ class Presence extends \yii\db\ActiveRecord
     {
         return [
             [['school_id', 'student_id'], 'integer'],
-            [['date', 'check_in', 'check_out', 'created_at', 'updated_at', 'file', 'student'], 'safe'],
-            [['class', 'status_check_in', 'status_check_out'], 'string', 'max' => 255],
+            [['date', 'check_in', 'check_out', 'check_in_fullday', 'check_out_fullday', 'created_at', 'updated_at', 'file', 'student'], 'safe'],
+            [['class', 'status_check_in', 'status_check_out', 'status_check_in_fullday', 'status_check_out_fullday'], 'string', 'max' => 255],
             [['school_id'], 'exist', 'skipOnError' => true, 'targetClass' => School::className(), 'targetAttribute' => ['school_id' => 'id']],
             [['student_id'], 'exist', 'skipOnError' => true, 'targetClass' => Student::className(), 'targetAttribute' => ['student_id' => 'id']],
         ];

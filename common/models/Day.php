@@ -51,7 +51,7 @@ class Day extends \yii\db\ActiveRecord
             [['name'], 'required'],
             [['school_id'], 'integer'],
             [['created_at', 'updated_at'], 'safe'],
-            [['name', 'status', 'check_in', 'check_out'], 'string', 'max' => 255],
+            [['name', 'status', 'check_in', 'check_out', 'check_in_fullday', 'check_out_fullday'], 'string', 'max' => 255],
             [['school_id'], 'exist', 'skipOnError' => true, 'targetClass' => School::className(), 'targetAttribute' => ['school_id' => 'id']],
         ];
     }
