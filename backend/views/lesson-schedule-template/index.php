@@ -63,14 +63,19 @@ $user = Yii::$app->user->identity;
                             echo '<td>' . $template->lesson->name . '</td>';
                             if ($user->role_id == 5) {
                                 if ($template->teacher->user_id == $user->id) {
-                                    echo '<td>' . Html::a('Masuk Kelas <i class="fas fa-chalkboard-teacher"></i>', ['lesson-schedule/create', 'id' => $template->id], ['class' => 'btn btn-primary']) . '</td>';
+                                    echo '<td>' .
+                                        Html::a('Masuk Kelas <i class="fas fa-chalkboard-teacher"></i>', ['lesson-schedule/create', 'id' => $template->id], ['class' => 'btn btn-primary mr-1'])
+                                        . Html::a('<i class="fas fa-pen"></i>', ['update', 'id' => $template->id], ['class' => 'btn btn-primary mr-1'])
+                                        . Html::a('<i class="fas fa-trash-alt"></i>', ['delete', 'id' => $template->id], ['class' => 'btn btn-danger', 'onclick' => 'return confirm("Yakin hapus jadwal pelajaran ini?");'])
+                                        . '</td>';
                                 } else {
                                     echo '<td></td>';
                                 }
                             } else {
                                 echo '<td>' .
                                     Html::a('<i class="fas fa-pen"></i>', ['update', 'id' => $template->id], ['class' => 'btn btn-primary mr-1']) .
-                                    Html::a('<i class="fas fa-trash-alt"></i>', ['delete', 'id' => $template->id], ['class' => 'btn btn-danger', 'onclick' => 'return confirm("Yakin hapus jadwal pelajaran ini?");']) . '</td>';
+                                    Html::a('<i class="fas fa-trash-alt"></i>', ['delete', 'id' => $template->id], ['class' => 'btn btn-danger', 'onclick' => 'return confirm("Yakin hapus jadwal pelajaran ini?");'])
+                                    . '</td>';
                             }
                             echo '</tr>';
                             $lessonNum++;
