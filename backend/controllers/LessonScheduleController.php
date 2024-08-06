@@ -151,7 +151,7 @@ class LessonScheduleController extends Controller
 
         if ($model->save()) {
             // menambahkan semua siswa pada kelas tersebut ke kelas
-            $students = Student::find()->where(['school_id' => $school_id, 'class' => $template->class])->all();
+            $students = Student::find()->where(['school_id' => $school_id, 'class' => $template->class, 'status' => 'ACTIVE'])->all();
             foreach ($students as $student) {
                 $attendance = new LessonScheduleAttendance();
                 $attendance->lesson_schedule_id = $model->id;
