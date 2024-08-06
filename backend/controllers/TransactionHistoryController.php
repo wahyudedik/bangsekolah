@@ -17,6 +17,13 @@ use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use kartik\mpdf\Pdf;
 
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Style\Font;
+
 /**
  * TransactionHistoryController implements the CRUD actions for Transaction model.
  */
@@ -134,9 +141,8 @@ class TransactionHistoryController extends Controller
 
     public function actionExport($startdate, $enddate, $year, $class, $payment, $method)
     {
-        $objPHPExcel = new \PHPExcel();
-        $objPHPExcel->setActiveSheetIndex(0);
-        $sheet = $objPHPExcel->getActiveSheet();
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
 
         // populate data
         $school_id = Yii::$app->session->get('school_id');
@@ -206,23 +212,23 @@ class TransactionHistoryController extends Controller
         // }
 
         // styling
-        $sheet->getStyleByColumnAndRow(0, $row, ($column-1), $row)
-            ->getFill()
-            ->setFillType(\PHPExcel_Style_Fill::FILL_SOLID)
-            ->getStartColor()
-            ->setRGB('154360');
-        $sheet->getStyleByColumnAndRow(0, $row, ($column-1), $row)
-            ->getFill()
-            ->setFillType(\PHPExcel_Style_Fill::FILL_SOLID)
-            ->getStartColor()
-            ->setRGB('2C3E50');
-        $arrStyle = [
-            'font'  => [
-                'bold'  => true,
-                'color' => ['rgb' => 'FFFFFF'],
-            ]
-        ];
-        $sheet->getStyleByColumnAndRow(0, $row, ($column-1), $row)->applyFromArray($arrStyle);
+        // $sheet->getStyleByColumnAndRow(0, $row, ($column-1), $row)
+        //     ->getFill()
+        //     ->setFillType(\PHPExcel_Style_Fill::FILL_SOLID)
+        //     ->getStartColor()
+        //     ->setRGB('154360');
+        // $sheet->getStyleByColumnAndRow(0, $row, ($column-1), $row)
+        //     ->getFill()
+        //     ->setFillType(\PHPExcel_Style_Fill::FILL_SOLID)
+        //     ->getStartColor()
+        //     ->setRGB('2C3E50');
+        // $arrStyle = [
+        //     'font'  => [
+        //         'bold'  => true,
+        //         'color' => ['rgb' => 'FFFFFF'],
+        //     ]
+        // ];
+        // $sheet->getStyleByColumnAndRow(0, $row, ($column-1), $row)->applyFromArray($arrStyle);
 
         // style for body
         $style_row = array(
@@ -266,8 +272,8 @@ class TransactionHistoryController extends Controller
             $sheet->setCellValue('G' . $row, $trans->payment_method == 'CASH' ? $trans->amount : '');
             $sheet->setCellValue('H' . $row, $trans->payment_method == 'TRANSFER' ? $trans->amount : '');
             $sheet->setCellValue('I' . $row, $trans->amount);
-            $sheet->getStyleByColumnAndRow(0, $row, ($column-1), $row)
-                ->applyFromArray($style_row);
+            // $sheet->getStyleByColumnAndRow(0, $row, ($column-1), $row)
+            //     ->applyFromArray($style_row);
 
         }
         $row++;
@@ -284,21 +290,143 @@ class TransactionHistoryController extends Controller
         $sheet->setCellValue('H'.$row, $totalTransfer);
         $sheet->setCellValue('I'.$row, $totalCash + $totalTransfer);
         $sheet->mergeCells('A'.$row.':'.'F'.$row);
-        $sheet->getStyleByColumnAndRow(0, $row, ($column-1), $row)
-                ->applyFromArray($style_row);
+        // $sheet->getStyleByColumnAndRow(0, $row, ($column-1), $row)
+        //         ->applyFromArray($style_row);
 
         $filename = 'riwayat-transaksi-'.$startdate.'-'. $enddate . '.xlsx';
 
         ob_clean(); //Emptying the cache
         // header('Content-Type: application/vnd.ms-excel');
-        header('Content-Type: application/openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename=' . $filename . ' ');
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename=' . $filename);
         header('Cache-Control: max-age=0');
-        $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-        $objWriter->save('php://output');
-        unset($objPHPExcel);
+
+        $writer = new Xlsx($spreadsheet);
+        $writer->save('php://output');
+
         // most important code (exit)
         exit();
     }
 
+    // public function actionExport1($startdate, $enddate, $year, $class, $payment, $method)
+    // {
+    //     $spreadsheet = new Spreadsheet();
+    //     $sheet = $spreadsheet->getActiveSheet();
+
+    //     // populate data
+    //     $school_id = Yii::$app->session->get('school_id');
+    //     $school = School::findOne($school_id);
+
+    //     $query = Transaction::find()
+    //         ->joinWith(['student', 'schoolPayment'])
+    //         ->where(['student.school_id' => $school_id]);
+
+    //     if ($startdate) { $query->andFilterWhere(['and', ['>=', 'DATE(transaction.date)', $startdate]]); }
+    //     if ($enddate) { $query->andFilterWhere(['and', ['<=', 'DATE(transaction.date)', $enddate]]); }
+    //     if($year) { $query->andFilterWhere(['student.year' => $year]); }
+    //     if($class) { $query->andFilterWhere(['student.class' => $class]); }
+    //     if($payment) { $query->andFilterWhere(['or', ['like', 'school_payment.number', $payment]]); }
+    //     if($method) { $query->andFilterWhere(['or', ['like', 'payment_method', $method]]); }
+
+    //     $transaction = $query->orderBy(['id' => SORT_DESC])->all();
+
+    //     // set title
+    //     $sheet->setCellValue('A1', 'NO');
+    //     $sheet->setCellValue('B1', 'NIK');
+    //     $sheet->setCellValue('C1', 'NAMA');
+    //     $sheet->setCellValue('D1', 'JENIS KELAMIN');
+    //     $sheet->setCellValue('E1', 'USIA');
+    //     $sheet->setCellValue('F1', 'TELEPON');
+    //     $sheet->setCellValue('G1', 'PROVINSI');
+    //     $sheet->setCellValue('H1', 'KOTA/KAB');
+    //     $sheet->setCellValue('I1', 'KECAMATAN');
+    //     $sheet->setCellValue('J1', 'DESA/KELURAHAN');
+    //     $sheet->setCellValue('K1', 'ALAMAT');
+    //     $sheet->setCellValue('L1', 'LONGITUDE');
+    //     $sheet->setCellValue('M1', 'LATITUDE');
+    //     $sheet->getColumnDimension('A')->setAutoSize(true);
+    //     $sheet->getColumnDimension('B')->setAutoSize(true);
+    //     $sheet->getColumnDimension('C')->setAutoSize(true);
+    //     $sheet->getColumnDimension('D')->setAutoSize(true);
+    //     $sheet->getColumnDimension('E')->setAutoSize(true);
+    //     $sheet->getColumnDimension('F')->setAutoSize(true);
+    //     $sheet->getColumnDimension('G')->setAutoSize(true);
+    //     $sheet->getColumnDimension('H')->setAutoSize(true);
+    //     $sheet->getColumnDimension('I')->setAutoSize(true);
+    //     $sheet->getColumnDimension('J')->setAutoSize(true);
+    //     $sheet->getColumnDimension('K')->setAutoSize(true);
+    //     $sheet->getColumnDimension('L')->setAutoSize(true);
+    //     $sheet->getColumnDimension('M')->setAutoSize(true);
+    //     $sheet->getRowDimension('1')->setRowHeight(20);
+
+    //     $column = 12;
+    //     $row = 1;
+
+    //     // styling
+    //     $sheet->getStyleByColumnAndRow(1, $row, 13, $row) // Ubah dari 0 menjadi 1 karena kolom dimulai dari 1, bukan 0
+    //         ->getFill()
+    //         ->setFillType(Fill::FILL_SOLID)
+    //         ->getStartColor()
+    //         ->setRGB('075b75');
+    //     $arrStyle = [
+    //         'font' => [
+    //             'bold' => true,
+    //             'color' => ['rgb' => 'FFFFFF'],
+    //         ]
+    //     ];
+    //     $sheet->getStyleByColumnAndRow(1, $row, 13, $row)->applyFromArray($arrStyle);
+
+    //     // populate records data
+    //     $maxRowCount = 1;
+    //     $number = 1;
+    //     $row = 1;
+    //     foreach ($mustahiks as $mustahik) {
+    //         if ($maxRowCount > 10000) {
+    //             break;
+    //         }
+    //         $maxRowCount++;
+    //         $column = 12;
+    //         $row++;
+    //         //$number++;
+
+    //         $sheet->getStyle('A', $row)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
+    //         $sheet->getStyle('B', $row)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
+    //         $sheet->getStyle('C', $row)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
+    //         $sheet->getStyle('D', $row)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
+    //         $sheet->getStyle('E', $row)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
+    //         $sheet->getStyle('F', $row)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
+    //         $sheet->getStyle('G', $row)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
+    //         $sheet->getStyle('H', $row)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
+    //         $sheet->getStyle('I', $row)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
+    //         $sheet->getStyle('J', $row)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
+    //         $sheet->getStyle('K', $row)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
+    //         $sheet->getStyle('L', $row)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
+    //         $sheet->getStyle('M', $row)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
+    //         $sheet->setCellValue('A' . $row, $number++);
+    //         $sheet->setCellValueExplicit('B' . $row, $mustahik->nik, \PHPExcel_Cell_DataType::TYPE_STRING);
+    //         $sheet->setCellValue('C' . $row, $mustahik->nama);
+    //         $sheet->setCellValue('D' . $row, $mustahik->gender ? $mustahik->gender->nama : '');
+    //         $sheet->setCellValue('E' . $row, $mustahik->usia->nama);
+    //         $sheet->setCellValueExplicit('F' . $row, $mustahik->telepon, \PHPExcel_Cell_DataType::TYPE_STRING);
+    //         $sheet->setCellValue('G' . $row, $mustahik->mustahikDomisili ? $mustahik->mustahikDomisili->provinsi->nama : '');
+    //         $sheet->setCellValue('H' . $row, $mustahik->mustahikDomisili ? $mustahik->mustahikDomisili->kota->nama : '');
+    //         $sheet->setCellValue('I' . $row, $mustahik->mustahikDomisili ? $mustahik->mustahikDomisili->kecamatan->nama : '');
+    //         $sheet->setCellValue('J' . $row, $mustahik->mustahikDomisili ? $mustahik->mustahikDomisili->desa->name : '');
+    //         $sheet->setCellValue('K' . $row, $mustahik->mustahikDomisili ? $mustahik->mustahikDomisili->alamat : '');
+    //         $sheet->setCellValue('L' . $row, $mustahik->longitude);
+    //         $sheet->setCellValue('M' . $row, $mustahik->latitude);
+    //     }
+
+    //     $filename = 'MUSTAHIK_PERORANGAN-' . date('Y-m-d') . '.xlsx';
+
+    //     header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    //     header('Content-Disposition: attachment;filename=' . $filename);
+    //     header('Cache-Control: max-age=0');
+
+    //     $writer = new Xlsx($spreadsheet);
+    //     $writer->save('php://output');
+
+    //     // most important code (exit)
+    //     exit;
+    // }
 }
