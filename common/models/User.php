@@ -1,4 +1,5 @@
 <?php
+
 namespace common\models;
 
 use Yii;
@@ -54,13 +55,13 @@ class User extends ActiveRecord implements IdentityInterface
         return [
             // TimestampBehavior::className(),
             'timestamp' => [
-                 'class' => 'yii\behaviors\TimestampBehavior',
-                 'attributes' => [
-                     \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => ['created_at', 'updated_at'],
-                     \yii\db\ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_at'],
-                 ],
-                 'value' => new \yii\db\Expression('NOW()'),
-             ],
+                'class' => 'yii\behaviors\TimestampBehavior',
+                'attributes' => [
+                    \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => ['created_at', 'updated_at'],
+                    \yii\db\ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_at'],
+                ],
+                'value' => new \yii\db\Expression('NOW()'),
+            ],
         ];
     }
 
@@ -78,23 +79,23 @@ class User extends ActiveRecord implements IdentityInterface
              * Role pada saat buat user baru, yang required hanya:
              * nik, nama, email, password
              */
-            [['name', 'role_id', 'username', 'password'], 'required', 'when' => function($model) {
+            [['name', 'role_id', 'username', 'password'], 'required', 'when' => function ($model) {
                 return $model->mode_create == true;
             }, 'message' => '{attribute} harus diisi'],
-            
+
             /**
              * Role untuk change password
              * berlaku pada saat mengubah password saja
              */
-            [['password', 'confirm_password'], 'required', 'when' => function($model) {
+            [['password', 'confirm_password'], 'required', 'when' => function ($model) {
                 return $model->mode_change_password == true;
             }, 'message' => '{attribute} harus diisi'],
-            [['password', 'confirm_password'], 'string', 'min' => 5, 'when' => function($model) {
+            [['password', 'confirm_password'], 'string', 'min' => 5, 'when' => function ($model) {
                 return $model->mode_change_password == true;
             }, 'message' => '{attribute} minimal 5 karakter'],
-            [['confirm_password'], 'compare', 'compareAttribute'=>'password', 'skipOnEmpty' => false, 'when' => function($model) {
+            [['confirm_password'], 'compare', 'compareAttribute' => 'password', 'skipOnEmpty' => false, 'when' => function ($model) {
                 return $model->mode_change_password == true;
-            }, 'message'=>"Passwords don't match"],
+            }, 'message' => "Passwords don't match"],
             [['role_id'], 'integer'],
             [['email'], 'email', 'message' => 'Email tidak valid'],
             [['register', 'mode_create', 'mode_add_user'], 'safe'],
@@ -309,7 +310,7 @@ class User extends ActiveRecord implements IdentityInterface
         } else {
             $src = $this->foto_small;
         }
-        return Html::img($baseUrl.'/uploads/user/'.$src, ['style' => 'width: 20px; border-radius: 20px;']);
+        return Html::img($baseUrl . '/uploads/user/' . $src, ['style' => 'width: 20px; border-radius: 20px;']);
     }
 
     public function getUserCareers()
@@ -363,7 +364,8 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return ArrayHelper::map(
             User::find()->where(['status' => 'ACTIVE'])->asArray()->all(),
-            'id', 'name'
+            'id',
+            'name'
         );
     }
 
@@ -377,5 +379,4 @@ class User extends ActiveRecord implements IdentityInterface
             return '<label class="label label-success">Email Confirmed</i>';
         }
     }
-
 }

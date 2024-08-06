@@ -87,10 +87,44 @@ class LessonScheduleTemplateController extends Controller
             $model->class = $class;
         }
 
-        // $classes = SchoolClass::find()->where(['school_id' => Yii::$app->session->get('school_id')])->all();
+        if ($model->load(Yii::$app->request->post())) {
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            // return $this->redirect(['view', 'id' => $model->id]);
+            // looping sesuai start dan end
+            $saved = 0;
+            $start = $model->hour_start;
+            $end = $model->hour_end;
+            $school_id = Yii::$app->session->get('school_id');
+            if ($end < $start) {
+                Yii::$app->session->setFlash('danger', 'Jam mulai dan selesai tidak valid');
+                return $this->redirect(['index', 'class' => $class]);
+            }
+
+            for ($i = $start; $i <= $end; $i++) {
+                // cek apakah jadwal sudah ada
+                $checkTemplate = LessonScheduleTemplate::find()
+                    ->where(['school_id' => $school_id, 'day' => $model->day, 'lesson_id' => $model->lesson_id, 'teacher_id' => $model->teacher_id, 'hour' => $i, 'status' => 'ACTIVE'])
+                    ->one();
+                if (!$checkTemplate) {
+                    $template = new LessonScheduleTemplate();
+                    $template->school_id = $school_id;
+                    $template->day = $model->day;
+                    $template->lesson_id = $model->lesson_id;
+                    $template->teacher_id = $model->teacher_id;
+                    $template->hour = $i . '';
+                    $template->status = 'ACTIVE';
+                    if ($class) {
+                        $template->class = $class;
+                    }
+                    if ($template->save()) {
+                        $saved++;
+                    } else {
+                        foreach ($template->errors as $err) {
+                            return $err[0];
+                        }
+                    }
+                }
+            }
+
             return $this->redirect(['index', 'class' => $class]);
         }
 

@@ -1,18 +1,20 @@
 <?php
+
 use common\helpers\Strings;
 use common\models\Transaction;
 
 $transactionNumber = '';
 $transactionDate = '';
-foreach($transactions as $trx) {
+foreach ($transactions as $trx) {
     $transactionNumber = $trx->number;
     $transactionDate = Strings::getFullDate($trx->date);
     break;
 }
 $baseUrl = Yii::$app->request->baseUrl;
+
 ?>
 <div style="color: #000000;">
-    
+
     <!-- <watermarkimage src="images/watermark-sertifikat-provinsi.png" size="285, 200" alpha="1" /> -->
     <table cellpadding="5px" width="100%">
         <tr>
@@ -20,14 +22,15 @@ $baseUrl = Yii::$app->request->baseUrl;
                 <?php if ($transaction->invoice->school->image == null) { ?>
                     <img src="<?= $baseUrl ?>/images/banksekolah-logo.png" alt="BANKSEKOLAH" class="brand-image img-circle elevation-3" style="width: 60px; height: 60px;" />
                 <?php } else { ?>
-                    <img src="<?= $baseUrl ?>/uploads/school/<?= $transaction->invoice->school->image ?>" alt="BANKSEKOLAH" class="brand-image img-circle elevation-3" style="width: 60px; height: 60px;" />
+                    <img src="<?= $transaction->invoice->school->image_base64 ?>" alt="BANKSEKOLAH" class="brand-image img-circle elevation-3" style="width: 60px; height: 60px;" />
+
                 <?php } ?>
             </td>
             <td style="text-align: left;">
                 <span style="font-size: 18px;"><b><?= strtoupper($transaction->invoice->school->name) ?></b></span><br>
                 <span class="small">
-                <?= $transaction->invoice->school->address.' '.$transaction->invoice->school->city ?><br>
-                <?= $transaction->invoice->school->phone ?>
+                    <?= $transaction->invoice->school->address . ' ' . $transaction->invoice->school->city ?><br>
+                    <?= $transaction->invoice->school->phone ?>
                 </span>
             </td>
             <td class="large" style="text-align: left;">
@@ -80,10 +83,10 @@ $baseUrl = Yii::$app->request->baseUrl;
                             <th class="small" style="border: 1px solid black;">JUMLAH PEMBAYARAN</th>
                         </tr>
                         <?php
-                        $i=1;
-                        $total=0;
-                        foreach($transactions as $trx):
-                            $total+=$trx->amount;
+                        $i = 1;
+                        $total = 0;
+                        foreach ($transactions as $trx) :
+                            $total += $trx->amount;
 
                             // get total kekurangan pada sebelum transaksi ini
                             $paidTotal = 0;
@@ -94,19 +97,19 @@ $baseUrl = Yii::$app->request->baseUrl;
                                 }
                                 $paidTotal += $oldTrx->amount;
                             }
-                            ?>
+                        ?>
                             <tr style="border: 1px solid black;">
                                 <td rowspan="2" class="small monospacearial" style="vertical-align: top; border: 1px solid black;"><?= $i++ ?></td>
-                                <td rowspan="2" class="small monospacearial" style="vertical-align: top; border: 1px solid black;"><?= $trx->schoolPayment->name == 'SPP' ? $trx->schoolPayment->name.' Bulan '.$trx->invoice->month : $trx->schoolPayment->name ?></td>
+                                <td rowspan="2" class="small monospacearial" style="vertical-align: top; border: 1px solid black;"><?= $trx->schoolPayment->name == 'SPP' ? $trx->schoolPayment->name . ' Bulan ' . $trx->invoice->month : $trx->schoolPayment->name ?></td>
                                 <td rowspan="2" class="small monospacearial" style="vertical-align: top; text-align: center; border: 1px solid black;"><?= $trx->payment_method == 'CASH' ? 'TUNAI' : $trx->payment_method ?></td>
                                 <td class="small monospacearial">
-                                    <?= Strings::getRupiah($trx->invoice->amount-$paidTotal) ?>
+                                    <?= Strings::getRupiah($trx->invoice->amount - $paidTotal) ?>
                                 </td>
                                 <td rowspan="2" class="small monospacearial" style="vertical-align: top; border: 1px solid black;"><?= $trx->amountRupiah ?></td>
                             </tr>
                             <tr style="border: 1px solid black;">
                                 <td class="small monospacearial">
-                                    <?= Strings::getRupiah(($trx->invoice->amount-$paidTotal)-$trx->amount) ?>
+                                    <?= Strings::getRupiah(($trx->invoice->amount - $paidTotal) - $trx->amount) ?>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -121,7 +124,7 @@ $baseUrl = Yii::$app->request->baseUrl;
                         <tr>
                             <td width="70%"></td>
                             <td class="small">
-                                <?= $transaction->invoice->school->city.', '.Strings::getFullDate($transaction->date) ?><br>
+                                <?= $transaction->invoice->school->city . ', ' . Strings::getFullDate($transaction->date) ?><br>
                                 Petugas<br><br><br>
                                 <?= $transaction->user->name ?>
                             </td>
@@ -134,40 +137,42 @@ $baseUrl = Yii::$app->request->baseUrl;
 </div>
 
 <?php
-function penyebut($nilai) {
+function penyebut($nilai)
+{
     $nilai = abs($nilai);
     $huruf = array("", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan", "sepuluh", "sebelas");
     $temp = "";
     if ($nilai < 12) {
-        $temp = " ". $huruf[$nilai];
-    } else if ($nilai <20) {
-        $temp = penyebut($nilai - 10). " belas";
+        $temp = " " . $huruf[$nilai];
+    } else if ($nilai < 20) {
+        $temp = penyebut($nilai - 10) . " belas";
     } else if ($nilai < 100) {
-        $temp = penyebut($nilai/10)." puluh". penyebut($nilai % 10);
+        $temp = penyebut($nilai / 10) . " puluh" . penyebut($nilai % 10);
     } else if ($nilai < 200) {
         $temp = " seratus" . penyebut($nilai - 100);
     } else if ($nilai < 1000) {
-        $temp = penyebut($nilai/100) . " ratus" . penyebut($nilai % 100);
+        $temp = penyebut($nilai / 100) . " ratus" . penyebut($nilai % 100);
     } else if ($nilai < 2000) {
         $temp = " seribu" . penyebut($nilai - 1000);
     } else if ($nilai < 1000000) {
-        $temp = penyebut($nilai/1000) . " ribu" . penyebut($nilai % 1000);
+        $temp = penyebut($nilai / 1000) . " ribu" . penyebut($nilai % 1000);
     } else if ($nilai < 1000000000) {
-        $temp = penyebut($nilai/1000000) . " juta" . penyebut($nilai % 1000000);
+        $temp = penyebut($nilai / 1000000) . " juta" . penyebut($nilai % 1000000);
     } else if ($nilai < 1000000000000) {
-        $temp = penyebut($nilai/1000000000) . " milyar" . penyebut(fmod($nilai,1000000000));
+        $temp = penyebut($nilai / 1000000000) . " milyar" . penyebut(fmod($nilai, 1000000000));
     } else if ($nilai < 1000000000000000) {
-        $temp = penyebut($nilai/1000000000000) . " trilyun" . penyebut(fmod($nilai,1000000000000));
-    }     
+        $temp = penyebut($nilai / 1000000000000) . " trilyun" . penyebut(fmod($nilai, 1000000000000));
+    }
     return $temp;
 }
 
-function terbilang($nilai) {
-    if($nilai<0) {
-        $hasil = "minus ". trim(penyebut($nilai));
+function terbilang($nilai)
+{
+    if ($nilai < 0) {
+        $hasil = "minus " . trim(penyebut($nilai));
     } else {
         $hasil = trim(penyebut($nilai));
-    }           
+    }
     return $hasil;
 }
 ?>

@@ -205,18 +205,23 @@ class PresenceController extends Controller
         // get check_in time
         $check_in = '07:00';
         $check_out = '13:00';
+        $check_in_fullday = '14:00';
+        $check_out_fullday = '16:00';
         $arrNamaHari = array("Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu");
         $hariIni = date('w');
         $day = Day::find()->where(['school_id' => $school_id, 'name' => $arrNamaHari[$hariIni]])->one();
         if ($day) {
             $check_in = $day->check_in;
             $check_out = $day->check_out;
+            $check_in_fullday = $day->check_in_fullday;
+            $check_out_fullday = $day->check_out_fullday;
         }
 
         $students = null;
         if (!empty($_POST['students'])) {
             $class = $_POST['class'];
             $students = $_POST['students'];
+            $studentsfullday = $_POST['studentsfullday'];
 
             // reset all presence
             Presence::deleteAll(['class' => $class, 'date' => date('Y-m-d')]);
@@ -230,15 +235,38 @@ class PresenceController extends Controller
                     $presence->class = $class;
                     $presence->date = $date;
                     $presence->check_in = date('Y-m-d') . ' ' . $check_in;
-                    $presence->check_out = date('Y-m-d') . ' ' . $check_in;
+                    $presence->check_out = date('Y-m-d') . ' ' . $check_out;
                     $presence->status_check_in = 'ONTIME';
                     $presence->status_check_out = 'ONTIME';
+
+                    // null kan dulu fullday
+                    $presence->check_in_fullday = null;
+                    $presence->check_out_fullday = null;
+                    $presence->status_check_in_fullday = null;
+                    $presence->status_check_out_fullday = null;
                     if ($presence->save()) {
                         $saved++;
                     } else {
                         foreach ($presence->errors as $error) {
                             Yii::$app->session->setFlash('danger', $error[0]);
-                            return $this->redirect(['event/view', 'id' => $id]);
+                            return $this->redirect(['presence/manual', 'class' => $class]);
+                        }
+                    }
+                }
+                foreach ($studentsfullday as $student_id) {
+                    $presence = Presence::find()->where(['school_id' => $school_id, 'student_id' => $student_id, 'date' => $date, 'class' => $class])->one();
+                    if ($presence) {
+                        $presence->check_in_fullday = date('Y-m-d') . ' ' . $check_in_fullday;
+                        $presence->check_out_fullday = date('Y-m-d') . ' ' . $check_out_fullday;
+                        $presence->status_check_in_fullday = 'ONTIME';
+                        $presence->status_check_out_fullday = 'ONTIME';
+                        if ($presence->save()) {
+                            $saved++;
+                        } else {
+                            foreach ($presence->errors as $error) {
+                                Yii::$app->session->setFlash('danger', $error[0]);
+                                return $this->redirect(['presence/manual', 'class' => $class]);
+                            }
                         }
                     }
                 }
@@ -259,6 +287,8 @@ class PresenceController extends Controller
             'class' => $class,
             'check_in' => $check_in,
             'check_out' => $check_out,
+            'check_in_fullday' => $check_in_fullday,
+            'check_out_fullday' => $check_out_fullday,
             'students' => $students,
             'date' => $date,
         ]);

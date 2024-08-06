@@ -24,6 +24,10 @@ use Yii;
  */
 class LessonScheduleTemplate extends \yii\db\ActiveRecord
 {
+
+    public $hour_start;
+    public $hour_end;
+
     /**
      * {@inheritdoc}
      */
@@ -58,7 +62,7 @@ class LessonScheduleTemplate extends \yii\db\ActiveRecord
     {
         return [
             [['school_id', 'teacher_id', 'lesson_id', 'created_by', 'updated_by'], 'integer'],
-            [['created_at', 'updated_at'], 'safe'],
+            [['created_at', 'updated_at', 'hour_start', 'hour_end'], 'safe'],
             [['hour', 'status', 'class', 'day'], 'string', 'max' => 255],
         ];
     }
@@ -74,6 +78,8 @@ class LessonScheduleTemplate extends \yii\db\ActiveRecord
             'class' => 'Kelas',
             'day' => 'Hari',
             'hour' => 'Jam',
+            'hour_start' => 'Jam Mulai',
+            'hour_end' => 'Jam Selesai',
             'teacher_id' => 'Guru',
             'lesson_id' => 'Pelajaran',
             'status' => 'Status',

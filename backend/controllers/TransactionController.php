@@ -154,10 +154,10 @@ class TransactionController extends Controller
 
             ',
 
-            'options' => [
-                'showWatermarkText' => true,
-                'showWatermarkImage' => true,
-            ],
+            // 'options' => [
+            //     'showWatermarkText' => true,
+            //     'showWatermarkImage' => true,
+            // ],
             'methods' => [
                 'SetTitle' => 'Bukti Pembayaran - ' . $transaction->student->nis . ' - ' . $transaction->student->name,
             ]

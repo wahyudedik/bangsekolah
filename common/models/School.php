@@ -55,6 +55,7 @@ class School extends \yii\db\ActiveRecord
             // [['captcha'], 'captcha', 'on' => 'register'],
             // [['captcha'], 'safe', 'on' => 'update'],
             [['created_at', 'updated_at'], 'safe'],
+            [['image_base64'], 'string'],
             [['number', 'name', 'status', 'address', 'city', 'phone', 'image', 'expired_date', 'nota_format'], 'string', 'max' => 255],
             // [['invoice_number', 'transaction_number'], 'integer'],
             [['number', 'name', 'address', 'city', 'phone'], 'required'],

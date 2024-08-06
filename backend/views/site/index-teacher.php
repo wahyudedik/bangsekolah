@@ -6,6 +6,7 @@ use yii\widgets\ActiveForm;
 use yii\grid\GridView;
 use common\models\LessonScheduleTemplate;
 use common\models\SchoolClass;
+use common\models\Teacher;
 
 $this->title = 'Beranda';
 $this->params['breadcrumbs'][] = $this->title;
@@ -15,11 +16,7 @@ $user = Yii::$app->user->identity;
     <div class="card-header">
         <div class="row">
             <div class="col-lg-6">
-                <?php $form = ActiveForm::begin(['method' => 'get', 'action' => Url::to(['index']), 'options' => ['class' => 'form-inline', 'id' => 'form-search']]) ?>
-                <div class="input-group input-group-sm">
-                    <?= $form->field($model, 'class')->dropDownList(SchoolClass::getList(), ['name' => 'class']) ?>
-                </div>
-                <?php ActiveForm::end() ?>
+                <h5>Jadwal Pelajaran Anda</h5>
             </div>
             <div class="col-lg-6">
                 <div class="card-tools float-right">
@@ -34,15 +31,19 @@ $user = Yii::$app->user->identity;
                 <tr>
                     <th>No</th>
                     <th>Hari</th>
+                    <th>Kelas</th>
                     <th>Jam</th>
-                    <th>Guru</th>
                     <th>Pelajaran</th>
                     <th>Action</th>
                 </tr>
                 <?php
                 $no = 1;
                 foreach ($days as $day) {
-                    $templates = LessonScheduleTemplate::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'class' => $class, 'day' => $day->name, 'status' => 'ACTIVE'])->all();
+                    $teacher = Teacher::find()->where(['user_id' => $user->id])->one();
+                    $templates = LessonScheduleTemplate::find()
+                        ->where(['school_id' => Yii::$app->session->get('school_id'), 'teacher_id' => $teacher->id, 'day' => $day->name, 'status' => 'ACTIVE'])
+                        ->orderBy(['hour' => SORT_ASC])
+                        ->all();
                     if (count($templates) > 0) {
                         $lessonNum = 1;
                         foreach ($templates as $template) {
@@ -51,9 +52,8 @@ $user = Yii::$app->user->identity;
                                 echo '<td rowspan="' . count($templates) . '">' . $no . '</td>';
                                 echo '<td rowspan="' . count($templates) . '">' . $day->name . '</td>';
                             }
-                            // echo '<td>' . $template->class . '</td>';
+                            echo '<td>' . $template->class . '</td>';
                             echo '<td>' . $template->hour . '</td>';
-                            echo '<td>' . $template->teacher->name . '</td>';
                             echo '<td>' . $template->lesson->name . '</td>';
                             if ($template->teacher->user_id == $user->id) {
                                 echo '<td>' . Html::a('Masuk Kelas <i class="fas fa-chalkboard-teacher"></i>', ['lesson-schedule/create', 'id' => $template->id], ['class' => 'btn btn-primary']) . '</td>';
@@ -67,7 +67,6 @@ $user = Yii::$app->user->identity;
                         echo '<tr>';
                         echo '<td>' . $no . '</td>';
                         echo '<td>' . $day->name . '</td>';
-                        echo '<td></td>';
                         echo '<td></td>';
                         echo '<td></td>';
                         echo '<td></td>';
