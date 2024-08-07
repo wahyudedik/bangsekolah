@@ -14,11 +14,13 @@ use common\models\Year;
 
 use common\helpers\Activities;
 use common\helpers\Strings;
+use common\models\SchoolMonth;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use kartik\mpdf\Pdf;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use yii\web\UploadedFile;
 
 /**
@@ -455,7 +457,6 @@ class TransactionController extends Controller
 
     private function populateDataExcel($fileName, $sheet = 0)
     {
-
         // populate array for data validation
         $arrYear = [];
         $years = Year::find()->all();
@@ -470,7 +471,7 @@ class TransactionController extends Controller
         }
 
         // PHP Excel init        
-        $phpexcel = \PHPExcel_IOFactory::load($fileName);
+        $phpexcel = IOFactory::load($fileName);
         $worksheet = $phpexcel->getSheet($sheet);
         $dataExcel = $worksheet->toArray();
         $error = null;
@@ -488,9 +489,10 @@ class TransactionController extends Controller
             foreach ($dataExcel as $rowExcelData) {
                 if ($row_number++ > 0 && $rowExcelData[0] !== null) {
                     // check nisn student
-                    $student = Student::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'nisn' => trim((string)$rowExcelData[1])])->one();
+                    $nisn = trim((string)$rowExcelData[1]);
+                    $student = Student::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'nisn' => $nisn])->one();
                     if (!$student) {
-                        $error = 'NISN ' . $student->nisn . ' belum terdaftar ';
+                        $error = 'NISN ' . $nisn . ' belum terdaftar';
                         break;
                     }
 

@@ -13,6 +13,7 @@ use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use common\helpers\Strings;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use yii\web\UploadedFile;
 
 /**
@@ -280,7 +281,7 @@ class TeacherController extends Controller
         }
 
         // PHP Excel init        
-        $phpexcel = \PHPExcel_IOFactory::load($fileName);
+        $phpexcel = IOFactory::load($fileName);
         $worksheet = $phpexcel->getSheet($sheet);
         $dataExcel = $worksheet->toArray();
         $error = null;

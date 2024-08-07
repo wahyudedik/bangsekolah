@@ -7,6 +7,7 @@ use common\models\Presence;
 use common\models\Teacher;
 use common\models\School;
 use common\models\SchoolClass;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use yii\data\ActiveDataProvider;
 use yii\web\Response;
 use yii\web\Controller;
@@ -302,7 +303,7 @@ class PresenceTeacherController extends Controller
     {
 
         // PHP Excel init        
-        $phpexcel = \PHPExcel_IOFactory::load($fileName);
+        $phpexcel = IOFactory::load($fileName);
         $worksheet = $phpexcel->getSheet($sheet);
         $dataExcel = $worksheet->toArray();
         $error = null;

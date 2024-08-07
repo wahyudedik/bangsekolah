@@ -7,7 +7,7 @@ use common\models\Student;
 use common\models\SchoolMonth;
 use common\models\SchoolClass;
 use common\models\Year;
-
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -54,9 +54,8 @@ class StudentController extends Controller
                 $query->andFilterWhere([
                     'and',
                     ['class' => $class],
-                ]); 
+                ]);
             }
-            
         }
 
         $dataProvider = new ActiveDataProvider([
@@ -120,7 +119,7 @@ class StudentController extends Controller
         if ($model->load(Yii::$app->request->post())) {
 
             $import = UploadedFile::getInstance($model, 'file');
-            if(isset($import)){
+            if (isset($import)) {
                 $exploded_name = explode('.', $import->name);
                 $extension = end($exploded_name);
                 $model->file = Yii::$app->security->generateRandomString() . ".{$extension}";
@@ -159,7 +158,7 @@ class StudentController extends Controller
                     }
                 }
                 $transaction->commit();
-                Yii::$app->session->setFlash('success', $totalItem.' siswa berhasil diimport');
+                Yii::$app->session->setFlash('success', $totalItem . ' siswa berhasil diimport');
                 return $this->redirect(['index']);
             }
         }
@@ -239,7 +238,7 @@ class StudentController extends Controller
         }
 
         // PHP Excel init        
-        $phpexcel = \PHPExcel_IOFactory::load($fileName);
+        $phpexcel = IOFactory::load($fileName);
         $worksheet = $phpexcel->getSheet($sheet);
         $dataExcel = $worksheet->toArray();
         $error = null;
@@ -249,9 +248,10 @@ class StudentController extends Controller
             foreach ($dataExcel as $rowExcelData) {
                 if ($row_number++ > 0 && $rowExcelData[0] !== null) {
                     // check nis student
-                    $student = Student::find()->where(['school_id' => Yii::$app->session->get('school_id'),'nis' => trim((string)$rowExcelData[0])])->one();
+                    $nis = trim((string)$rowExcelData[0]);
+                    $student = Student::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'nis' => $nis])->one();
                     if ($student) {
-                        $error = 'NIS siswa sudah ada '.$student->nis;
+                        $error = 'NIS siswa sudah ada ' . $student->nis;
                         break;
                     }
 
@@ -275,7 +275,7 @@ class StudentController extends Controller
                             'year' => trim((string)$rowExcelData[5]),
                         ];
                     } else {
-                        $error = 'Data tidak valid pada baris ke '.$row_number;
+                        $error = 'Data tidak valid pada baris ke ' . $row_number;
                         break;
                     }
                 }

@@ -8,6 +8,8 @@ use common\models\Teacher;
 use common\models\SchoolClass;
 use common\models\School;
 use common\helpers\Strings;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use yii\data\ActiveDataProvider;
 use yii\web\Response;
 use yii\web\Controller;
@@ -66,9 +68,8 @@ class PresenceRecapTeacherController extends Controller
 
     public function actionExport($startdate, $enddate)
     {
-        $objPHPExcel = new \PHPExcel();
-        $objPHPExcel->setActiveSheetIndex(0);
-        $sheet = $objPHPExcel->getActiveSheet();
+        $spreadsheet = new Spreadsheet;
+        $sheet = $spreadsheet->getActiveSheet();
 
         // populate data
         $school_id = Yii::$app->session->get('school_id');
@@ -117,23 +118,23 @@ class PresenceRecapTeacherController extends Controller
         $row = 5;
 
         // styling
-        $sheet->getStyleByColumnAndRow(0, $row, ($column - 1), $row)
-            ->getFill()
-            ->setFillType(\PHPExcel_Style_Fill::FILL_SOLID)
-            ->getStartColor()
-            ->setRGB('154360');
-        $sheet->getStyleByColumnAndRow(0, $row, ($column - 1), $row)
-            ->getFill()
-            ->setFillType(\PHPExcel_Style_Fill::FILL_SOLID)
-            ->getStartColor()
-            ->setRGB('2C3E50');
-        $arrStyle = [
-            'font'  => [
-                'bold'  => true,
-                'color' => ['rgb' => 'FFFFFF'],
-            ]
-        ];
-        $sheet->getStyleByColumnAndRow(0, $row, ($column - 1), $row)->applyFromArray($arrStyle);
+        // $sheet->getStyleByColumnAndRow(0, $row, ($column - 1), $row)
+        //     ->getFill()
+        //     ->setFillType(\PHPExcel_Style_Fill::FILL_SOLID)
+        //     ->getStartColor()
+        //     ->setRGB('154360');
+        // $sheet->getStyleByColumnAndRow(0, $row, ($column - 1), $row)
+        //     ->getFill()
+        //     ->setFillType(\PHPExcel_Style_Fill::FILL_SOLID)
+        //     ->getStartColor()
+        //     ->setRGB('2C3E50');
+        // $arrStyle = [
+        //     'font'  => [
+        //         'bold'  => true,
+        //         'color' => ['rgb' => 'FFFFFF'],
+        //     ]
+        // ];
+        // $sheet->getStyleByColumnAndRow(0, $row, ($column - 1), $row)->applyFromArray($arrStyle);
 
         // style for body
         $style_row = array(
@@ -183,8 +184,8 @@ class PresenceRecapTeacherController extends Controller
                 $persentase = 0;
             }
             $sheet->setCellValue('F' . $row, $persentase . '%');
-            $sheet->getStyleByColumnAndRow(0, $row, ($column - 1), $row)
-                ->applyFromArray($style_row);
+            // $sheet->getStyleByColumnAndRow(0, $row, ($column - 1), $row)
+            //     ->applyFromArray($style_row);
         }
         $row++;
 
@@ -192,12 +193,13 @@ class PresenceRecapTeacherController extends Controller
 
         ob_clean(); //Emptying the cache
         // header('Content-Type: application/vnd.ms-excel');
-        header('Content-Type: application/openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename=' . $filename . ' ');
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename=' . $filename);
         header('Cache-Control: max-age=0');
-        $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-        $objWriter->save('php://output');
-        unset($objPHPExcel);
+
+        $writer = new Xlsx($spreadsheet);
+        $writer->save('php://output');
+        unset($spreadsheet);
         // most important code (exit)
         exit();
     }

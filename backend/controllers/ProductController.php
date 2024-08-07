@@ -9,6 +9,8 @@ use common\models\Production;
 use common\models\ProductionDetail;
 use common\models\ProductLog;
 use common\models\Item;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -186,9 +188,8 @@ class ProductController extends Controller
 
     public function actionExport($q = null, $category = 'ALL')
     {
-        $objPHPExcel = new \PHPExcel();
-        $objPHPExcel->setActiveSheetIndex(0);
-        $sheet = $objPHPExcel->getActiveSheet();
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
 
         $query = Product::find();
         if ($q !== null) { 
@@ -226,18 +227,18 @@ class ProductController extends Controller
         $row = 1;
         
         // styling
-        $sheet->getStyleByColumnAndRow(0, $row, 7, $row)
-            ->getFill()
-            ->setFillType(\PHPExcel_Style_Fill::FILL_SOLID)
-            ->getStartColor()
-            ->setRGB('d32f2f');
-        $arrStyle = [
-            'font'  => [
-                'bold'  => true,
-                'color' => ['rgb' => 'FFFFFF'],
-            ]
-        ];
-        $sheet->getStyleByColumnAndRow(0, $row, ($column-1), $row)->applyFromArray($arrStyle);
+        // $sheet->getStyleByColumnAndRow(0, $row, 7, $row)
+        //     ->getFill()
+        //     ->setFillType(\PHPExcel_Style_Fill::FILL_SOLID)
+        //     ->getStartColor()
+        //     ->setRGB('d32f2f');
+        // $arrStyle = [
+        //     'font'  => [
+        //         'bold'  => true,
+        //         'color' => ['rgb' => 'FFFFFF'],
+        //     ]
+        // ];
+        // $sheet->getStyleByColumnAndRow(0, $row, ($column-1), $row)->applyFromArray($arrStyle);
 
         // populate records data
         $row = 1;
@@ -261,20 +262,21 @@ class ProductController extends Controller
             $sheet->setCellValue('F' . $row, $product->unit);
             $sheet->setCellValue('G' . $row, $product->price_sale);
             $sheet->setCellValue('H' . $row, $product->lastOpnameAt);
-            $sheet->getStyleByColumnAndRow(0, $row, 7, $row)
-                ->getFill()
-                ->setFillType(\PHPExcel_Style_Fill::FILL_SOLID)
-                ->getStartColor()
-                ->setRGB('eeeeee');
+            // $sheet->getStyleByColumnAndRow(0, $row, 7, $row)
+            //     ->getFill()
+            //     ->setFillType(\PHPExcel_Style_Fill::FILL_SOLID)
+            //     ->getStartColor()
+            //     ->setRGB('eeeeee');
         }
 
         $filename = 'PRODUCTS-' . date('YmdHis') . '.xlsx';
-        header('Content-Type: application/openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename=' . $filename . ' ');
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename=' . $filename);
         header('Cache-Control: max-age=0');
-        $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-        $objWriter->save('php://output');
-        unset($objPHPExcel);
+
+        $writer = new Xlsx($spreadsheet);
+        $writer->save('php://output');
+        unset($spreadsheet);
         // most important code (exit)
         exit;
     }
