@@ -28,6 +28,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="col-lg-6">
                 <div class="card-tools float-right">
                     <?= Html::a('<i class="fas fa-file-excel"></i> Import Excel', ['import'], ['class' => 'btn btn-success']) ?>
+                    <?php echo Html::a('<i class="fas fa-file-excel"></i> Download Excel', ['lesson-schedule/export'], ['class' => 'ml-2 btn btn-info']) . ' '; ?>
                     <?= Html::a('<i class="fas fa-sync-alt fa-lg"></i>', ['index'], ['class' => 'btn btn-primary']) ?>
                 </div>
             </div>

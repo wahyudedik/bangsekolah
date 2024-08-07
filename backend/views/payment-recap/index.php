@@ -66,7 +66,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     if ($year && $class && $payment) {
                         echo Html::a('<i class="fas fa-sync-alt"></i> Reset', ['payment-recap/index'], ['class' => 'btn btn-primary']).' ';
                         echo Html::a('<i class="fas fa-download"></i> Download PDF', ['payment-recap/download', 'year' => $year, 'class' => $class, 'payment' => $payment->number], ['class' => 'btn btn-info', 'download' => 'payment-recap-'.$year.'-'.$class.'-'.$payment->number.'.pdf']).' ';
-                        echo Html::a('<i class="fas fa-file-excel"></i> Download Excel', ['payment-recap/export', 'year' => $year, 'class' => $class, 'payment' => $payment->number], ['class' => 'btn btn-info']).' ';
+                        echo Html::a('<i class="fas fa-file-excel"></i> Export Excel', ['payment-recap/export', 'year' => $year, 'class' => $class, 'payment' => $payment->number], ['class' => 'btn btn-info']).' ';
                     }
                     ?>
                 </div>

@@ -2,6 +2,7 @@
 
 namespace backend\controllers;
 
+use common\models\School;
 use Yii;
 use common\models\Student;
 use common\models\SchoolMonth;
@@ -13,6 +14,13 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\web\UploadedFile;
+
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Style\Font;
 
 /**
  * GraduatedStudentController implements the CRUD actions for Student model.
@@ -170,5 +178,110 @@ class GraduatedStudentController extends Controller
                 'data' => $itemArray
             ];
         }
+    }
+    public function actionExport( $year = null , $search = null)
+    {
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // populate data
+        $school_id = Yii::$app->session->get('school_id');
+        $school = School::findOne($school_id);
+
+        $query = Student::find()
+            ->where(['status' => "GRADUATED"])
+            ->andWhere(['school_id' => $school_id]);
+
+        if ($search) {
+            $query->andFilterWhere(['and', ['nisn' => $search]]);
+        }
+        if ($year) {
+            $query->andFilterWhere(['and', ['year' => $year]]);
+        }
+
+        $deleted_student = $query->orderBy(['id' => SORT_DESC])->all();
+        // set main title
+        $sheet->setCellValue('A1', 'GRADUATED STUDENT');
+        $sheet->mergeCells('A1:I1');
+        $sheet->setCellValue('A2', strtoupper($school->name));
+        $sheet->mergeCells('A2:I2');
+        $sheet->mergeCells('A3:I3');
+        $sheet->getStyle('A1')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A2')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A3')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A1')->getFont()->setBold(TRUE);
+        $sheet->getStyle('A2')->getFont()->setBold(TRUE);
+        $sheet->getStyle('A3')->getFont()->setBold(TRUE);
+        $sheet->mergeCells('A4:I4');
+        $sheet->getStyle('A4')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
+
+        // set title
+        $sheet->setCellValue('A5', 'NO');
+        $sheet->setCellValue('B5', 'NIS');
+        $sheet->setCellValue('C5', 'NAMA');
+        $sheet->setCellValue('D5', 'KELAS');
+        $sheet->setCellValue('E5', 'JENIS KELAMIN');
+        $sheet->setCellValue('F5', 'TAHUN AJARAN');
+        $sheet->getColumnDimension('A')->setAutoSize(true);
+        $sheet->getColumnDimension('B')->setAutoSize(true);
+        $sheet->getColumnDimension('C')->setAutoSize(true);
+        $sheet->getColumnDimension('D')->setAutoSize(true);
+        $sheet->getColumnDimension('E')->setAutoSize(true);
+        $sheet->getColumnDimension('F')->setAutoSize(true);
+        $sheet->getRowDimension('5')->setRowHeight(30);
+
+        $column = 6;
+        $row = 5;
+
+        // style for body
+        $style_row = array(
+            'borders' => array(
+                'top' => array('style'  => \PHPExcel_Style_Border::BORDER_THIN),
+                'right' => array('style'  => \PHPExcel_Style_Border::BORDER_THIN),
+                'bottom' => array('style'  => \PHPExcel_Style_Border::BORDER_THIN),
+                'left' => array('style'  => \PHPExcel_Style_Border::BORDER_THIN)
+            )
+        );
+        // populate records data
+        $row = 5;
+        $no = 0;
+        foreach ($deleted_student as $del_student) {
+            $column = 6;
+            $row++;
+            $no++;
+            $sheet->getStyle('A', $row)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
+            $sheet->getStyle('B', $row)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
+            $sheet->getStyle('C', $row)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
+            $sheet->getStyle('D', $row)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
+            $sheet->getStyle('E', $row)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
+            $sheet->getStyle('F', $row)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
+            $sheet->setCellValue('A' . $row, ($no));
+            $sheet->setCellValue('B' . $row, ($del_student->nis));
+            $sheet->setCellValue('C' . $row, $del_student->name);
+            $sheet->setCellValue('D' . $row, $del_student->class);
+            $sheet->setCellValue('E' . $row, $del_student->gender);
+            $sheet->setCellValue('F' . $row, $del_student->year);
+
+        }
+        $row++;
+        $sheet->getStyle('A', $row)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('G', $row)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
+        $sheet->getStyle('H', $row)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
+        $sheet->getStyle('I', $row)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
+        $sheet->getStyle('A', $row)->getFont()->setBold(TRUE);
+
+        $filename = 'graduated-student-'. $school->name. '.xlsx';
+
+        ob_clean(); //Emptying the cache
+        // header('Content-Type: application/vnd.ms-excel');
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename=' . $filename);
+        header('Cache-Control: max-age=0');
+
+        $writer = new Xlsx($spreadsheet);
+        $writer->save('php://output');
+
+        // most important code (exit)
+        exit();
     }
 }

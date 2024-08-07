@@ -43,6 +43,7 @@ $school_id = School::findOne(Yii::$app->session->get('school_id'));
                 ?>
                 <?php //= Html::submitButton('<i class="fas fa-file-pdf"></i> Download PDF', ['class' => 'btn btn-default', 'onclick' => 'alert("Fitur download PDF belum bisa digunakan, menunggu final revisi");']) 
                 ?>
+                <?php echo Html::a('<i class="fas fa-file-excel"></i> Download Excel', ['lesson-schedule-attendance/export', 'class' => $class, 'startdate' => $startdate, 'enddate' => $enddate], ['class' => 'ml-2 btn btn-info']) . ' '; ?>
             </div>
         </div>
     </div>

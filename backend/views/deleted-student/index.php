@@ -32,6 +32,7 @@ $user = Yii::$app->user->identity;
                         <span class="input-group-append">
                             <button type="submit" class="btn btn-info btn-flat"><i class="fas fa-search search-icon"></i></button>
                         </span>
+                        <?php echo Html::a('<i class="fas fa-file-excel"></i> Download Excel', ['deleted-student/export', 'year' => $year, 'search' => $search], ['class' => 'ml-2 btn btn-info']) . ' '; ?>
                     </div>
                 <?php ActiveForm::end() ?>
             </div>
