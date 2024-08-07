@@ -110,181 +110,73 @@ class PaymentRecapController extends Controller
         return $pdf->render();
     }
 
-    // public function actionExport($year, $class, $payment)
-    // {
-    //     $objPHPExcel = new \PHPExcel();
-    //     $objPHPExcel->setActiveSheetIndex(0);
-    //     $sheet = $objPHPExcel->getActiveSheet();
-
-    //     // populate data
-    //     $schoolMonths = SchoolMonth::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'status' => 'ACTIVE'])->all();
-    //     $students = null;
-    //     if ($year && $class && $payment) {
-    //         $school = School::findOne(Yii::$app->session->get('school_id'));
-    //         $payment = SchoolPayment::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'number' => $payment])->one();
-    //         $students = Student::find()->where(['year' => $year, 'class' => $class, 'school_id' => Yii::$app->session->get('school_id'), 'status' => 'ACTIVE'])->all();
-    //     }
-
-    //     // set main title
-    //     $sheet->setCellValue('A1', 'REKAPITULASI PEMBAYARAN SISWA');
-    //     $sheet->mergeCells('A1:F1');
-    //     $sheet->setCellValue('A2', $school->name);
-    //     $sheet->mergeCells('A2:F2');
-    //     $sheet->setCellValue('B3', 'Jenis Pembayaran');
-    //     $sheet->setCellValue('B4', 'Tahun Ajaran');
-    //     $sheet->setCellValue('B5', 'Kelas');
-    //     $sheet->setCellValue('C3', ': '.$payment->name);
-    //     $sheet->setCellValue('C4', ': '.$year);
-    //     $sheet->setCellValue('C5', ': '.$class);
-    //     $sheet->getStyle('A1')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-    //     $sheet->getStyle('A2')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-    //     $sheet->getStyle('A1')->getFont()->setBold(TRUE);
-    //     $sheet->getStyle('A2')->getFont()->setBold(TRUE);
-
-    //     // set title
-    //     $sheet->setCellValue('A7', 'NO');
-    //     $sheet->setCellValue('B7', 'NIS');
-    //     $sheet->setCellValue('C7', 'NAMA SISWA');
-    //     $sheet->setCellValue('D7', 'TAGIHAN');
-    //     $sheet->setCellValue('E7', 'BAYAR');
-    //     $sheet->setCellValue('F7', 'KEKURANGAN');
-    //     $sheet->getColumnDimension('A')->setAutoSize(true);
-    //     $sheet->getColumnDimension('B')->setAutoSize(true);
-    //     $sheet->getColumnDimension('C')->setAutoSize(true);
-    //     $sheet->getColumnDimension('D')->setAutoSize(true);
-    //     $sheet->getColumnDimension('E')->setAutoSize(true);
-    //     $sheet->getColumnDimension('F')->setAutoSize(true);
-    //     $sheet->getRowDimension('7')->setRowHeight(30);
-
-    //     $column = 6;
-    //     $row = 7;
-
-    //     // styling
-    //     $sheet->getStyleByColumnAndRow(0, $row, ($column-1), $row)
-    //         ->getFill()
-    //         ->setFillType(\PHPExcel_Style_Fill::FILL_SOLID)
-    //         ->getStartColor()
-    //         ->setRGB('154360');
-    //     $sheet->getStyleByColumnAndRow(0, $row, ($column-1), $row)
-    //         ->getFill()
-    //         ->setFillType(\PHPExcel_Style_Fill::FILL_SOLID)
-    //         ->getStartColor()
-    //         ->setRGB('2C3E50');
-    //     $arrStyle = [
-    //         'font'  => [
-    //             'bold'  => true,
-    //             'color' => ['rgb' => 'FFFFFF'],
-    //         ]
-    //     ];
-    //     $sheet->getStyleByColumnAndRow(0, $row, ($column-1), $row)->applyFromArray($arrStyle);
-
-    //     // style for body
-    //     $style_row = array(
-    //         'borders' => array(
-    //             'top' => array('style'  => \PHPExcel_Style_Border::BORDER_THIN),
-    //             'right' => array('style'  => \PHPExcel_Style_Border::BORDER_THIN),
-    //             'bottom' => array('style'  => \PHPExcel_Style_Border::BORDER_THIN),
-    //             'left' => array('style'  => \PHPExcel_Style_Border::BORDER_THIN) 
-    //         )
-    //     );
-    //     // populate records data
-    //     $row = 7;
-    //     $no = 0;
-    //     $totalBayar = 0;
-    //     $totalSisa = 0;
-
-    //     foreach ($students as $student) {
-
-    //         // get invoices
-    //         $invoice = Invoice::find()->where(['student_id' => $student->id, 'school_payment_id' => $payment->id, 'year' => $year])->one();
-    //         if ($invoice) {
-    //             $row++;
-    //             $no++;
-    //             // count cash and transfer
-    //             $totalBayar += $invoice->amount;
-    //             $totalSisa += $invoice->paid_amount;
-    //             $sheet->getStyle('D', $row)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
-    //             $sheet->getStyle('E', $row)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
-    //             $sheet->getStyle('F', $row)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
-    //             $sheet->setCellValue('A' . $row, ($no));
-    //             $sheet->setCellValue('B' . $row, $student->nis);
-    //             $sheet->setCellValue('C' . $row, $student->name);
-    //             $sheet->setCellValue('D' . $row, $invoice->amount);
-    //             $sheet->setCellValue('E' . $row, $invoice->paid_amount);
-    //             $sheet->setCellValue('F' . $row, ($invoice->amount - $invoice->paid_amount));
-
-    //         }
-    //     }
-
-    //     $row++;
-    //     $sheet->getStyle('A', $row)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-    //     $sheet->getStyle('D', $row)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
-    //     $sheet->getStyle('E', $row)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
-    //     $sheet->getStyle('F', $row)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
-    //     $sheet->setCellValue('A'.$row, 'TOTAL');
-    //     $sheet->setCellValue('E'.$row, $totalBayar);
-    //     $sheet->setCellValue('F'.$row, $totalSisa);
-    //     $sheet->mergeCells('A'.$row.':'.'D'.$row);
-    //     $sheet->getStyleByColumnAndRow(0, $row, ($column-1), $row)
-    //         ->getFill()
-    //         ->setFillType(\PHPExcel_Style_Fill::FILL_SOLID)
-    //         ->getStartColor()
-    //         ->setRGB('DDDDDD');
-
-    //     $filename = 'rekapitulasi-pembayaran-'.$year.'-'.$class.'-'.$payment->number. '.xlsx';
-
-    //     ob_clean(); //Emptying the cache
-    //     // header('Content-Type: application/vnd.ms-excel');
-    //     header('Content-Type: application/openxmlformats-officedocument.spreadsheetml.sheet');
-    //     header('Content-Disposition: attachment;filename=' . $filename . ' ');
-    //     header('Cache-Control: max-age=0');
-    //     $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-    //     $objWriter->save('php://output');
-    //     unset($objPHPExcel);
-    //     // most important code (exit)
-    //     exit();
-    // }
-
     public function actionExport($year, $class, $payment)
     {
-        $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
+        $objPHPExcel = new Spreadsheet();
+        // $objPHPExcel->setActiveSheetIndex(0);
+        $sheet = $objPHPExcel->getActiveSheet();
 
         // populate data
-        $school_id = Yii::$app->session->get('school_id');
-        $school = School::findOne($school_id);
+        $schoolMonths = SchoolMonth::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'status' => 'ACTIVE'])->all();
+        $students = null;
+        if ($year && $class && $payment) {
+            $school = School::findOne(Yii::$app->session->get('school_id'));
+            $payment = SchoolPayment::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'number' => $payment])->one();
+            $students = Student::find()->where(['year' => $year, 'class' => $class, 'school_id' => Yii::$app->session->get('school_id'), 'status' => 'ACTIVE'])->all();
+        }
 
         // set main title
-        $sheet->setCellValue('A1', 'LESSON SCHEDULE');
-        $sheet->mergeCells('A1:I1');
-        $sheet->setCellValue('A2', strtoupper($school->name));
-        $sheet->mergeCells('A2:I2');
-        $sheet->mergeCells('A3:I3');
+        $sheet->setCellValue('A1', 'REKAPITULASI PEMBAYARAN SISWA');
+        $sheet->mergeCells('A1:F1');
+        $sheet->setCellValue('A2', $school->name);
+        $sheet->mergeCells('A2:F2');
+        $sheet->setCellValue('B3', 'Jenis Pembayaran');
+        $sheet->setCellValue('B4', 'Tahun Ajaran');
+        $sheet->setCellValue('B5', 'Kelas');
+        $sheet->setCellValue('C3', ': '.$payment->name);
+        $sheet->setCellValue('C4', ': '.$year);
+        $sheet->setCellValue('C5', ': '.$class);
         $sheet->getStyle('A1')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
         $sheet->getStyle('A2')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-        $sheet->getStyle('A3')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
         $sheet->getStyle('A1')->getFont()->setBold(TRUE);
         $sheet->getStyle('A2')->getFont()->setBold(TRUE);
-        $sheet->getStyle('A3')->getFont()->setBold(TRUE);
-        $sheet->mergeCells('A4:I4');
-        $sheet->getStyle('A4')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
 
         // set title
-        $sheet->setCellValue('A5', 'NO');
-        $sheet->setCellValue('B5', 'NIS');
-        $sheet->setCellValue('C5', 'NAMA SISWA');
-        $sheet->setCellValue('D5', 'TOTAL BAYAR');
-        $sheet->setCellValue('E5', 'SUDAH BAYAR');
-        $sheet->setCellValue('F5', 'SISA');
+        $sheet->setCellValue('A7', 'NO');
+        $sheet->setCellValue('B7', 'NIS');
+        $sheet->setCellValue('C7', 'NAMA SISWA');
+        $sheet->setCellValue('D7', 'TAGIHAN');
+        $sheet->setCellValue('E7', 'BAYAR');
+        $sheet->setCellValue('F7', 'KEKURANGAN');
         $sheet->getColumnDimension('A')->setAutoSize(true);
         $sheet->getColumnDimension('B')->setAutoSize(true);
         $sheet->getColumnDimension('C')->setAutoSize(true);
         $sheet->getColumnDimension('D')->setAutoSize(true);
         $sheet->getColumnDimension('E')->setAutoSize(true);
         $sheet->getColumnDimension('F')->setAutoSize(true);
+        $sheet->getRowDimension('7')->setRowHeight(30);
 
-        $column = 5;
-        $row = 5;
+        $column = 6;
+        $row = 7;
+
+        // styling
+        // $sheet->getStyleByColumnAndRow(0, $row, ($column-1), $row)
+        //     ->getFill()
+        //     ->setFillType(\PHPExcel_Style_Fill::FILL_SOLID)
+        //     ->getStartColor()
+        //     ->setRGB('154360');
+        // $sheet->getStyleByColumnAndRow(0, $row, ($column-1), $row)
+        //     ->getFill()
+        //     ->setFillType(\PHPExcel_Style_Fill::FILL_SOLID)
+        //     ->getStartColor()
+        //     ->setRGB('2C3E50');
+        // $arrStyle = [
+        //     'font'  => [
+        //         'bold'  => true,
+        //         'color' => ['rgb' => 'FFFFFF'],
+        //     ]
+        // ];
+        // $sheet->getStyleByColumnAndRow(0, $row, ($column-1), $row)->applyFromArray($arrStyle);
 
         // style for body
         $style_row = array(
@@ -292,43 +184,54 @@ class PaymentRecapController extends Controller
                 'top' => array('style'  => \PHPExcel_Style_Border::BORDER_THIN),
                 'right' => array('style'  => \PHPExcel_Style_Border::BORDER_THIN),
                 'bottom' => array('style'  => \PHPExcel_Style_Border::BORDER_THIN),
-                'left' => array('style'  => \PHPExcel_Style_Border::BORDER_THIN)
+                'left' => array('style'  => \PHPExcel_Style_Border::BORDER_THIN) 
             )
         );
         // populate records data
-        $row = 5;
+        $row = 7;
         $no = 0;
-        $students = $students = Student::find()->where(['class' => $class, 'school_id' => $school_id, 'status' => 'ACTIVE'])->all();
+        $totalBayar = 0;
+        $totalSisa = 0;
+
         foreach ($students as $student) {
-            if (is_object($student) && property_exists($student, 'id')) {
-                $column = 6;
+
+            // get invoices
+            $invoice = Invoice::find()->where(['student_id' => $student->id, 'school_payment_id' => $payment->id, 'year' => $year])->one();
+            if ($invoice) {
                 $row++;
                 $no++;
-                $invoice = Invoice::find()->where(['student_id' => $student->id, 'school_payment_id' => $payment->id, 'year' => $year])->one();
-                $sheet->getStyle('A', $row)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
-                $sheet->getStyle('B', $row)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
-                $sheet->getStyle('C', $row)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
-                $sheet->getStyle('D', $row)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
-                $sheet->getStyle('E', $row)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
-                $sheet->getStyle('F', $row)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
+                // count cash and transfer
+                $totalBayar += $invoice->amount;
+                $totalSisa += $invoice->paid_amount;
+                $sheet->getStyle('D', $row)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
+                $sheet->getStyle('E', $row)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
+                $sheet->getStyle('F', $row)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
                 $sheet->setCellValue('A' . $row, ($no));
                 $sheet->setCellValue('B' . $row, $student->nis);
                 $sheet->setCellValue('C' . $row, $student->name);
-                if ($invoice) {
-                    $sheet->setCellValue('D' . $row, $invoice->amountRupiah);
-                    $sheet->setCellValue('E' . $row, $invoice->amount->paidAmountRupiah);
-                    $sheet->setCellValue('F' . $row, $invoice->amount - $invoice->paid_amount);
-                }
+                $sheet->setCellValue('D' . $row, $invoice->amount);
+                $sheet->setCellValue('E' . $row, $invoice->paid_amount);
+                $sheet->setCellValue('F' . $row, ($invoice->amount - $invoice->paid_amount));
+
             }
         }
+
         $row++;
         $sheet->getStyle('A', $row)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-        $sheet->getStyle('G', $row)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
-        $sheet->getStyle('H', $row)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
-        $sheet->getStyle('I', $row)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
-        $sheet->getStyle('A', $row)->getFont()->setBold(TRUE);
+        $sheet->getStyle('D', $row)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
+        $sheet->getStyle('E', $row)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
+        $sheet->getStyle('F', $row)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
+        $sheet->setCellValue('A'.$row, 'TOTAL');
+        $sheet->setCellValue('E'.$row, $totalBayar);
+        $sheet->setCellValue('F'.$row, $totalSisa);
+        $sheet->mergeCells('A'.$row.':'.'D'.$row);
+        // $sheet->getStyleByColumnAndRow(0, $row, ($column-1), $row)
+        //     ->getFill()
+        //     ->setFillType(\PHPExcel_Style_Fill::FILL_SOLID)
+        //     ->getStartColor()
+        //     ->setRGB('DDDDDD');
 
-        $filename = 'deleted-student-'. $school->name . '.xlsx';
+        $filename = 'rekapitulasi-pembayaran-'.$year.'-'.$class.'-'.$payment->number. '.xlsx';
 
         ob_clean(); //Emptying the cache
         // header('Content-Type: application/vnd.ms-excel');
@@ -336,10 +239,107 @@ class PaymentRecapController extends Controller
         header('Content-Disposition: attachment;filename=' . $filename);
         header('Cache-Control: max-age=0');
 
-        $writer = new Xlsx($spreadsheet);
+        $writer = new Xlsx($objPHPExcel);
         $writer->save('php://output');
-
         // most important code (exit)
         exit();
     }
+
+    // public function actionExport($year, $class, $payment)
+    // {
+    //     $spreadsheet = new Spreadsheet();
+    //     $sheet = $spreadsheet->getActiveSheet();
+
+    //     // populate data
+    //     $school_id = Yii::$app->session->get('school_id');
+    //     $school = School::findOne($school_id);
+
+    //     // set main title
+    //     $sheet->setCellValue('A1', 'LESSON SCHEDULE');
+    //     $sheet->mergeCells('A1:I1');
+    //     $sheet->setCellValue('A2', strtoupper($school->name));
+    //     $sheet->mergeCells('A2:I2');
+    //     $sheet->mergeCells('A3:I3');
+    //     $sheet->getStyle('A1')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    //     $sheet->getStyle('A2')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    //     $sheet->getStyle('A3')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    //     $sheet->getStyle('A1')->getFont()->setBold(TRUE);
+    //     $sheet->getStyle('A2')->getFont()->setBold(TRUE);
+    //     $sheet->getStyle('A3')->getFont()->setBold(TRUE);
+    //     $sheet->mergeCells('A4:I4');
+    //     $sheet->getStyle('A4')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
+
+    //     // set title
+    //     $sheet->setCellValue('A5', 'NO');
+    //     $sheet->setCellValue('B5', 'NIS');
+    //     $sheet->setCellValue('C5', 'NAMA SISWA');
+    //     $sheet->setCellValue('D5', 'TOTAL BAYAR');
+    //     $sheet->setCellValue('E5', 'SUDAH BAYAR');
+    //     $sheet->setCellValue('F5', 'SISA');
+    //     $sheet->getColumnDimension('A')->setAutoSize(true);
+    //     $sheet->getColumnDimension('B')->setAutoSize(true);
+    //     $sheet->getColumnDimension('C')->setAutoSize(true);
+    //     $sheet->getColumnDimension('D')->setAutoSize(true);
+    //     $sheet->getColumnDimension('E')->setAutoSize(true);
+    //     $sheet->getColumnDimension('F')->setAutoSize(true);
+
+    //     $column = 5;
+    //     $row = 5;
+
+    //     // style for body
+    //     $style_row = array(
+    //         'borders' => array(
+    //             'top' => array('style'  => \PHPExcel_Style_Border::BORDER_THIN),
+    //             'right' => array('style'  => \PHPExcel_Style_Border::BORDER_THIN),
+    //             'bottom' => array('style'  => \PHPExcel_Style_Border::BORDER_THIN),
+    //             'left' => array('style'  => \PHPExcel_Style_Border::BORDER_THIN)
+    //         )
+    //     );
+    //     // populate records data
+    //     $row = 5;
+    //     $no = 0;
+    //     $students = $students = Student::find()->where(['class' => $class, 'school_id' => $school_id, 'status' => 'ACTIVE'])->all();
+    //     foreach ($students as $student) {
+    //         if (is_object($student) && property_exists($student, 'id')) {
+    //             $column = 6;
+    //             $row++;
+    //             $no++;
+    //             $invoice = Invoice::find()->where(['student_id' => $student->id, 'school_payment_id' => $payment->id, 'year' => $year])->one();
+    //             $sheet->getStyle('A', $row)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
+    //             $sheet->getStyle('B', $row)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
+    //             $sheet->getStyle('C', $row)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
+    //             $sheet->getStyle('D', $row)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
+    //             $sheet->getStyle('E', $row)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
+    //             $sheet->getStyle('F', $row)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
+    //             $sheet->setCellValue('A' . $row, ($no));
+    //             $sheet->setCellValue('B' . $row, $student->nis);
+    //             $sheet->setCellValue('C' . $row, $student->name);
+    //             if ($invoice) {
+    //                 $sheet->setCellValue('D' . $row, $invoice->amountRupiah);
+    //                 $sheet->setCellValue('E' . $row, $invoice->amount->paidAmountRupiah);
+    //                 $sheet->setCellValue('F' . $row, $invoice->amount - $invoice->paid_amount);
+    //             }
+    //         }
+    //     }
+    //     $row++;
+    //     $sheet->getStyle('A', $row)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+    //     $sheet->getStyle('G', $row)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
+    //     $sheet->getStyle('H', $row)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
+    //     $sheet->getStyle('I', $row)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
+    //     $sheet->getStyle('A', $row)->getFont()->setBold(TRUE);
+
+    //     $filename = 'deleted-student-'. $school->name . '.xlsx';
+
+    //     ob_clean(); //Emptying the cache
+    //     // header('Content-Type: application/vnd.ms-excel');
+    //     header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    //     header('Content-Disposition: attachment;filename=' . $filename);
+    //     header('Cache-Control: max-age=0');
+
+    //     $writer = new Xlsx($spreadsheet);
+    //     $writer->save('php://output');
+
+    //     // most important code (exit)
+    //     exit();
+    // }
 }

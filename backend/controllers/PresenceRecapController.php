@@ -205,7 +205,7 @@ class PresenceRecapController extends Controller
         // $sheet->getStyle('I', $row)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
         $sheet->getStyle('A', $row)->getFont()->setBold(TRUE);
 
-        $filename = 'lesson-schedule-attendance' . $school->name . '.xlsx';
+        $filename = 'presence-recap' . $school->name . '.xlsx';
 
         ob_clean(); //Emptying the cache
         // header('Content-Type: application/vnd.ms-excel');

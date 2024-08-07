@@ -282,95 +282,95 @@ class LessonScheduleController extends Controller
         ]);
     }
 
-    // private function populateDataExcel($fileName, $sheet = 0)
-    // {
+    private function populateDataExcel($fileName, $sheet = 0)
+    {
 
-    //     // PHP Excel init        
-    //     $phpexcel = \PHPExcel_IOFactory::load($fileName);
-    //     $worksheet = $phpexcel->getSheet($sheet);
-    //     $dataExcel = $worksheet->toArray();
-    //     $error = null;
-    //     $itemArray = [];
-    //     $row_number = 0;
-    //     if ($sheet == 0) {
-    //         foreach ($dataExcel as $rowExcelData) {
-    //             if ($row_number++ > 0 && $rowExcelData[0] !== null) {
+        // PHP Excel init        
+        $phpexcel = IOFactory::load($fileName);
+        $worksheet = $phpexcel->getSheet($sheet);
+        $dataExcel = $worksheet->toArray();
+        $error = null;
+        $itemArray = [];
+        $row_number = 0;
+        if ($sheet == 0) {
+            foreach ($dataExcel as $rowExcelData) {
+                if ($row_number++ > 0 && $rowExcelData[0] !== null) {
 
-    //                 // cek kelas
-    //                 $schoolClass = SchoolClass::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'name' => $rowExcelData[1], 'status' => 'ACTIVE'])->one();
-    //                 if (!$schoolClass) {
-    //                     $error = 'Kelas ' . $rowExcelData[1] . ' pada baris ' . $row_number . ' tidak ditemukan';
-    //                     break;
-    //                 }
+                    // cek kelas
+                    $schoolClass = SchoolClass::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'name' => $rowExcelData[1], 'status' => 'ACTIVE'])->one();
+                    if (!$schoolClass) {
+                        $error = 'Kelas ' . $rowExcelData[1] . ' pada baris ' . $row_number . ' tidak ditemukan';
+                        break;
+                    }
 
-    //                 // cek mata pelajaran
-    //                 $lesson = Lesson::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'name' => $rowExcelData[2], 'status' => 'ACTIVE'])->one();
-    //                 if (!$lesson) {
-    //                     $error = 'Pelajaran "' . $rowExcelData[2] . '" pada baris ' . $row_number . ' tidak ditemukan';
-    //                     break;
-    //                 }
+                    // cek mata pelajaran
+                    $lesson = Lesson::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'name' => $rowExcelData[2], 'status' => 'ACTIVE'])->one();
+                    if (!$lesson) {
+                        $error = 'Pelajaran "' . $rowExcelData[2] . '" pada baris ' . $row_number . ' tidak ditemukan';
+                        break;
+                    }
 
-    //                 // check NIK teacher
-    //                 $teacher = Teacher::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'nik' => $rowExcelData[3], 'status' => 'ACTIVE'])->one();
-    //                 if ($teacher) {
-    //                     $user_id = Yii::$app->user->identity->id;
-    //                     if ($teacher->user_id !== $user_id) {
-    //                         $error = 'Anda hanya diperbolehkan import presensi Anda sendiri';
-    //                         break;
-    //                     }
-    //                 } else {
-    //                     $error = 'NIK ' . $rowExcelData[3] . ' guru pada baris ' . $row_number . ' tidak ditemukan';
-    //                     break;
-    //                 }
+                    // check NIK teacher
+                    $teacher = Teacher::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'nik' => $rowExcelData[3], 'status' => 'ACTIVE'])->one();
+                    if ($teacher) {
+                        $user_id = Yii::$app->user->identity->id;
+                        if ($teacher->user_id !== $user_id) {
+                            $error = 'Anda hanya diperbolehkan import presensi Anda sendiri';
+                            break;
+                        }
+                    } else {
+                        $error = 'NIK ' . $rowExcelData[3] . ' guru pada baris ' . $row_number . ' tidak ditemukan';
+                        break;
+                    }
 
-    //                 // check NIS student
-    //                 $student = Student::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'nis' => $rowExcelData[4], 'status' => 'ACTIVE'])->one();
-    //                 if (!$student) {
-    //                     $error = 'NIS ' . $rowExcelData[4] . ' siswa pada baris ' . $row_number . ' tidak ditemukan';
-    //                     break;
-    //                 }
+                    // check NIS student
+                    $student = Student::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'nis' => $rowExcelData[4], 'status' => 'ACTIVE'])->one();
+                    if (!$student) {
+                        $error = 'NIS ' . $rowExcelData[4] . ' siswa pada baris ' . $row_number . ' tidak ditemukan';
+                        break;
+                    }
 
-    //                 // check kolom status
-    //                 $arrStatus = ['MASUK', 'ABSEN'];
-    //                 if (in_array($rowExcelData[5], $arrStatus)) {
-    //                 } else {
-    //                     $error = 'Kolom status pada baris ' . $row_number . ' tidak valid. Pilihan: MASUK, ABSEN';
-    //                     break;
-    //                 }
+                    // check kolom status
+                    $arrStatus = ['MASUK', 'ABSEN'];
+                    if (in_array($rowExcelData[5], $arrStatus)) {
+                    } else {
+                        $error = 'Kolom status pada baris ' . $row_number . ' tidak valid. Pilihan: MASUK, ABSEN';
+                        break;
+                    }
 
-    //                 // check kolom keterangan
-    //                 $arrStatus = ['SAKIT', 'IZIN', 'TANPA KETERANGAN', ''];
-    //                 if (in_array($rowExcelData[6], $arrStatus)) {
-    //                 } else {
-    //                     $error = 'Kolom keterangan pada baris ' . $row_number . ' tidak valid. Pilihan: SAKIT, IZIN, TANPA KETERANGAN';
-    //                     break;
-    //                 }
+                    // check kolom keterangan
+                    $arrStatus = ['SAKIT', 'IZIN', 'TANPA KETERANGAN', ''];
+                    if (in_array($rowExcelData[6], $arrStatus)) {
+                    } else {
+                        $error = 'Kolom keterangan pada baris ' . $row_number . ' tidak valid. Pilihan: SAKIT, IZIN, TANPA KETERANGAN';
+                        break;
+                    }
 
-    //                 $itemArray[] = [
-    //                     'date' => date('Y-m-d', strtotime($rowExcelData[0])),
-    //                     'class' => $rowExcelData[1],
-    //                     'lesson' => $rowExcelData[2],
-    //                     'teacher_id' => $teacher->id,
-    //                     'student_id' => $student->id,
-    //                     'status' => $rowExcelData[5],
-    //                     'note' => $rowExcelData[6],
-    //                 ];
-    //             }
-    //         }
-    //     }
-    //     @unlink($fileName);
-    //     if ($error != NULL) {
-    //         return [
-    //             'status' => 'ERROR',
-    //             'data' => $error
-    //         ];
-    //     } else {
-    //         return [
-    //             'status' => 'OK',
-    //             'data' => $itemArray
-    //         ];
-    //     }
-    // }
+                    $itemArray[] = [
+                        'date' => date('Y-m-d', strtotime($rowExcelData[0])),
+                        'class' => $rowExcelData[1],
+                        'lesson' => $rowExcelData[2],
+                        'teacher_id' => $teacher->id,
+                        'student_id' => $student->id,
+                        'status' => $rowExcelData[5],
+                        'note' => $rowExcelData[6],
+                    ];
+                }
+            }
+        }
+        @unlink($fileName);
+        if ($error != NULL) {
+            return [
+                'status' => 'ERROR',
+                'data' => $error
+            ];
+        } else {
+            return [
+                'status' => 'OK',
+                'data' => $itemArray
+            ];
+        }
+    }
 
     public function actionExport($year = null, $search = null)
     {
@@ -456,7 +456,7 @@ class LessonScheduleController extends Controller
         $sheet->getStyle('I', $row)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
         $sheet->getStyle('A', $row)->getFont()->setBold(TRUE);
 
-        $filename = 'deleted-student-' . $school->name . '.xlsx';
+        $filename = 'lesson-scheduled-' . $school->name . '.xlsx';
 
         ob_clean(); //Emptying the cache
         // header('Content-Type: application/vnd.ms-excel');
