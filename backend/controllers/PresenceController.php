@@ -403,8 +403,15 @@ class PresenceController extends Controller
                         }
                         $presence->check_in = $item['date'] . ' ' . $item['check_in'];
                         $presence->check_out = $item['date'] . ' ' . $item['check_out'];
+                        $presence->check_in_fullday = $item['date'] . ' ' . $item['check_in_fullday'];
+                        $presence->check_out_fullday = $item['date'] . ' ' . $item['check_out_fullday'];
                         if ($presence->save()) {
                             $totalItem++;
+                        } else {
+                            foreach ($presence->errors as $error) {
+                                return $error[0];
+                                // Yii::$app->session->setFlash('danger', $error[0]);
+                            }
                         }
                     }
                 }
@@ -456,6 +463,8 @@ class PresenceController extends Controller
                         'student' => $student,
                         'check_in' => $rowExcelData[2],
                         'check_out' => $rowExcelData[3],
+                        'check_in_fullday' => $rowExcelData[4],
+                        'check_out_fullday' => $rowExcelData[5],
                     ];
                 }
             }
