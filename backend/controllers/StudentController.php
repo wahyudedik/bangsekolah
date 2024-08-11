@@ -243,42 +243,48 @@ class StudentController extends Controller
         $dataExcel = $worksheet->toArray();
         $error = null;
         $itemArray = [];
-        $row_number = 0;
+        $row_number = 1; // Dimulai dari baris 1 (baris header)
+
         if ($sheet == 0) {
             foreach ($dataExcel as $rowExcelData) {
-                if ($row_number++ > 0 && $rowExcelData[0] !== null) {
+                if ($row_number > 1 && $rowExcelData[0] !== null) {
                     // check nis student
                     $nis = trim((string)$rowExcelData[0]);
                     $student = Student::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'nis' => $nis])->one();
                     if ($student) {
-                        $error = 'NIS siswa sudah ada ' . $student->nis;
+                        $error = 'NIS siswa sudah ada ' . $student->nis . ' pada baris ke ' . $row_number;
                         break;
                     }
 
                     // check gender student
                     $gender = trim((string)$rowExcelData[3]);
                     if ($gender !== 'L' && $gender !== 'P') {
-                        $error = 'Jenis kelamin siswa tidak valid. Gunakan L/P untuk jenis kelamin';
+                        $error = 'Jenis kelamin siswa tidak valid. Gunakan L/P untuk jenis kelamin pada baris ke ' . $row_number;
                         break;
                     }
 
                     // validasi data
                     $class = trim((string)$rowExcelData[4]);
                     $year = trim((string)$rowExcelData[5]);
-                    if (in_array($class, $arrClass) && in_array($year, $arrYear)) {
-                        $itemArray[] = [
-                            'nis' => trim((string)$rowExcelData[0]),
-                            'nisn' => trim((string)$rowExcelData[1]),
-                            'name' => trim((string)$rowExcelData[2]),
-                            'gender' => trim((string)$rowExcelData[3]),
-                            'class' => trim((string)$rowExcelData[4]),
-                            'year' => trim((string)$rowExcelData[5]),
-                        ];
-                    } else {
-                        $error = 'Data tidak valid pada baris ke ' . $row_number;
+                    if (!in_array($class, $arrClass)) {
+                        $error = 'Kelas tidak valid pada baris ke ' . $row_number;
                         break;
                     }
+                    if (!in_array($year, $arrYear)) {
+                        $error = 'Tahun tidak valid pada baris ke ' . $row_number;
+                        break;
+                    }
+
+                    $itemArray[] = [
+                        'nis' => $nis,
+                        'nisn' => trim((string)$rowExcelData[1]),
+                        'name' => trim((string)$rowExcelData[2]),
+                        'gender' => $gender,
+                        'class' => $class,
+                        'year' => $year,
+                    ];
                 }
+                $row_number++;
             }
         }
         @unlink($fileName);
