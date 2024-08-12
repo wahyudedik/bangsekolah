@@ -403,8 +403,12 @@ class PresenceController extends Controller
                         }
                         $presence->check_in = $item['date'] . ' ' . $item['check_in'];
                         $presence->check_out = $item['date'] . ' ' . $item['check_out'];
+                        $presence->status_check_in = $item['status_check_in'];
+                        $presence->status_check_out = $item['status_check_out'];
                         $presence->check_in_fullday = $item['date'] . ' ' . $item['check_in_fullday'];
                         $presence->check_out_fullday = $item['date'] . ' ' . $item['check_out_fullday'];
+                        $presence->status_check_in_fullday = $item['status_check_in_fullday'];
+                        $presence->status_check_out_fullday = $item['status_check_out_fullday'];
                         if ($presence->save()) {
                             $totalItem++;
                         } else {
@@ -450,7 +454,7 @@ class PresenceController extends Controller
                     // Cek apakah format waktu valid
                     // Coba membuat objek DateTime dari string dengan format H:i
                     $dateTimeCheckIn = \DateTime::createFromFormat('H:i', $rowExcelData[2]);
-                    $dateTimeCheckOut = \DateTime::createFromFormat('H:i', $rowExcelData[2]);
+                    $dateTimeCheckOut = \DateTime::createFromFormat('H:i', $rowExcelData[3]);
 
                     // Periksa apakah berhasil dan apakah nilai yang diberikan sesuai dengan format H:i
                     if ($dateTimeCheckIn->format('H:i') !== $rowExcelData[2] && $dateTimeCheckOut->format('H:i') !== $rowExcelData[3]) {
@@ -463,8 +467,12 @@ class PresenceController extends Controller
                         'student' => $student,
                         'check_in' => $rowExcelData[2],
                         'check_out' => $rowExcelData[3],
-                        'check_in_fullday' => $rowExcelData[4],
-                        'check_out_fullday' => $rowExcelData[5],
+                        'status_check_in' => $rowExcelData[4],
+                        'status_check_out' => $rowExcelData[5],
+                        'check_in_fullday' => $rowExcelData[6],
+                        'check_out_fullday' => $rowExcelData[7],
+                        'status_check_in_fullday' => $rowExcelData[8],
+                        'status_check_out_fullday' => $rowExcelData[9],
                     ];
                 }
             }

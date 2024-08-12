@@ -314,7 +314,7 @@ class PresenceTeacherController extends Controller
                 if ($row_number++ > 0 && $rowExcelData[0] !== null) {
 
                     // check NIS teacher
-                    $teacher = Teacher::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'nis' => $rowExcelData[1], 'status' => 'ACTIVE'])->one();
+                    $teacher = Teacher::find()->where(['school_id' => Yii::$app->session->get('school_id'), 'nik' => $rowExcelData[1], 'status' => 'ACTIVE'])->one();
                     if (!$teacher) {
                         $error = 'NIK ' . $rowExcelData[1] . ' guru pada baris ' . $row_number . ' tidak ditemukan';
                         break;
