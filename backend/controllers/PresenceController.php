@@ -392,15 +392,23 @@ class PresenceController extends Controller
                     $data = $result['data'];
 
                     foreach ($data as $item) {
-                        $presence = Presence::find()->where(['school_id' => $school_id, 'date' => $item['date']])->one();
+                        // Cari data presensi berdasarkan school_id, student_id, dan date
+                        $presence = Presence::find()->where([
+                            'school_id' => $school_id,
+                            'student_id' => $item['student']->id,
+                            'date' => $item['date']
+                        ])->one();
+
                         if (!$presence) {
-                            $student = $item['student'];
+                            // Jika tidak ada, buat entri baru
                             $presence = new Presence();
                             $presence->school_id = $school_id;
-                            $presence->student_id = $student->id;
-                            $presence->class = $student->class;
+                            $presence->student_id = $item['student']->id;
+                            $presence->class = $item['student']->class;
                             $presence->date = $item['date'];
                         }
+
+                        // Isi atau update data presensi
                         $presence->check_in = $item['date'] . ' ' . $item['check_in'];
                         $presence->check_out = $item['date'] . ' ' . $item['check_out'];
                         $presence->status_check_in = $item['status_check_in'];
@@ -409,16 +417,20 @@ class PresenceController extends Controller
                         $presence->check_out_fullday = $item['date'] . ' ' . $item['check_out_fullday'];
                         $presence->status_check_in_fullday = $item['status_check_in_fullday'];
                         $presence->status_check_out_fullday = $item['status_check_out_fullday'];
+
                         if ($presence->save()) {
                             $totalItem++;
                         } else {
+                            // Jika ada error, rollback transaksi dan tampilkan pesan error
+                            $transaction->rollBack();
                             foreach ($presence->errors as $error) {
-                                return $error[0];
-                                // Yii::$app->session->setFlash('danger', $error[0]);
+                                Yii::$app->session->setFlash('danger', $error[0]);
                             }
+                            return $this->redirect(['index']);
                         }
                     }
                 }
+                // Jika semua data berhasil disimpan, commit transaksi
                 $transaction->commit();
                 Yii::$app->session->setFlash('success', $totalItem . ' data presensi berhasil diimport');
                 return $this->redirect(['index']);

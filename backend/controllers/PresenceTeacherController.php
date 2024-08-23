@@ -273,21 +273,39 @@ class PresenceTeacherController extends Controller
                     $data = $result['data'];
 
                     foreach ($data as $item) {
-                        $presence = Presence::find()->where(['school_id' => $school_id, 'date' => $item['date']])->one();
+                        // Cari data presensi berdasarkan school_id, teacher_id, dan date
+                        $presence = Presence::find()->where([
+                            'school_id' => $school_id,
+                            'teacher_id' => $item['teacher']->id,
+                            'date' => $item['date']
+                        ])->one();
+
                         if (!$presence) {
-                            $teacher = $item['teacher'];
+                            // Jika tidak ada, buat entri baru
                             $presence = new Presence();
                             $presence->school_id = $school_id;
-                            $presence->teacher_id = $teacher->id;
+                            $presence->teacher_id = $item['teacher']->id;
                             $presence->date = $item['date'];
                         }
+
+                        // Isi atau update data presensi
                         $presence->check_in = $item['date'] . ' ' . $item['check_in'];
                         $presence->check_out = $item['date'] . ' ' . $item['check_out'];
+
                         if ($presence->save()) {
                             $totalItem++;
+                        } else {
+                            // Jika ada error, rollback transaksi dan tampilkan pesan error
+                            $transaction->rollBack();
+                            foreach ($presence->errors as $error) {
+                                Yii::$app->session->setFlash('danger', $error[0]);
+                            }
+                            return $this->redirect(['index']);
                         }
                     }
                 }
+
+                // Jika semua data berhasil disimpan, commit transaksi
                 $transaction->commit();
                 Yii::$app->session->setFlash('success', $totalItem . ' data presensi berhasil diimport');
                 return $this->redirect(['index']);
@@ -298,6 +316,7 @@ class PresenceTeacherController extends Controller
             'model' => $model,
         ]);
     }
+
 
     private function populateDataExcel($fileName, $sheet = 0)
     {

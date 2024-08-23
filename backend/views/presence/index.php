@@ -79,6 +79,20 @@ $this->params['breadcrumbs'][] = $this->title;
                         return '~';
                     }
                 }],
+                ['label' => 'Check In Fullday', 'value' => function ($model) {
+                    if ($model->check_in_fullday) {
+                        return date('H:i:s', strtotime($model->check_in_fullday));
+                    } else {
+                        return '~';
+                    }
+                }],
+                ['label' => 'Check Out Fullday', 'value' => function ($model) {
+                    if ($model->check_out_fullday) {
+                        return date('H:i:s', strtotime($model->check_out_fullday));
+                    } else {
+                        return '~';
+                    }
+                }],
 
             ],
         ]); ?>
