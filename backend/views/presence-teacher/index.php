@@ -57,13 +57,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 ['label' => 'Check In', 'value' => function ($model) {
                     return date('H:i:s', strtotime($model->check_in));
                 }],
-                ['label' => 'Check Out', 'value' => function ($model) {
-                    if ($model->check_out) {
-                        return date('H:i:s', strtotime($model->check_out));
-                    } else {
-                        return '~';
-                    }
-                }],
+                // ['label' => 'Check Out', 'value' => function ($model) {
+                //     if ($model->check_out) {
+                //         return date('H:i:s', strtotime($model->check_out));
+                //     } else {
+                //         return '~';
+                //     }
+                // }],
 
             ],
         ]); ?>
