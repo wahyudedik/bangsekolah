@@ -3251,6 +3251,79 @@ Harapan: `/` = `200`, `/user/login` = `200`, `/backend/web/` = `302` + `Location
 | `cookieValidationKey` (frontend & backend) | `*/config/main-local.php` — nilai acak 32+ karakter |
 | Password SSH & panel aaPanel | Setelah pastikan tidak ada kunci `/root/.ssh/authorized_keys` yang tidak dikenal |
 
+#### 17.6.8 Ratusan baris ` D backend/web/assets/<hash>/...` di `git status`
+
+**Gejala.** Setelah `git reset --hard` lalu `rm -rf backend/web/assets/*/ frontend/web/assets/*/` (langkah pembersihan 17.6.6), `git status` memuntahkan **ribuan** baris:
+
+```text
+ D backend/web/assets/7da65128/js/i18n/tk.js
+ D backend/web/assets/80ee709e/yii.activeForm.js
+ D backend/web/assets/8ba909c8/css/fileinput.min.css
+ D backend/web/assets/bc875821/js/select2.full.min.js
+ ... (2242 file, 981.379 baris terhapus)
+ M frontend/runtime/.gitignore
+ M frontend/web/assets/.gitignore
+?? backend/web/assets/1ba72367/
+?? backend/web/assets/c3f756f8/
+```
+
+**Sebabnya:** folder `backend/web/assets/<hash>/` adalah **cache asset Yii**, bukan kode sumber. Isinya di-generate ulang otomatis oleh `AssetManager` setiap kali hash berubah, jadi **tidak mungkin** sama antar-server. Di repo lama folder ini terlanjur **di-commit**, sehingga saat Anda menghapusnya di server, Git menganggapnya "file dihapus" (` D`).
+
+Kalau dibiarkan, setiap deploy akan selalu menghasilkan konflik palsu dan membuat `git status` tidak berguna untuk mendeteksi perubahan sungguhan.
+
+**Perbaikan sudah dilakukan di repo** (commit `3496630d`):
+
+```text
+ .gitignore                              | 9 +
+ backend/web/assets/...                  | 2242 files deleted
+ 2244 files changed, 11 insertions(+), 981379 deletions(-)
+```
+
+Isi tambahan `.gitignore`:
+
+```gitignore
+# Asset cache Yii - JANGAN pernah di-commit.
+/backend/web/assets/*
+!/backend/web/assets/.gitignore
+/frontend/web/assets/*
+!/frontend/web/assets/.gitignore
+```
+
+serta `backend/web/assets/.gitignore` baru berisi `*` + `!.gitignore` (sebelumnya tidak ada, hanya `frontend` yang punya).
+
+**Yang harus dijalankan di server:**
+
+```bash
+cd /www/wwwroot/banksekolah.noteds.com
+
+# 1. Ambil commit yang menghapus cache asset dari repo
+git pull origin main          # harus sampai 3496630d
+
+# 2. Dua file .gitignore yang muncul " M" hanya beda line-ending (CRLF vs LF)
+git checkout -- frontend/runtime/.gitignore frontend/web/assets/.gitignore
+
+# 3. Cek hasilnya
+git status -sb
+```
+
+Hasil yang diharapkan: **bersih**, tanpa baris ` D` maupun `??` dari `assets/`.
+
+**Folder `assets/` tetap ada dan tetap berfungsi**, meski `git status` bersih:
+
+```bash
+ls -l backend/web/assets/ | head
+```
+
+Yii akan membuat subfolder hash baru otomatis begitu ada pengunjung. Yang berubah hanyalah: **folder itu sekarang tidak dilacak Git**. Ini justru wajib, karena:
+
+| Alasan | Penjelasan |
+| --- | --- |
+| Isi berbeda tiap server | Hash bergantung path & waktu; commit hanya menimbulkan konflik palsu |
+| Ukuran besar | 981.379 baris terbuang dari repo, `git pull` jadi jauh lebih cepat |
+| Bisa dibersihkan kapan saja | Cukup `rm -rf */web/assets/*/` untuk memaksa Yii regenerasi |
+
+> **Jangan** menambahkan `backend/web/assets/` ke `git rm -r` **tanpa** `--cached`. Perintah yang benar hanya mengeluarkan dari indeks: `git rm -r --cached backend/web/assets`. File fisiknya harus tetap ada di disk agar tidak perlu men-generate ulang saat deploy.
+
 #### Ringkasan urutan perbaikan
 
 | # | Aksi | Perintah / Lokasi |
