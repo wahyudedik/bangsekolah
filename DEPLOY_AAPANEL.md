@@ -732,7 +732,7 @@ Jika tidak memungkinkan subdomain **dan** Anda ingin `Site directory` tetap menu
 - `https://domain-anda.com/` → frontend
 - `https://domain-anda.com/backend/web/` → backend
 
-Maka **jangan** memakai potongan `alias` di Section 10.3 secara terpisah — pakai vhost lengkap di **Section 10.5** (sudah termasuk blokir `vendor/`, `common/`, `.git`, file `*.sql`, dan blokir eksekusi PHP di `uploads/`).
+Maka **jangan** memakai potongan `alias` di Section 10.3 secara terpisah — pakai konfigurasi lengkap di **Section 10.5** (sudah termasuk blokir `vendor/`, `common/`, `.git`, file `*.sql`, dan blokir eksekusi PHP di `uploads/`), ditempel di kotak **URL rewrite** aaPanel.
 
 > **Peringatan keamanan:** pada layout ini seluruh source code berada **di dalam** document root. Tanpa aturan blokir di Section 10.5, `vendor/`, `common/config/main-local.php`, dan file `*.sql` dapat diunduh publik.
 
@@ -946,7 +946,7 @@ Kerjakan berurutan. Tidak perlu mengedit file vhost sama sekali — semua routin
 | Anti-XSS attack `(open basedir)` | **OFF** (atau tetap ON lalu ikuti 10.5.4) |
 | PHP version | `8.1` / `8.2`, harus sama untuk kedua app |
 
-#### 10.5.3 Langkah 2 — Konfigurasi vhost Nginx
+#### 10.5.3 Langkah 2 — Konfigurasi rewrite Nginx (kotak URL rewrite)
 
 **Cara yang disarankan — tanpa menyentuh vhost:** buka **Website → domain → URL rewrite**, hapus dulu isi default (`location / { try_files $uri $uri/ /index.php?$args; }`), lalu tempel blok di bawah ini. aaPanel menyisipkan isi kotak itu sebagai `include` di dalam `server{}`, tepat **sebelum** `include enable-php-81.conf`, sehingga urutan yang dibutuhkan sudah terpenuhi.
 
@@ -1960,7 +1960,7 @@ root /www/wwwroot/banksekolah.noteds.com/frontend/web;
 
 > **Jangan** mengarahkan Site directory ke root proyek tanpa vhost khusus, dan **jangan** memindahkan `index.php` ke root — keduanya membuat source code (`common/`, `vendor/`, `.git/`, file `.sql`) terekspos publik.
 >
-> **Pengecualian:** bila Anda memang ingin `root` = root proyek (satu domain melayani frontend + backend), itu **boleh**, tapi **wajib** memakai vhost lengkap di **Section 10.5** yang menyertakan `try_files /frontend/web$uri` dan blokir `vendor/`, `common/`, `.git`, `*.sql`. Tanpa itu, `403` akan berganti menjadi kebocoran source code.
+> **Pengecualian:** bila Anda memang ingin `root` = root proyek (satu domain melayani frontend + backend), itu **boleh**, tapi **wajib** memakai konfigurasi lengkap di **Section 10.5** yang menyertakan `try_files /frontend/web$uri` dan blokir `vendor/`, `common/`, `.git`, `*.sql`. Tanpa itu, `403` akan berganti menjadi kebocoran source code.
 
 #### Langkah 2 — Pastikan `try_files` ada (pretty URL Yii2)
 
@@ -3011,6 +3011,6 @@ rm -f /www/wwwroot/banksekolah/backend/web/uploads/test-block.php
 **Selesai.** Setelah seluruh section di atas dijalankan, aplikasi Bank Sekolah siap diakses pada salah satu layout berikut:
 
 - **Subdomain (disarankan):** `https://domain-anda.com` (frontend) + `https://admin.domain-anda.com` (backend) → Section 9.1, 9.2, 10.1, 10.2.
-- **Satu domain, root proyek:** `https://domain-anda.com/` (frontend) + `https://domain-anda.com/backend/web/` (backend) → **Section 10.5** (wajib memakai vhost lengkap beserta blokir `vendor/`, `common/`, `.git`, `*.sql`).
+- **Satu domain, root proyek:** `https://domain-anda.com/` (frontend) + `https://domain-anda.com/backend/web/` (backend) → **Section 10.5** (wajib memakai blok **Varian A** di kotak URL rewrite, beserta blokir `vendor/`, `common/`, `.git`, `*.sql`).
 
 Update berikutnya cukup mengikuti **Section 18**: backup → `git pull origin main` → bersihkan cache → verifikasi.
