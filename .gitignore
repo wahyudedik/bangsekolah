@@ -51,3 +51,11 @@ desktop.ini
 /frontend/config/main-local.php
 /console/config/main-local.php
 /.user.ini
+
+# Upload folder - jangan commit file user (cegah webshell masuk repo)
+/backend/web/uploads/*
+!/backend/web/uploads/.gitkeep
+!/backend/web/uploads/.htaccess
+/frontend/web/uploads/*
+!/frontend/web/uploads/.gitkeep
+!/frontend/web/uploads/.htaccess

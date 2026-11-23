@@ -1,4 +1,7 @@
 # CATATAN: /index.php SENGAJA TIDAK di-ignore (dibutuhkan di server tanpa composer install)
 /index-test.php
 /robots.txt
-/uploads
+# Folder upload: abaikan isi file user (cegah webshell masuk repo), tapi simpan .gitkeep & .htaccess
+/uploads/*
+!/uploads/.gitkeep
+!/uploads/.htaccess
