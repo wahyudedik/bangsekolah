@@ -4107,15 +4107,45 @@ user_school, year
 
 ```bash
 cd /www/wwwroot/banksekolah.noteds.com
-mysqldump -u root -p --single-transaction --routines --triggers \
-  --default-character-set=utf8mb4 sql_banksekolah_noteds_com \
-  > backup_db_$(date +%F_%H%M%S).sql
+
+# PENTING: gunakan user DATABASE APLIKASI, bukan root.
+# Di aaPanel, MySQL root memakai auth_socket sehingga `-u root -p` akan gagal
+# dengan "Access denied for user 'root'@'localhost' (using password: YES)".
+# Password user aplikasi ada di common/config/main-local.php (bagian dsn/username/password).
+mysqldump -u sql_banksekolah_noteds_com -p \
+  --single-transaction --routines --triggers \
+  --default-character-set=utf8mb4 \
+  sql_banksekolah_noteds_com > backup_db_$(date +%F_%H%M%S).sql
+
 ls -lh backup_db_*.sql
 ```
 
-Jangan lanjut bila file backup berukuran 0 byte atau jauh lebih kecil dari biasanya.
+> **⚠️ Cek ukuran file backup!** Bila `ls -lh` menampilkan `0` byte, backup GAGAL — jangan lanjut ke Langkah 3. Hapus file 0 byte tersebut (`rm -f backup_db_*.sql` setelah memastikan yang dihapus memang 0 byte) lalu ulangi dengan password yang benar. Backup yang sehat untuk database ini berukuran **±14 MB**.
+>
+> Bila tetap gagal dengan user aplikasi, ambil kredensial dari [`common/config/main-local.php`](common/config/main-local.php) (kunci `username` dan `password` pada komponen `db`), atau gunakan fitur **Backup** di panel aaPanel (menu Database → Backup) yang tidak memerlukan password MySQL.
 
 #### Langkah 1 — konfirmasi diagnosis
+
+> **⚠️ Jangan tempel SQL langsung di prompt bash.** Backtick pada `` `school` `` akan dieksekusi bash sebagai *command substitution* dan menghasilkan error seperti `school: command not found`, `SHOW: command not found`. SQL harus dijalankan **setelah** prompt berubah menjadi `mysql>`.
+>
+> Alternatif yang lebih aman (tanpa masuk klien interaktif) — simpan SQL ke file lalu pipe:
+> ```bash
+> cat > /tmp/cek_auto_increment.sql <<'EOF'
+> SELECT TABLE_NAME, COLUMN_NAME, COLUMN_TYPE, EXTRA
+> FROM information_schema.COLUMNS
+> WHERE TABLE_SCHEMA = DATABASE()
+>   AND COLUMN_NAME = 'id'
+>   AND EXTRA NOT LIKE '%auto_increment%'
+> ORDER BY TABLE_NAME;
+> EOF
+> mysql -u sql_banksekolah_noteds_com -p sql_banksekolah_noteds_com < /tmp/cek_auto_increment.sql
+> ```
+> Perhatikan `<<'EOF'` (dengan tanda kutip) — itu mencegah bash meng-expand isi file.
+
+```bash
+# Masuk ke klien MySQL dulu. Prompt akan berubah menjadi `mysql>`.
+mysql -u sql_banksekolah_noteds_com -p sql_banksekolah_noteds_com
+```
 
 ```sql
 SHOW CREATE TABLE `school`;
@@ -4139,6 +4169,11 @@ ORDER BY TABLE_NAME;
 
 Catat daftar yang muncul — itulah daftar tabel yang harus diperbaiki di Langkah 3.
 
+```sql
+-- keluar dari klien
+exit;
+```
+
 #### Langkah 3 — perbaiki semua sekaligus
 
 Cara cepat (menyalin blok `ALTER` dari dump):
@@ -4155,6 +4190,8 @@ mysql -u sql_banksekolah_noteds_com -p sql_banksekolah_noteds_com \
 ```
 
 Rentang `98852,99023` adalah blok `AUTO_INCREMENT` penuh: dibuka oleh komentar `--` di baris 98852, diakhiri baris kosong 99023, tepat sebelum `Constraints for dumped tables` (99025). **Periksa `head -20`**: baris pertama harus `--`, disusul `-- AUTO_INCREMENT for dumped tables`, lalu `ALTER TABLE \`activity\``. Bila tidak, nomor baris bergeser — jangan dijalankan.
+
+> 📌 Cara ini **aman dari masalah backtick** (`school: command not found`) karena SQL dibaca `mysql` langsung dari file `/tmp/fix_auto_increment.sql`, bukan dari shell — backtick di dalam file tidak pernah dieksekusi `bash`.
 
 > ⚠️ Cara cepat ini **tidak** menyertakan `post_image` (lihat catatan 19.2). Setelah menjalankan `sed`, verifikasi ulang dengan query Langkah 2; bila `post_image` masih muncul, jalankan minimal baris `post_image` dari blok manual di bawah.
 
@@ -4230,6 +4267,15 @@ https://banksekolah.noteds.com/school-register
 ```
 
 Bila berhasil, halaman akan redirect ke login backend (`@backurl`). Bila masih gagal, cek `frontend/runtime/logs/app.log` untuk pesan SQL terbaru — jangan mengandalkan tampilan halaman error saja.
+
+#### 19.3.6 Ringkasan kesalahan umum saat menjalankan SQL
+
+| Gejala | Penyebab | Solusi |
+|---|---|---|
+| `Access denied for user 'root'@'localhost' (using password: YES)` | MySQL root aaPanel pakai `auth_socket`, bukan password | Pakai user aplikasi `sql_banksekolah_noteds_com` |
+| File backup `0` byte | `mysqldump` gagal connect tapi shell tetap membuat file kosong karena redirect `>` | Cek `ls -lh`; hapus file 0 byte; ulangi dengan kredensial benar |
+| `school: command not found` / `SHOW: command not found` | SQL ditempel di prompt bash, backtick dieksekusi sebagai command substitution | Masuk `mysql>` dulu, atau pakai `mysql < file.sql` dengan heredoc `<<'EOF'` |
+| `ERROR 1045 (28000): Access denied ... (using password: NO)` | Lupa `-p` atau password kosong | Tambahkan `-p` dan masukkan password saat diminta |
 
 ### 19.4 Perbaikan di repo (sudah di-commit `dc6eeada`)
 
