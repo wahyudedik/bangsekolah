@@ -1576,6 +1576,7 @@ git push origin --force --tags
 | **File `.php` muncul di folder uploads** | Ada file `.php`/`.phtml`/`.phar` di `uploads` saat dicek `find` | Kemungkinan **webshell** / upload tidak tervalidasi | **Hapus file**, blokir eksekusi di Nginx (Section 16.3), validasi upload di aplikasi (Section 16.4), scan menyeluruh (Section 16.5), dan rotasi kredensial (Section 16.7) |
 | **Akses `.php` di `/uploads/` mengembalikan 200** | File uji `test-block.php` bisa diakses / dieksekusi | Aturan `location` uploads belum ada atau tertimpa `include enable-php` | Tambahkan blok §16.3 **sebelum** `include enable-php-81.conf;`, lalu `nginx -t && nginx -s reload` |
 | **HTTP 403 Forbidden (halaman default Nginx)** | Buka domain langsung muncul `403 Forbidden` polos dari nginx | **Site directory** aaPanel menunjuk root proyek (`/www/wwwroot/<domain>`), bukan `frontend/web`. Di root tidak ada `index.php` dan directory listing dimatikan | Arahkan `root` vhost ke `<proyek>/frontend/web` lalu tambah `try_files` — ikuti **Section 17.2** |
+| **`open_basedir restriction in effect`** | `require(): open_basedir restriction in effect. File(.../vendor/autoload.php) is not within the allowed path(s): (.../frontend/web/)` lalu `Fatal error ... Failed opening required '../../vendor/autoload.php'` | aaPanel menulis `.user.ini` dengan `open_basedir` hanya ke `frontend/web`, padahal Yii2 Advanced wajib membaca `../../vendor` dan `../../common` | Perluas `open_basedir` ke **root proyek** (`/www/wwwroot/<domain>/:/tmp/`) di `.user.ini` atau `php.ini`, reload PHP-FPM — lihat **Section 17.3** |
 
 ### 17.1 Perintah Diagnosa Cepat
 
@@ -1753,6 +1754,127 @@ curl -I https://banksekolah.noteds.com/database/        # harus 403/404
 | `index` directive | cari `index index.php index.html;` di vhost | Bila kosong, tambahkan |
 
 > **Kesimpulan:** `403 Forbidden` di aaPanel untuk Yii2 = **Site directory bukan `frontend/web`**. Perbaiki root vhost, tambahkan `try_files`, lengkapi config lokal, lalu reload Nginx.
+
+### 17.3 `open_basedir restriction in effect` Setelah Site Directory Diubah
+
+**Gejala:** setelah Site directory diarahkan ke `frontend/web`, `403` hilang tapi muncul:
+
+```text
+Warning: require(): open_basedir restriction in effect.
+File(/www/wwwroot/domain-anda.com/vendor/autoload.php) is not within the allowed path(s):
+(/www/wwwroot/domain-anda.com/frontend/web/:/tmp/)
+
+Warning: require(/www/wwwroot/domain-anda.com/vendor/autoload.php): Failed to open stream:
+Operation not permitted in /www/wwwroot/domain-anda.com/frontend/web/index.php on line 5
+
+Fatal error: Uncaught Error: Failed opening required
+'/www/wwwroot/domain-anda.com/frontend/web/../../vendor/autoload.php'
+```
+
+**Penyebab:** aaPanel menulis `open_basedir` **otomatis** ke `.user.ini` di Site directory, dengan nilai **hanya folder situs itu sendiri** (`.../frontend/web`) plus `/tmp`. Padahal Yii2 Advanced Template wajib membaca file **di luar** Site directory:
+
+| Yang dibutuhkan | Lokasi relatif dari `frontend/web` |
+| --- | --- |
+| `vendor/autoload.php`, `vendor/yiisoft/yii2/Yii.php` | `../../vendor/` |
+| `common/config/*.php` | `../../common/` |
+| `frontend/config/*.php` | `../config/` |
+
+Selama `open_basedir` dibatasi ke `frontend/web`, Yii2 **tidak mungkin** jalan. Ini memang konsekuensi tak terhindarkan dari struktur Advanced Template.
+
+#### Solusi A — Perluas `open_basedir` ke root proyek (direkomendasikan)
+
+Edit `/www/wwwroot/domain-anda.com/frontend/web/.user.ini`:
+
+```ini
+open_basedir=/www/wwwroot/domain-anda.com/:/tmp/
+```
+
+Perhatikan: **root proyek** (`domain-anda.com/`), bukan `frontend/web/`. Untuk backend (`backend/web/.user.ini`) nilainya sama:
+
+```ini
+open_basedir=/www/wwwroot/domain-anda.com/:/tmp/
+```
+
+Lalu beri jeda **1–5 menit** (PHP-FPM `user_ini.cache_ttl` default 300 detik) atau paksa reload:
+
+```bash
+# reload PHP-FPM agar .user.ini dibaca ulang
+/etc/init.d/php-fpm-81 reload
+```
+
+Bila aaPanel menimpanya lagi setiap kali Site directory diubah, kunci file-nya:
+
+```bash
+cd /www/wwwroot/domain-anda.com/frontend/web
+chattr +i .user.ini
+```
+
+> Ingat untuk `chattr -i .user.ini` bila suatu saat perlu mengubah Site directory lagi — file immutable membuat aaPanel gagal menulis.
+
+#### Solusi B — Turunkan langsung di konfigurasi PHP (paling permanen)
+
+Di aaPanel: **App Store → PHP 8.1 → Config** (atau `/www/server/php/81/etc/php.ini`), ubah:
+
+```ini
+;open_basedir = /www/wwwroot/domain-anda.com/frontend/web/:/tmp/
+open_basedir = /www/wwwroot/domain-anda.com/:/tmp/
+```
+
+Jika ingin satu server menampung banyak situs Yii2, kosongkan saja:
+
+```ini
+open_basedir =
+```
+
+Lalu restart PHP-FPM:
+
+```bash
+/etc/init.d/php-fpm-81 restart
+```
+
+> **Trade-off keamanan:** `open_basedir` adalah lapisan pengaman agar satu situs tidak bisa membaca file situs lain. Melebarkannya ke root proyek **tidak** mengurangi isolasi antar-situs, hanya memberi akses ke folder proyek sendiri — ini aman dan memang dibutuhkan. Yang **tidak** disarankan adalah mengosongkan `open_basedir` bila server dipakai bersama banyak pengguna.
+
+#### Solusi C — Ubah `open_basedir` per-vhost lewat `fastcgi_param` (paling rapi)
+
+Di vhost Nginx, **setelah** `include enable-php-81.conf;`:
+
+```nginx
+fastcgi_param PHP_ADMIN_VALUE "open_basedir=/www/wwwroot/domain-anda.com/:/tmp/";
+```
+
+Nilai ini mengesampingkan `.user.ini`. Reload Nginx lalu PHP-FPM.
+
+#### Verifikasi
+
+```bash
+# 1. Cek nilai efektif
+php -i | grep open_basedir          # konteks CLI (bisa beda dengan FPM)
+```
+
+Buat file uji sementara di `frontend/web/`:
+
+```php
+<?php
+echo 'open_basedir = ' . ini_get('open_basedir') . PHP_EOL;
+echo 'autoload exists = ' . (is_file(__DIR__ . '/../../vendor/autoload.php') ? 'YA' : 'TIDAK') . PHP_EOL;
+```
+
+Buka `https://domain-anda.com/cek.php` → harus menampilkan root proyek dan `YA`, lalu **hapus file uji**.
+
+Atau langsung buka beranda — bila `open_basedir` benar tetapi masih error, masalahnya sudah berpindah ke config lokal (Section 7).
+
+#### Urutan error yang wajar pada deployment baru
+
+Ini rangkaian yang normal; setiap perbaikan akan memunculkan error berikutnya:
+
+```text
+1. 403 Forbidden                        → Site directory salah            (Section 17.2)
+2. open_basedir restriction in effect    → .user.ini terlalu sempit        (Section 17.3)
+3. Failed opening required ...-local.php → config lokal belum dibuat      (Section 7)
+4. SQLSTATE / Access denied for user     → kredensial DB salah            (Section 7.3)
+5. The directory is not writable         → permission runtime/assets      (Section 11.2)
+6. 404 di halaman selain beranda         → try_files belum ada            (Section 17.2 Langkah 2)
+```
 
 ---
 
