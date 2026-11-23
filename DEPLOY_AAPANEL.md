@@ -51,6 +51,7 @@ Metode deployment yang dipakai adalah **Git clone langsung dari GitHub** (`git c
 | Entry Point Backend | [`backend/web/index.php`](backend/web/index.php) (ikut ter-commit) |
 | Document Root Frontend | `/www/wwwroot/banksekolah/frontend/web` |
 | Document Root Backend | `/www/wwwroot/banksekolah/backend/web` (disarankan subdomain terpisah) |
+| Alternatif Satu Domain | `root` = **root proyek** `/www/wwwroot/banksekolah.noteds.com`, frontend di `/`, backend di `/backend/web/` — lihat **Section 10.5** |
 | Dependency | `vendor/` **sudah ikut ter-commit di repo** — server **tidak perlu** `composer install` |
 | File SQL | [`banksekolah_banksekolah.sql`](banksekolah_banksekolah.sql) (root proyek, ikut ter-commit) |
 | File Config Lokal | `main-local.php` & `params-local.php` **di-ignore git** → **wajib dibuat manual di server** (Section 7) |
@@ -708,7 +709,9 @@ Dialog **Site modification** aaPanel punya beberapa field yang sering disalahpah
 | **SSL** | Let's Encrypt | Let's Encrypt | Wajib kalau sudah pakai `https://` |
 | **PHP version** | 8.1 / 8.2 | **sama** dengan frontend | Beda versi = perilaku & ekstensi beda |
 
-> **Ringkasnya:** yang menentukan sebuah situs aaPanel melayani frontend atau backend adalah **Site directory** — bukan nama domain, bukan Running directory. Karena itu frontend dan backend **wajib** menjadi **dua entri Website terpisah** di aaPanel.
+> **Ringkasnya:** yang menentukan sebuah situs aaPanel melayani frontend atau backend adalah **Site directory** — bukan nama domain, bukan Running directory. Karena satu entri Website hanya punya satu `root`, cara paling aman adalah **dua entri Website terpisah** (frontend + subdomain admin).
+>
+> **Bila Anda tetap ingin satu domain** dengan `root` = **root proyek** (`/www/wwwroot/banksekolah.noteds.com/`) dan mengakses backend lewat `/backend/web/`, gunakan konfigurasi lengkap di **Section 10.5**. Jangan mengandalkan potongan di Section 10.3 — di sana hanya `alias` tanpa aturan blokir yang wajib.
 
 ### 9.2 Situs Backend (Subdomain Admin)
 
@@ -722,9 +725,16 @@ Disarankan memakai subdomain terpisah agar panel admin terisolasi:
 3. Klik **Submit**.
 4. Buat DNS record `A` untuk `admin.domain-anda.com` → IP server.
 
-### 9.3 Alternatif: Backend di Sub-path
+### 9.3 Alternatif: Satu Domain dengan Root Proyek (Frontend + Backend)
 
-Jika tidak memungkinkan subdomain, akses backend via `https://domain-anda.com/backend/web/...`. Namun konfigurasi Nginx harus ditambahkan manual (lihat Section 10.3), dan risiko kebocoran file lebih tinggi.
+Jika tidak memungkinkan subdomain **dan** Anda ingin `Site directory` tetap menunjuk ke **root proyek** (`/www/wwwroot/banksekolah.noteds.com/`) sehingga satu domain melayani keduanya:
+
+- `https://domain-anda.com/` → frontend
+- `https://domain-anda.com/backend/web/` → backend
+
+Maka **jangan** memakai potongan `alias` di Section 10.3 secara terpisah — pakai vhost lengkap di **Section 10.5** (sudah termasuk blokir `vendor/`, `common/`, `.git`, file `*.sql`, dan blokir eksekusi PHP di `uploads/`).
+
+> **Peringatan keamanan:** pada layout ini seluruh source code berada **di dalam** document root. Tanpa aturan blokir di Section 10.5, `vendor/`, `common/config/main-local.php`, dan file `*.sql` dapat diunduh publik.
 
 ### 9.4 Cek Konfigurasi Site
 
@@ -883,7 +893,9 @@ location /backend/web/ {
 }
 ```
 
-> Pendekatan ini kurang aman dan lebih sulit di-maintain. Subdomain tetap direkomendasikan.
+> Potongan di atas **tidak cukup** untuk produksi: tanpa aturan blokir folder `vendor/`, `common/`, `.git`, dan file `*.sql`, seluruh source code ikut terekspos. Gunakan versi lengkap di **Section 10.5**.
+>
+> **Catatan:** jangan mencampur `alias` dari Section 10.3 dengan `root` proyek dari Section 10.5 — pilih salah satu.
 
 ### 10.4 Test & Reload Nginx
 
@@ -893,6 +905,240 @@ nginx -s reload
 ```
 
 Jika `nginx -t` gagal, periksa pesan error baris berapa yang bermasalah.
+
+### 10.5 Satu Domain, Satu Situs: Frontend + Backend dari Root Proyek
+
+Konfigurasi ini menjadikan **root proyek** sebagai `root` Nginx, lalu frontend & backend dilayani lewat **internal rewrite** ke masing-masing `web/index.php`. Ini jawaban untuk permintaan "backend dan frontend jadi satu, load folder `/www/wwwroot/banksekolah.noteds.com/`".
+
+#### 10.5.1 Pemetaan URL
+
+| URL publik | Yang dieksekusi / disajikan | Path fisik |
+| --- | --- | --- |
+| `https://domain/` | `frontend/web/index.php` | `/www/wwwroot/domain/frontend/web/index.php` |
+| `https://domain/privacy`, `/post`, `/site/...` | frontend (pretty URL Yii) | idem |
+| `https://domain/css/...`, `/js/...`, `/img/...`, `/theme/...`, `/assets/...`, `/uploads/...` | file statis frontend | `/www/wwwroot/domain/frontend/web/...` |
+| `https://domain/backend/web/` | `backend/web/index.php` | `/www/wwwroot/domain/backend/web/index.php` |
+| `https://domain/backend/web/site/login` | backend (pretty URL Yii) | idem |
+| `https://domain/backend/web/assets/...`, `/backend/web/uploads/...` | file statis backend | `/www/wwwroot/domain/backend/web/...` |
+
+- **Kelebihan:** satu entri aaPanel, satu SSL, satu `.user.ini`.
+- **Konsekuensi:** source code ada **di dalam** document root → aturan blokir di 10.5.3 **wajib**, bukan opsional.
+
+#### 10.5.2 Langkah 1 — Site directory di aaPanel
+
+**Website → domain → Site modification**:
+
+| Field | Nilai |
+| --- | --- |
+| Site directory | `/www/wwwroot/banksekolah.noteds.com` ← **root proyek**, tanpa `/frontend/web` |
+| Running directory | `/` (tidak berpengaruh ke routing PHP) |
+| Anti-XSS attack `(open basedir)` | **OFF** (atau tetap ON lalu ikuti 10.5.4) |
+| PHP version | `8.1` / `8.2`, harus sama untuk kedua app |
+
+#### 10.5.3 Langkah 2 — Konfigurasi vhost Nginx
+
+Edit `/www/server/panel/vhost/nginx/banksekolah.noteds.com.conf` (Website → Config). Perhatikan nomor urut blok — urutan `location` menentukan hasil.
+
+```nginx
+server {
+    listen 80;
+    listen 443 ssl http2;
+    server_name banksekolah.noteds.com www.banksekolah.noteds.com;
+
+    # root = ROOT PROYEK (bukan frontend/web)
+    root /www/wwwroot/banksekolah.noteds.com;
+    index index.php index.html;
+    autoindex off;
+
+    # ==== 1. PHP hanya boleh dieksekusi dari dua entry point ====
+    # WAJIB di atas `include enable-php-*.conf` (block #7).
+    location ~* ^/(?!frontend/web/|backend/web/).*\.(php|phtml|pht|phar|php[0-9]|phps|inc|cgi|pl|py|sh)$ {
+        deny all;
+        return 404;
+    }
+
+    # ==== 2. Folder & file non-publik (defense in depth) ====
+    location ^~ /vendor/               { deny all; return 404; }
+    location ^~ /common/               { deny all; return 404; }
+    location ^~ /console/              { deny all; return 404; }
+    location ^~ /environments/         { deny all; return 404; }
+    location ^~ /database/             { deny all; return 404; }
+    location ^~ /banksekolahgit/       { deny all; return 404; }
+    location ^~ /vagrant/              { deny all; return 404; }
+    location ^~ /frontend/config/      { deny all; return 404; }
+    location ^~ /frontend/controllers/ { deny all; return 404; }
+    location ^~ /frontend/models/      { deny all; return 404; }
+    location ^~ /frontend/views/       { deny all; return 404; }
+    location ^~ /frontend/runtime/     { deny all; return 404; }
+    location ^~ /frontend/tests/       { deny all; return 404; }
+    location ^~ /backend/config/       { deny all; return 404; }
+    location ^~ /backend/controllers/  { deny all; return 404; }
+    location ^~ /backend/models/       { deny all; return 404; }
+    location ^~ /backend/views/        { deny all; return 404; }
+    location ^~ /backend/runtime/      { deny all; return 404; }
+    location ^~ /backend/tests/        { deny all; return 404; }
+    location ~* ^/.*\.(sql|log|ini|bak|md|lock|sh|zip)$ { deny all; return 404; }
+    location ~ ^/\.(git|user\.ini|env|htaccess|gitignore) { deny all; return 404; }
+
+    # ==== 3. FRONTEND di domain utama ====
+    location = / {
+        rewrite ^ /frontend/web/index.php last;
+    }
+
+    location / {
+        # TIDAK memakai `$uri` polos: mencegah file di root proyek
+        # (config, *.sql, README.md, .git) pernah tersaji.
+        try_files /frontend/web$uri /frontend/web$uri/ /frontend/web/index.php?$args;
+    }
+
+    # ==== 4. BACKEND di /backend/web/ ====
+    location = /backend/web {
+        return 301 /backend/web/;
+    }
+
+    location ^~ /backend/web/uploads/ {
+        location ~ \.php$ { deny all; return 403; }
+        try_files $uri =404;
+    }
+
+    location ^~ /backend/web/ {
+        try_files $uri $uri/ /backend/web/index.php?$args;
+    }
+
+    # ==== 5. Uploads frontend: statis saja, tanpa eksekusi PHP ====
+    location ^~ /frontend/web/uploads/ {
+        location ~ \.php$ { deny all; return 403; }
+        try_files $uri =404;
+    }
+
+    # ==== 6. Cache aset statis (frontend & backend) ====
+    location ~* \.(css|js|jpg|jpeg|png|gif|svg|webp|ico|woff2?|ttf|eot|map)$ {
+        expires 30d;
+        access_log off;
+        try_files /frontend/web$uri /backend/web$uri $uri =404;
+    }
+
+    # ==== 7. Eksekusi PHP ====
+    # `enable-php-81.conf` memakai SCRIPT_FILENAME $document_root$fastcgi_script_name
+    # sehingga path fisik benar untuk frontend maupun backend.
+    include enable-php-81.conf;
+
+    access_log /www/wwwlogs/banksekolah.noteds.com.log;
+    error_log  /www/wwwlogs/banksekolah.noteds.com.error.log;
+}
+```
+
+**Mengapa pola ini benar:** [`frontend/web/index.php`](frontend/web/index.php) dan [`backend/web/index.php`](backend/web/index.php) sama-sama melakukan `require __DIR__ . '/../../vendor/autoload.php'`. Dengan `root` di root proyek, `../../vendor` tetap valid, dan `$document_root$fastcgi_script_name` menghasilkan `/www/wwwroot/banksekolah.noteds.com/frontend/web/index.php` (atau `.../backend/web/index.php`) — bukan path di root proyek yang tidak berisi `index.php`.
+
+> **Kenapa `try_files` frontend memakai prefiks `/frontend/web`?** Kalau ditulis `try_files $uri $uri/ /index.php?$args`, Nginx akan mencari `/www/wwwroot/banksekolah.noteds.com/index.php` yang **tidak ada** → 403/500. Selain itu, `$uri` polos akan menyajikan `/common/config/main-local.php` bila aturan blokir terlewat. Dengan prefiks `/frontend/web$uri`, hanya folder `frontend/web` yang pernah menjadi sumber file statis.
+
+#### 10.5.4 Langkah 3 — `open_basedir`
+
+Karena frontend dan backend berada di bawah satu root, cukup satu nilai. Buat/edit `.user.ini` **di root proyek**:
+
+```ini
+open_basedir=/www/wwwroot/banksekolah.noteds.com/:/tmp/
+```
+
+```bash
+cd /www/wwwroot/banksekolah.noteds.com
+printf 'open_basedir=/www/wwwroot/banksekolah.noteds.com/:/tmp/\n' > .user.ini
+chattr +i .user.ini          # cegah ditimpa aaPanel
+/etc/init.d/php-fpm-81 reload
+```
+
+> Jika `chattr` gagal (filesystem tidak mendukung), cukup matikan toggle **Anti-XSS attack** di aaPanel. Detail di Section 17.3.
+
+#### 10.5.5 Langkah 4 — Penyesuaian config aplikasi
+
+**a) Aktifkan `urlManager` backend (wajib untuk layout ini).** Saat ini blok tersebut dikomentari di [`backend/config/main.php`](backend/config/main.php:42). Tanpa ini, backend menghasilkan tautan `/index.php?r=site/login` yang menunjuk ke root domain → 404. Ubah menjadi:
+
+```php
+'urlManager' => [
+    'enablePrettyUrl' => true,
+    'showScriptName' => false,
+    'rules' => [
+    ],
+],
+```
+
+Tidak perlu menulis `baseUrl` manual: Yii menghitung dari `SCRIPT_NAME` = `/backend/web/index.php` → `baseUrl` = `/backend/web`. Konfigurasi ini **juga tetap benar** bila nanti Anda pindah ke layout subdomain (di sana `baseUrl` = kosong, dan hasilnya sama-sama valid).
+
+**b) Alias domain.** [`common/config/bootstrap.php`](common/config/bootstrap.php) memaksa `@backurl` ke `https://banksekolah.com` untuk semua domain selain `banksekolah.test`. Jangan edit file itu (tracked). Tambahkan override di `common/config/main-local.php`:
+
+```php
+'aliases' => [
+    '@fronturl' => 'https://banksekolah.noteds.com',
+    '@backurl'  => 'https://banksekolah.noteds.com/backend/web',
+],
+```
+
+**c) `cookieValidationKey`.** Pastikan `backend/config/main-local.php` ada dan key-nya **berbeda** dari frontend (Section 7.5).
+
+#### 10.5.6 Langkah 5 — Permission
+
+```bash
+cd /www/wwwroot/banksekolah.noteds.com
+
+mkdir -p backend/runtime frontend/runtime console/runtime \
+         backend/web/assets frontend/web/assets \
+         backend/web/uploads frontend/web/uploads
+
+chown -R www:www backend frontend common console vendor
+chown -R root:root .git
+chmod -R g+w backend/runtime frontend/runtime console/runtime \
+             backend/web/assets frontend/web/assets \
+             backend/web/uploads frontend/web/uploads
+```
+
+#### 10.5.7 Langkah 6 — Reload & verifikasi
+
+```bash
+nginx -t && nginx -s reload
+```
+
+```bash
+# harus 200
+curl -I https://banksekolah.noteds.com/
+curl -I https://banksekolah.noteds.com/privacy
+
+# backend (pretty URL aktif sesuai 10.5.5a)
+curl -I https://banksekolah.noteds.com/backend/web/
+curl -I https://banksekolah.noteds.com/backend/web/site/login
+
+# WAJIB 404 / 403
+curl -I https://banksekolah.noteds.com/common/config/main-local.php
+curl -I https://banksekolah.noteds.com/vendor/autoload.php
+curl -I https://banksekolah.noteds.com/.git/config
+curl -I https://banksekolah.noteds.com/banksekolah_banksekolah.sql
+curl -I https://banksekolah.noteds.com/frontend/config/main.php
+```
+
+Jika `main-local.php` mengembalikan `200` (bukan 404), aturan blokir belum aktif — periksa apakah blok #2 berada **sebelum** `include enable-php-81.conf`, lalu reload ulang.
+
+#### 10.5.8 Troubleshooting khusus layout satu root
+
+| Gejala | Penyebab | Perbaikan |
+| --- | --- | --- |
+| `/` → 403 | `location = /` tidak ada, sehingga Nginx mencari `index.php` di root proyek (tidak ada) | Tambahkan `location = / { rewrite ^ /frontend/web/index.php last; }` |
+| `/` tampil tapi CSS/JS 404 | `try_files` tidak memakai prefiks `/frontend/web$uri` | Ganti sesuai 10.5.3 blok #3 |
+| Backend link ke `/index.php?r=...` lalu 404 | `urlManager` backend masih dikomentari | Aktifkan per 10.5.5(a) |
+| Tautan admin menuju `banksekolah.com` | `bootstrap.php` jatuh ke cabang `else` | Override `@fronturl`/`@backurl` per 10.5.5(b) |
+| `/backend/web/` → 404 | Blok #4 hilang atau salah `try_files` | Salin ulang `location ^~ /backend/web/` |
+| Upload gambar 403 | Permission `uploads` bukan milik `www` | `chown -R www:www backend/web/uploads frontend/web/uploads` |
+| `open_basedir restriction` di backend | `.user.ini` tertinggal menunjuk `frontend/web` | Ikuti 10.5.4 |
+| Semua halaman 500 | `SCRIPT_FILENAME` menunjuk root proyek | Pastikan memakai `include enable-php-81.conf` yang berbasis `$document_root` |
+
+#### 10.5.9 Root proyek vs subdomain
+
+| Aspek | Root proyek (Section 10.5) | Subdomain (Section 10.2) |
+| --- | --- | --- |
+| Entri Website aaPanel | 1 | 2 |
+| SSL | 1 sertifikat | 2 sertifikat |
+| Source code di document root | **Ya** → butuh blokir ketat | Tidak |
+| Isolasi panel admin | Rendah | Tinggi |
+| Dampak bila satu aturan blokir lupa | Seluruh config/SQL dapat diunduh | Terbatas |
+| Cocok untuk | domain tunggal / server terbatas | produksi jangka panjang |
 
 ---
 
@@ -1360,6 +1606,8 @@ Section ini **wajib dibaca** sebelum go-live. Folder `uploads` adalah **vektor u
 
 Tambahkan blok berikut ke **kedua** vhost (frontend `domain-anda.com` dan backend `admin.domain-anda.com`). Blok harus berada **sebelum** `include enable-php-81.conf;` agar tidak tertimpa aturan PHP.
 
+> **Bila memakai layout satu root proyek (Section 10.5):** blokir uploads sudah termasuk di dalam vhost 10.5.3 (`location ^~ /backend/web/uploads/` dan `location ^~ /frontend/web/uploads/`). Pakai salah satu — jangan menduplikasi blok dengan `^~ /uploads/` karena pada root proyek `/uploads/` tidak ada.
+
 **Vhost Frontend** (`/www/server/panel/vhost/nginx/domain-anda.com.conf`, root `frontend/web`):
 
 ```nginx
@@ -1593,7 +1841,8 @@ git push origin --force --tags
 | **Perubahan tidak muncul setelah pull** | Kode lama masih jalan | OPcache / cache runtime | `rm -rf */runtime/cache/*`, reload PHP-FPM; cek `opcache.validate_timestamps = 1` |
 | **File `.php` muncul di folder uploads** | Ada file `.php`/`.phtml`/`.phar` di `uploads` saat dicek `find` | Kemungkinan **webshell** / upload tidak tervalidasi | **Hapus file**, blokir eksekusi di Nginx (Section 16.3), validasi upload di aplikasi (Section 16.4), scan menyeluruh (Section 16.5), dan rotasi kredensial (Section 16.7) |
 | **Akses `.php` di `/uploads/` mengembalikan 200** | File uji `test-block.php` bisa diakses / dieksekusi | Aturan `location` uploads belum ada atau tertimpa `include enable-php` | Tambahkan blok §16.3 **sebelum** `include enable-php-81.conf;`, lalu `nginx -t && nginx -s reload` |
-| **HTTP 403 Forbidden (halaman default Nginx)** | Buka domain langsung muncul `403 Forbidden` polos dari nginx | **Site directory** aaPanel menunjuk root proyek (`/www/wwwroot/<domain>`), bukan `frontend/web`. Di root tidak ada `index.php` dan directory listing dimatikan | Arahkan `root` vhost ke `<proyek>/frontend/web` lalu tambah `try_files` — ikuti **Section 17.2** |
+| **HTTP 403 Forbidden (halaman default Nginx)** | Buka domain langsung muncul `403 Forbidden` polos dari nginx | **Site directory** aaPanel menunjuk root proyek (`/www/wwwroot/<domain>`) **tanpa** vhost khusus; di root tidak ada `index.php` dan directory listing dimatikan | Arahkan `root` ke `<proyek>/frontend/web` + `try_files` (**Section 17.2**), **atau** tetap di root proyek tapi pakai vhost lengkap **Section 10.5** |
+| **Satu domain ingin melayani frontend `/` dan backend `/backend/web/`** | `root` = root proyek, backend tidak terjangkau / frontend 403 | `try_files` masih `$uri` polos sehingga mencari `index.php` di root proyek | Gunakan **Section 10.5** (`try_files /frontend/web$uri ... /frontend/web/index.php?$args` + `location ^~ /backend/web/`) dan aktifkan `urlManager` backend |
 | **`open_basedir restriction in effect`** | `require(): open_basedir restriction in effect. File(.../vendor/autoload.php) is not within the allowed path(s): (.../frontend/web/)` lalu `Fatal error ... Failed opening required '../../vendor/autoload.php'` | aaPanel menulis `.user.ini` dengan `open_basedir` hanya ke `frontend/web`, padahal Yii2 Advanced wajib membaca `../../vendor` dan `../../common` | Perluas `open_basedir` ke **root proyek** (`/www/wwwroot/<domain>/:/tmp/`) di `.user.ini` atau `php.ini`, reload PHP-FPM — lihat **Section 17.3** |
 
 ### 17.1 Perintah Diagnosa Cepat
@@ -1658,7 +1907,9 @@ Setara dengan mengedit Nginx manual:
 root /www/wwwroot/banksekolah.noteds.com/frontend/web;
 ```
 
-> **Jangan** mengarahkan Site directory ke root proyek, dan **jangan** memindahkan `index.php` ke root — keduanya membuat source code (`common/`, `vendor/`, `.git/`, file `.sql`) terekspos publik.
+> **Jangan** mengarahkan Site directory ke root proyek tanpa vhost khusus, dan **jangan** memindahkan `index.php` ke root — keduanya membuat source code (`common/`, `vendor/`, `.git/`, file `.sql`) terekspos publik.
+>
+> **Pengecualian:** bila Anda memang ingin `root` = root proyek (satu domain melayani frontend + backend), itu **boleh**, tapi **wajib** memakai vhost lengkap di **Section 10.5** yang menyertakan `try_files /frontend/web$uri` dan blokir `vendor/`, `common/`, `.git`, `*.sql`. Tanpa itu, `403` akan berganti menjadi kebocoran source code.
 
 #### Langkah 2 — Pastikan `try_files` ada (pretty URL Yii2)
 
@@ -2206,7 +2457,16 @@ Buka `https://admin.banksekolah.noteds.com/index.php?r=site/login` di browser.
 
 #### Solusi B — Backend via sub-path (tanpa subdomain)
 
-Kalau tidak bisa menambah DNS record, backend bisa diakses di `https://banksekolah.noteds.com/backend/web/`. Tambahkan blok berikut **di dalam** vhost frontend:
+Kalau tidak bisa menambah DNS record, backend bisa diakses di `https://banksekolah.noteds.com/backend/web/`.
+
+**Ada dua varian yang berbeda — pilih sesuai `Site directory` Anda:**
+
+| `Site directory` aaPanel | Varian yang dipakai | Catatan |
+| --- | --- | --- |
+| `.../frontend/web` | potongan `alias` di bawah | root = frontend/web |
+| `.../` (root proyek) | **Section 10.5** (versi lengkap) | `alias` di bawah **tidak berlaku** |
+
+**Varian A — root = `frontend/web`** (tambahkan blok berikut **di dalam** vhost frontend):
 
 ```nginx
 location /backend/web/ {
@@ -2228,9 +2488,21 @@ Lalu set `@backurl`:
 '@backurl' => 'https://banksekolah.noteds.com/backend/web',
 ```
 
-Serta jangan lupa `.user.ini` di `backend/web/` tepat seperti Langkah 4.
+Serta `.user.ini` di root proyek (`open_basedir` harus mencakup **root proyek**, bukan `backend/web`).
 
-> **Kekurangan Solusi B:** semua source backend berada di bawah domain publik, risiko kebocoran file lebih tinggi, dan `alias` + `try_files` lebih rawan salah konfigurasi. **Solusi A (subdomain) tetap direkomendasikan.**
+**Varian B — root = root proyek (yang Anda minta).** Jangan pakai blok di atas. Ikuti **Section 10.5** langkah demi langkah (vhost lengkap + blokir `vendor/`, `common/`, `.git`), lalu:
+
+```php
+// common/config/main-local.php
+'aliases' => [
+    '@fronturl' => 'https://banksekolah.noteds.com',
+    '@backurl'  => 'https://banksekolah.noteds.com/backend/web',
+],
+```
+
+dan aktifkan `urlManager` di [`backend/config/main.php`](backend/config/main.php:42) supaya tautan admin tidak menunjuk ke `/index.php?r=...` di root domain.
+
+> **Kekurangan solusi sub-path:** source code backend berada di bawah domain publik, sehingga **wajib** ada aturan blokir folder sensitif. `alias` + `try_files` juga lebih rawan salah konfigurasi daripada subdomain. **Solusi A (subdomain) tetap paling aman.**
 
 #### Bila subdomain dibuat tapi tetap `ERR_TIMED_OUT`
 
@@ -2619,6 +2891,13 @@ cd /www/wwwroot/banksekolah && ./yii cache/flush-all --interactive=0 || true
 # =========================================================
 curl -I https://domain-anda.com
 curl -I https://admin.domain-anda.com/
+
+# --- Jika memakai layout SATU DOMAIN (Section 10.5) ---
+curl -I https://banksekolah.noteds.com/                       # frontend 200
+curl -I https://banksekolah.noteds.com/backend/web/           # backend 200/302
+curl -I https://banksekolah.noteds.com/.git/config            # harus 404
+curl -I https://banksekolah.noteds.com/vendor/autoload.php    # harus 404
+curl -I https://banksekolah.noteds.com/common/config/main-local.php  # harus 404
 git ls-files | grep -E '(^|/)(db|info)\.php$'        # harus kosong
 git ls-files | grep -E 'main-local\.php$'            # harus kosong
 
@@ -2678,4 +2957,9 @@ rm -f /www/wwwroot/banksekolah/backend/web/uploads/test-block.php
 
 > ⚠️ **Jangan lewati Section 16.** Sebelum go-live pastikan: (1) tidak ada file eksekusi di folder `uploads`, (2) Nginx mengembalikan **403** untuk `/uploads/*.php`, (3) semua kredensial sudah dirotasi, dan (4) keputusan tentang pembersihan git history sudah diambil.
 
-**Selesai.** Setelah seluruh section di atas dijalankan, aplikasi Bank Sekolah siap diakses pada `https://domain-anda.com` (frontend) dan `https://admin.domain-anda.com` (backend). Update berikutnya cukup mengikuti **Section 18**: backup → `git pull origin main` → bersihkan cache → verifikasi.
+**Selesai.** Setelah seluruh section di atas dijalankan, aplikasi Bank Sekolah siap diakses pada salah satu layout berikut:
+
+- **Subdomain (disarankan):** `https://domain-anda.com` (frontend) + `https://admin.domain-anda.com` (backend) → Section 9.1, 9.2, 10.1, 10.2.
+- **Satu domain, root proyek:** `https://domain-anda.com/` (frontend) + `https://domain-anda.com/backend/web/` (backend) → **Section 10.5** (wajib memakai vhost lengkap beserta blokir `vendor/`, `common/`, `.git`, `*.sql`).
+
+Update berikutnya cukup mengikuti **Section 18**: backup → `git pull origin main` → bersihkan cache → verifikasi.
