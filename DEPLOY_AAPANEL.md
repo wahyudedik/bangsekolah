@@ -694,6 +694,22 @@ Pastikan charset database tampil `utf8mb4`.
 
 > **KRITIS:** Document root **WAJIB** menunjuk ke `frontend/web`, **bukan** ke root proyek. Jika salah, seluruh source code (`config`, `vendor`, `.sql`) dapat diakses publik.
 
+#### 9.1.1 Arti Setiap Field di Dialog "Site modification" aaPanel
+
+Dialog **Site modification** aaPanel punya beberapa field yang sering disalahpahami. Untuk Yii2 Advanced Template nilainya harus seperti ini:
+
+| Field | Nilai yang benar (frontend) | Nilai yang benar (backend) | Catatan |
+| --- | --- | --- | --- |
+| **Site directory** | `/www/wwwroot/banksekolah.noteds.com/frontend/web` | `/www/wwwroot/banksekolah.noteds.com/backend/web` | **Ini yang jadi `root` Nginx.** Salah di sini = 403 / 404 |
+| **Running directory** | `/www/wwwroot/banksekolah.noteds.com` | `/www/wwwroot/banksekolah.noteds.com` | cwd proses. Untuk PHP **tidak berpengaruh** ke routing; nilai `/` pun tetap jalan. Berguna untuk Node/Python/Laravel |
+| **Anti-XSS attack** `(open basedir)` | **OFF** | **OFF** | Kalau ON, aaPanel menulis `.user.ini` berisi `open_basedir` hanya ke Site directory → Yii2 gagal baca `../../vendor` (Section 17.3) |
+| **Write access log** | ON | ON | Untuk debugging awal |
+| **Password access** | OFF (kecuali perlu HTTP auth) | OFF | Menambah lapisan Basic Auth |
+| **SSL** | Let's Encrypt | Let's Encrypt | Wajib kalau sudah pakai `https://` |
+| **PHP version** | 8.1 / 8.2 | **sama** dengan frontend | Beda versi = perilaku & ekstensi beda |
+
+> **Ringkasnya:** yang menentukan sebuah situs aaPanel melayani frontend atau backend adalah **Site directory** — bukan nama domain, bukan Running directory. Karena itu frontend dan backend **wajib** menjadi **dua entri Website terpisah** di aaPanel.
+
 ### 9.2 Situs Backend (Subdomain Admin)
 
 Disarankan memakai subdomain terpisah agar panel admin terisolasi:
@@ -1782,6 +1798,10 @@ Fatal error: Uncaught Error: Failed opening required
 | `frontend/config/*.php` | `../config/` |
 
 Selama `open_basedir` dibatasi ke `frontend/web`, Yii2 **tidak mungkin** jalan. Ini memang konsekuensi tak terhindarkan dari struktur Advanced Template.
+
+> **PENTING — jangan tertukar dengan toggle "Anti-XSS attack":** di dialog **Site modification** aaPanel ada toggle **Anti-XSS attack** dengan keterangan kecil `(Base directory limit) (open basedir)`. Toggle itulah yang mengendalikan `open_basedir`. Bila dibiarkan **ON**, aaPanel menulis `open_basedir` ke `frontend/web` saja dan Yii2 tetap gagal. **Matikan toggle tersebut** (geser ke off) lalu **Save** — aaPanel akan menghapus batasan `open_basedir` dari `.user.ini`, dan itu cara paling cepat menyelesaikan masalah ini lewat GUI. Setelah Save, tetap reload PHP-FPM.
+>
+> Konsekuensi mematikan toggle: tidak ada batasan direktori untuk situs itu. Bila server hanya dipakai satu situs ini, aman. Bila dipakai bersama situs lain, gunakan **Solusi A/C** di bawah agar isolasi antar-situs tetap terjaga namun Yii2 bisa membaca root proyeknya sendiri.
 
 #### Solusi A — Perluas `open_basedir` ke root proyek (direkomendasikan)
 
