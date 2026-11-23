@@ -99,7 +99,7 @@ class Backup extends \yii\db\ActiveRecord
     {
         return '';
 
-        $downloadUrl = "https://banksekolah.com/backend/web/uploads/database/$this->filename";
+        $downloadUrl = Yii::getAlias('@backurl') . "/uploads/database/$this->filename";
         return Html::a('<i class="fas fa-download"></i> ' . $this->filename, $downloadUrl, ['class' => 'btn btn-primary btn-xs', 'download' => $this->filename]);
     }
 }

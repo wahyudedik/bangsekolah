@@ -129,7 +129,7 @@ class SchoolRegisterController extends Controller
                     $user->school_id = $school->id;
                     $user->user_id = $admin->id;
                     $user->save();
-                    return $this->redirect('https://banksekolah.com/backend/web');
+                    return $this->redirect(Yii::getAlias('@backurl'));
                 } else {
                     foreach ($admin->getErrors() as $error) {
                         $message = $error[0];

@@ -2691,6 +2691,8 @@ Serta `.user.ini` di root proyek (`open_basedir` harus mencakup **root proyek**,
 
 `urlManager` backend sudah aktif di repo, jadi tautan admin berbentuk `/backend/web/site/login` (bukan `/index.php?r=...` di root domain). Pastikan server sudah `git pull` versi terbaru.
 
+> **Jangan menguji login frontend di `/site/login`.** [`frontend/controllers/SiteController.php`](frontend/controllers/SiteController.php:25) hanya memiliki `actionIndex`, `actionError`, dan `actionPrivacy` — **tidak ada** `actionLogin`. Login frontend ada di [`frontend/controllers/UserController.php`](frontend/controllers/UserController.php), yaitu **`/user/login`**. Membuka `/site/login` akan mendapat `404` dari Yii dan itu **normal**.
+
 > **Kekurangan solusi sub-path:** source code backend berada di bawah domain publik, sehingga **wajib** ada aturan blokir folder sensitif. `alias` + `try_files` juga lebih rawan salah konfigurasi daripada subdomain. **Solusi A (subdomain) tetap paling aman.**
 
 #### Bila subdomain dibuat tapi tetap `ERR_TIMED_OUT`
@@ -2709,7 +2711,9 @@ Serta `.user.ini` di root proyek (`open_basedir` harus mencakup **root proyek**,
 
 ### 17.6 Semua URL Balas `404` dengan `server: cloudflare`
 
-Gejalanya: **semua** URL (beranda, `/site/login`, `/backend/web/`, aset) membalas `HTTP/2 404`, dan header responsnya berbunyi:
+Gejalanya: **semua** URL (beranda `/`, `/user/login`, `/backend/web/`, aset) membalas `HTTP/2 404`, dan header responsnya berbunyi:
+
+> **Peringatan saat menguji:** `frontend/controllers/SiteController.php` **tidak** punya `actionLogin` (hanya `actions()`, `actionIndex`, `actionError`, `actionPrivacy`). Jadi `https://banksekolah.noteds.com/site/login` **sah** membalas `404` — itu 404 dari Yii, bukan kerusakan nginx. Gunakan **`/user/login`** untuk menguji login frontend, dan **`/backend/web/site/login`** untuk login backend.
 
 ```text
 HTTP/2 404

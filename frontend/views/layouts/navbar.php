@@ -20,7 +20,7 @@ $baseUrl = Yii::$app->request->baseUrl;
                 <li><a class="nav-link scrollto" href="#pricing">Harga</a></li>
                 <li><a class="nav-link" href="school-register">Daftar Sekolah</a></li>
                 <li><a class="nav-link scrollto" href="#contact">Hubungi Kami</a></li>
-                <li><a class="getstarted scrollto" href="https://banksekolah.com/backend/web">LOGIN</a></li>
+                <li><a class="getstarted" href="<?= Yii::getAlias('@backurl') ?>">LOGIN</a></li>
             </ul>
             <i class="bi bi-list mobile-nav-toggle"></i>
         </nav>
