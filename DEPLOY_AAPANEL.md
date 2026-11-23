@@ -948,9 +948,22 @@ Kerjakan berurutan. Tidak perlu mengedit file vhost sama sekali — semua routin
 
 #### 10.5.3 Langkah 2 — Konfigurasi rewrite Nginx (kotak URL rewrite)
 
-**Cara yang disarankan — tanpa menyentuh vhost:** buka **Website → domain → URL rewrite**, hapus dulu isi default (`location / { try_files $uri $uri/ /index.php?$args; }`), lalu tempel blok di bawah ini. aaPanel menyisipkan isi kotak itu sebagai `include` di dalam `server{}`, tepat **sebelum** `include enable-php-81.conf`, sehingga urutan yang dibutuhkan sudah terpenuhi.
+**Cara yang disarankan — tanpa menyentuh vhost:** buka **Website → domain → URL rewrite**, hapus dulu isi default (`location / { try_files $uri $uri/ /index.php?$args; }`), lalu tempel blok di bawah ini.
+
+> **Penting — posisi `include` yang dibuat aaPanel.** aaPanel menyisipkan isi kotak URL rewrite sebagai `include` di dalam `server{}` **sesudah** `include enable-php-*.conf`. Ini bisa dibuktikan:
+>
+> ```bash
+> nginx -T 2>/dev/null | grep -n -B2 -A2 "vhost/rewrite/banksekolah"
+> ```
+>
+> Karena `location ~ [^/]\.php(/|$)` milik aaPanel **didefinisikan lebih dulu**, Nginx akan memakai regex itu untuk setiap URI berakhiran `.php` — sehingga blok #1 di bawah (yang juga regex) **kalah prioritas**. Konsekuensinya:
+>
+> - Pertahanan utama adalah blok **`^~`** (blok #2) dan `try_files` yang **tidak pernah** memakai `$uri` polos.
+> - Blok #1 tetap dipertahankan sebagai lapisan tambahan (efektif bila `root` diarahkan ke `frontend/web`, atau bila include rewrite dipindah ke atas `enable-php`).
 
 Isi yang sama juga sah bila ditempel langsung ke blok `server{}` di `/www/server/panel/vhost/nginx/banksekolah.noteds.com.conf`. Perhatikan urutan `location` — urutan menentukan hasil.
+
+> **Prasyarat mutlak:** blok di bawah **hanya berlaku bila `root` = root proyek** (`/www/wwwroot/banksekolah.noteds.com`). Bila `root` masih `.../frontend/web/`, semua URL akan dibalas `404` kecil (`content-length: 146`, halaman 404 bawaan Nginx). Cara memastikannya ada di **Section 17.6.1**.
 
 ##### Varian A — tempel di kotak **URL rewrite** (tanpa `server{}`, tanpa `root`)
 
@@ -2667,7 +2680,7 @@ Yang harus terlihat di keluaran `nginx -T`:
 1. `server_name banksekolah.noteds.com ...;`
 2. `root /www/wwwroot/banksekolah.noteds.com;` ← **root proyek**, bukan `frontend/web`
 3. `include /www/server/panel/vhost/rewrite/banksekolah.noteds.com.conf;` ← isi kotak URL rewrite
-4. `include enable-php-81.conf;` **sesudah** baris nomor 3
+4. `include enable-php-*.conf;` (versi menyesuaikan server; contoh nyata di server ini: `enable-php-85.conf`)
 
 Kalau baris nomor 3 **tidak ada**, berarti tombol **Save** di kotak URL rewrite belum tersimpan / situs menunjuk file rewrite lain. Kalau ada tapi isinya kosong:
 
@@ -2681,7 +2694,7 @@ Bila kosong, tempel ulang blok **Varian A** di Section 10.5.3 lalu **Save**.
 
 ```bash
 nginx -t && nginx -s reload
-/etc/init.d/php-fpm-81 reload
+/etc/init.d/php-fpm-85 reload     # sesuaikan: `nginx -T | grep "enable-php"`
 ```
 
 Banyak kasus "sudah di-Save tapi tetap 404" ternyata hanya karena Nginx belum reload. aaPanel biasanya auto-reload, tapi tidak selalu saat konfigurasi diubah dari tab **URL rewrite**.
@@ -2741,7 +2754,7 @@ printf 'open_basedir=/www/wwwroot/banksekolah.noteds.com/:/tmp/\n' > .user.ini
 cat .user.ini
 lsattr .user.ini          # harus ada huruf "i" di kolom atribut
 chattr +i .user.ini
-/etc/init.d/php-fpm-81 reload
+/etc/init.d/php-fpm-85 reload     # sesuaikan versi: cek `include enable-php-*.conf` di nginx -T
 ```
 
 Catatan penting: kalau `lsattr` **tidak** menampilkan huruf `i` (mis. hanya `--------------e-------`), berarti `chattr +i` belum berhasil dan aaPanel bisa menimpa isi file kapan saja. Bisa juga matikan **Anti-XSS attack (Base directory limit)** di tab **Directory** agar aaPanel tidak menulis ulang `.user.ini`.
@@ -2761,6 +2774,82 @@ tail -n 60 /www/wwwlogs/banksekolah.noteds.com.error.log
 | `Failed opening required '.../vendor/autoload.php'` | `Site directory` bukan root proyek → Section 10.5.2 |
 | `404` berulang di access log | Request sampai Nginx tapi location salah → cek `try_files` di Langkah 2 |
 | Access log **kosong** | Request tidak sampai origin → Cloudflare / firewall → Langkah 6 |
+
+#### 17.6.1 Penyebab paling sering: `root` vhost masih `frontend/web/`
+
+Gejala khas: **semua** URL membalas `404` dan **`content-length: 146`** (halaman 404 bawaan Nginx, bukan 404 Yii). Bukti dari server:
+
+```bash
+nginx -T 2>/dev/null | grep -n -A6 "server_name banksekolah.noteds.com"
+```
+
+```text
+496:    server_name banksekolah.noteds.com;
+497-    index index.php index.html index.htm default.php default.htm default.html;
+498-    root /www/wwwroot/banksekolah.noteds.com/frontend/web/;     # ← MASIH SALAH
+```
+
+Kalau `root` berakhir dengan `/frontend/web/`, maka blok **Varian A** (Section 10.5.3) tidak akan pernah bekerja, karena blok itu menulis `try_files /frontend/web$uri ...` — hasilnya `/www/wwwroot/banksekolah.noteds.com/frontend/web/frontend/web/...` yang tidak ada → `404`.
+
+**Perbaikan lewat panel (tanpa edit vhost):**
+
+1. aaPanel → **Website** → `banksekolah.noteds.com` → **Set** / **Modify**.
+2. Tab **Directory** → **Site directory** → ubah menjadi:
+
+   ```text
+   /www/wwwroot/banksekolah.noteds.com
+   ```
+
+   (tanpa `/frontend/web` di belakangnya, tanpa garis miring penutup)
+3. **Save**.
+4. Tab **URL rewrite** → pastikan blok **Varian A** masih utuh (Save ulang bila perlu).
+5. Wajib:
+
+   ```bash
+   nginx -t && nginx -s reload
+   /etc/init.d/php-fpm-85 reload
+   ```
+
+> Perhatikan versi PHP pada vhost server Anda: `include enable-php-85.conf;` → berarti **PHP 8.5**, bukan 8.1. Sesuaikan perintah reload (`php-fpm-85`) dan pastikan ekstensi yang dipakai aplikasi tersedia di versi itu.
+
+**Verifikasi setelah Save** (harus muncul tiga baris ini):
+
+```bash
+nginx -T 2>/dev/null | grep -n -A3 "server_name banksekolah.noteds.com" | grep -E "root|include"
+```
+
+```text
+root /www/wwwroot/banksekolah.noteds.com;
+include /www/server/panel/vhost/rewrite/banksekolah.noteds.com.conf;
+```
+
+Lalu uji:
+
+```bash
+curl -sI --resolve banksekolah.noteds.com:80:127.0.0.1 http://banksekolah.noteds.com/
+curl -sI --resolve banksekolah.noteds.com:80:127.0.0.1 http://banksekolah.noteds.com/backend/web/
+```
+
+Yang diharapkan: `302`/`200` dan `content-length` **bukan** `146`.
+
+#### 17.6.2 `root` sudah benar tapi tetap 404 — cek versi blok rewrite
+
+Bila `root` sudah root proyek namun tetap `404`, hampir pasti blok yang tertempel di kotak URL rewrite adalah **versi lama** (yang masih memakai `try_files $uri` polos, atau masih `alias /backend/web/`). Cek isi file yang benar-benar dipakai:
+
+```bash
+cat /www/server/panel/vhost/rewrite/banksekolah.noteds.com.conf
+```
+
+Yang **wajib** ada di dalamnya:
+
+| Penanda | Arti |
+| --- | --- |
+| `try_files /frontend/web$uri` | bukti blok ditulis untuk root proyek |
+| `location /backend/web/` (**tanpa** `^~`) | backend sub-path, tidak menimpa blokir regex |
+| `location ^~ /vendor/` | blokir folder non-publik |
+| **tidak ada** `alias /www/wwwroot/.../backend/web/` | `alias` hanya untuk root `frontend/web` |
+
+Bila tidak cocok, hapus seluruh isi kotak URL rewrite lalu tempel ulang blok **Varian A** dari Section 10.5.3 → Save → `nginx -t && nginx -s reload`.
 
 #### Ringkasan urutan perbaikan
 
