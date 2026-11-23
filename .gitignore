@@ -59,3 +59,12 @@ desktop.ini
 /frontend/web/uploads/*
 !/frontend/web/uploads/.gitkeep
 !/frontend/web/uploads/.htaccess
+
+# Asset cache Yii - JANGAN pernah di-commit.
+# Folder ini di-generate ulang otomatis oleh Yii (AssetManager) setiap kali hash berubah,
+# jadi isinya berbeda di setiap server. Bila di-commit, `rm -rf */web/assets/*/` akan
+# memunculkan ratusan baris " D backend/web/assets/<hash>/..." pada `git status`.
+/backend/web/assets/*
+!/backend/web/assets/.gitignore
+/frontend/web/assets/*
+!/frontend/web/assets/.gitignore
