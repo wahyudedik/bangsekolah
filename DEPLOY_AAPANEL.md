@@ -3791,3 +3791,258 @@ rm -f /www/wwwroot/banksekolah/backend/web/uploads/test-block.php
 - **Satu domain, root proyek:** `https://domain-anda.com/` (frontend) + `https://domain-anda.com/backend/web/` (backend) → **Section 10.5** (wajib memakai blok **Varian A** di kotak URL rewrite, beserta blokir `vendor/`, `common/`, `.git`, `*.sql`).
 
 Update berikutnya cukup mengikuti **Section 18**: backup → `git pull origin main` → bersihkan cache → verifikasi.
+
+---
+
+## 18. Cara Login & Testing Aplikasi
+
+> **Status saat section ini ditulis:** deployment live di `https://banksekolah.noteds.com` (frontend) dan `https://banksekolah.noteds.com/backend/web/` (backend). Working tree server bersih, commit aktif `e8842f2f`. Database produksi: `sql_banksekolah_noteds_com`.
+>
+> Section ini **khusus** soal cara masuk ke aplikasi dan menguji setelah deploy. Berbeda dengan Section 18 sebelumnya (update aplikasi) — bagian ini adalah lampiran operasional untuk teknisi yang baru menerima akses server.
+
+Kesimpulan singkat: **hanya login backend yang benar-benar berfungsi end-to-end.** Login frontend (member) punya cacat kode yang membuatnya tidak dapat dipakai untuk uji coba. Jangan menghabiskan waktu menebak password di halaman frontend.
+
+### 18.1 Ringkasan cepat
+
+| Kebutuhan | URL | Field | Catatan |
+| --- | --- | --- | --- |
+| Login backend (**jalur utama**) | `https://banksekolah.noteds.com/backend/web/site/login` | `username` + `password` | Tanpa captcha, tanpa verifikasi email. Syarat user `status = 'ACTIVE'`. |
+| Login frontend (member) | `https://banksekolah.noteds.com/user/login` | `email` + `password` + **Google reCAPTCHA v2** | Wajib captcha. Syarat user `status = 10` (integer) — akun dump SQL berstatus `'ACTIVE'` sehingga **tidak lolos**. Halaman tujuan `/user/profile` masih error (lihat 18.3). |
+| Daftar sekolah (**paling mudah untuk test**) | `https://banksekolah.noteds.com/school-register` | data sekolah + data user | Publik, tanpa captcha. Membuat sekolah + admin + `user_school` sekaligus. |
+| Daftar member | `https://banksekolah.noteds.com/user/register` | data diri + email + password | Publik, tapi link konfirmasi email hardcode ke domain lama `vistaeducation.com`. |
+
+### 18.2 Login backend (jalur utama untuk testing)
+
+**URL:** `https://banksekolah.noteds.com/backend/web/site/login`
+
+**Field:** hanya dua — `username` dan `password` ([`backend/views/site/login.php`](backend/views/site/login.php:52)). Tidak ada captcha dan tidak ada pemeriksaan konfirmasi email.
+
+**Alur autentikasi:**
+
+1. [`backend/controllers/SiteController.php`](backend/controllers/SiteController.php:139) menerima POST dan memuat [`common\models\LoginForm`](common/models/LoginForm.php:10).
+2. Validasi password memakai [`LoginForm::validatePassword()`](common/models/LoginForm.php:41), yang memanggil `getUser()` → [`User::findByUsername()`](common/models/User.php:154).
+3. `findByUsername()` mencari dengan **dua syarat**: `username` cocok **dan** `status = self::STATUS_ACTIVE` — yaitu string `'ACTIVE'` ([`common/models/User.php`](common/models/User.php:30)). Jadi user dengan status `'NONACTIVE'`, `'0'`, atau `NULL` **tidak akan ditemukan** walaupun password benar.
+4. Bila kredensial valid, `SiteController` mengecek `UserSchool` lalu `school.expired_date` ([`backend/controllers/SiteController.php`](backend/controllers/SiteController.php:147)). Bila sudah lewat jatuh tempo → flash `danger` lalu kembali ke halaman login.
+5. Bila masih berlaku → `school_id` + `school_name` disimpan di session, lalu redirect [`goBack()`](backend/controllers/SiteController.php:162).
+
+**Catatan penting:** tombol **LOGIN** di navbar frontend tidak mengarah ke `/user/login`, melainkan ke backend lewat alias `@backurl`:
+
+```php
+<!-- frontend/views/layouts/navbar.php -->
+<li><a class="getstarted" href="<?= Yii::getAlias('@backurl') ?>">LOGIN</a></li>
+```
+
+Lihat [`frontend/views/layouts/navbar.php`](frontend/views/layouts/navbar.php:23). Artinya pengunjung situs yang menekan LOGIN akan **otomatis masuk ke halaman login backend**, bukan halaman login member.
+
+### 18.3 Login frontend (dan kenapa sering gagal)
+
+**URL:** `https://banksekolah.noteds.com/user/login`
+
+> Perhatikan: **bukan** `/site/login`. [`frontend/controllers/SiteController.php`](frontend/controllers/SiteController.php:25) hanya punya `actionIndex`, `actionError`, dan `actionPrivacy` — tidak ada `actionLogin`. Login member ada di controller `user`.
+
+**Field:** `email` + `password` + **Google reCAPTCHA v2** ([`frontend/views/user/login.php`](frontend/views/user/login.php:42)).
+
+**Alur autentikasi** ([`frontend/controllers/UserController.php`](frontend/controllers/UserController.php:138)):
+
+1. Captcha diverifikasi lebih dulu ke Google (`g-recaptcha-response`); tanpa captcha langsung gagal ([`UserController.php`](frontend/controllers/UserController.php:144)).
+2. User dicari **selalu berdasarkan `email`**, bukan username ([`UserController.php`](frontend/controllers/UserController.php:158)).
+3. Syarat login: `status == 10` — perbandingan **integer** ([`UserController.php`](frontend/controllers/UserController.php:160)). Akun hasil dump SQL berstatus string `'ACTIVE'`, sehingga `'ACTIVE' == 10` bernilai **false** → muncul pesan "Email is not confirmed".
+4. Bila lolos → session `id`, `name`, `role='member'` diset, lalu redirect ke `/user/profile` ([`UserController.php`](frontend/controllers/UserController.php:165)).
+
+#### ⚠️ Cacat kode yang diketahui
+
+Halaman member (profil, update profil, dsb.) **tidak memakai session** yang baru saja diset oleh `actionLogin`. Semua action tersebut memanggil [`BasicAuth::user()`](common/helpers/BasicAuth.php:13), yang:
+
+- membaca header HTTP `Authorization: Basic ...` ([`common/helpers/BasicAuth.php`](common/helpers/BasicAuth.php:14)),
+- mencari user berdasarkan **`username`** — bukan `id` session ([`common/helpers/BasicAuth.php`](common/helpers/BasicAuth.php:23)),
+- dan **tidak** di-import di `UserController` (daftar `use` berhenti di `common\helpers\Strings`, lihat [`frontend/controllers/UserController.php`](frontend/controllers/UserController.php:10)), sehingga pemanggilan `BasicAuth::user()` di namespace `frontend\controllers` memicu **`Class not found`**.
+
+Akibatnya: login form bisa saja menerima kredensial, tetapi `/user/profile` akan gagal. Lihat contoh pemakaian `BasicAuth::user()` di [`UserController::actionProfile()`](frontend/controllers/UserController.php:187).
+
+> **Kesimpulan:** jangan memakai halaman member frontend untuk uji coba deployment. Verifikasi cukup lewat login backend (18.2) dan `/school-register` (18.4).
+
+### 18.4 Cara termudah test tanpa akun — `/school-register`
+
+**URL:** `https://banksekolah.noteds.com/school-register` — publik, tanpa captcha, tanpa perlu akun apa pun.
+
+**Langkah:**
+
+1. Buka halaman, isi **Data Sekolah**: `name`, `number` (huruf kapital tanpa spasi/simbol), `address`, `city`, `phone`.
+2. Isi **Data User**: `name`, `email`, `username`, `password`, `confirm_password` ([`frontend/views/school-register/form.php`](frontend/views/school-register/form.php:61)).
+3. Klik **Simpan**. Bila berhasil, halaman langsung redirect ke halaman login backend (`@backurl`), lalu login memakai username hasil aturan di bawah.
+
+**Yang dibuat otomatis** oleh [`SchoolRegisterController::actionCreate()`](frontend/controllers/SchoolRegisterController.php:109):
+
+| Objek | Nilai yang diset |
+| --- | --- |
+| `school` | `expired_date = +1 bulan` ([baris 117](frontend/controllers/SchoolRegisterController.php:117)), `status = 'ACTIVE'`, `invoice_number = 0`, `transaction_number = 0` |
+| `user` | `role_id = 2` (Admin Sekolah) ([baris 122](frontend/controllers/SchoolRegisterController.php:122)), password di-hash via `setPassword()`, `auth_key` digenerate |
+| `user_school` | relasi `user_id` ↔ `school_id` ([baris 127](frontend/controllers/SchoolRegisterController.php:127)) |
+
+#### ⚠️ JEBAKAN: username yang Anda isi akan DITIMPA
+
+Kolom `username` di form **tidak dipakai**. Controller menimpa nilainya dengan nama user yang sudah di-lowercase dan dihilangkan spasinya:
+
+```php
+// frontend/controllers/SchoolRegisterController.php:123
+$admin->username = strtolower(str_replace(' ', '', $admin->name));
+```
+
+Jadi bila `name` diisi **`Test Admin`**, maka username untuk login backend adalah **`testadmin`** — bukan `username` yang Anda ketikkan di form. Ini kesalahan paling sering terjadi saat testing pertama kali.
+
+### 18.5 Akun yang sudah ada di dump SQL
+
+Dump referensi: [`database/banksekolah 2024-01-05.sql`](database/banksekolah%202024-01-05.sql:19182) (baris `INSERT INTO user`). Sebagian akun yang ada:
+
+| ID | Username | Email | Role | Status |
+| --- | --- | --- | --- | --- |
+| 2 | `admin` | `infografikamedia@gmail.com` | 1 — Super Admin | `ACTIVE` |
+| 22 | `sdn1nbr` | `adminsdn1nambangrejo@gmail.com` | 2 — Admin Sekolah | `ACTIVE` |
+| 24 | `kasirsdn1` | `staffkeuangan@gmail.com` | 4 — Kasir | `ACTIVE` |
+| 25 | `adminman1po` | `admin@man1po.sch.id` | 2 — Admin Sekolah | `ACTIVE` |
+| 26 | `accountingman1` | `accounting@man1po.sch.id` | 3 — Staff Keuangan | `ACTIVE` |
+| 27 | `financeman1` | `finance@man1po.sch.id` | 4 — Kasir | `ACTIVE` |
+| 28 | `fikru` | `fikru.khoiri@gmail.com` | 2 — Admin Sekolah | `ACTIVE` |
+| 44 | `smktelkom` | `smktelkomdujbg@gmail.com` | 2 — Admin Sekolah | `ACTIVE` |
+
+**Password akun-akun di atas TIDAK dapat dibaca.** Kolom `password_hash` hanya menyimpan hash bcrypt `$2y$13$...` (cost 13). Hash tidak dapat di-decrypt — hanya bisa diverifikasi. Selain itu, password produksi kemungkinan besar **sudah berbeda** dari dump (dump dibuat 2024-01-05 dan server sempat mengalami insiden webshell, lihat 17.6.6–17.6.7). Untuk masuk, password **harus di-reset** (18.6).
+
+### 18.6 Reset / buat akun admin pertama
+
+> **Semua SQL di bawah dijalankan di phpMyAdmin aaPanel**, database **`sql_banksekolah_noteds_com`**. Jangan jalankan `migration`, jangan menyalakan Gii (tetap OFF — [`backend/config/main.php`](backend/config/main.php:15)), dan **ganti password kembali setelah selesai testing**.
+
+#### Opsi A — Reset password akun `admin` yang sudah ada (paling cepat)
+
+**Langkah 1.** Generate hash bcrypt dengan cost 13 (sama seperti yang dipakai Yii `generatePasswordHash`). Jalankan di terminal server:
+
+```bash
+php -r "echo password_hash('GANTI_PASSWORD_INI', PASSWORD_BCRYPT, ['cost' => 13]), PHP_EOL;"
+```
+
+Output berupa satu baris `$2y$13$...` — salin seluruh baris itu.
+
+**Langkah 2.** Cek akun yang ada di database:
+
+```sql
+SELECT id, username, email, name, status, role_id
+FROM user
+ORDER BY id;
+```
+
+**Langkah 3.** Timpa password dan pastikan status bisa login (harus string `'ACTIVE'`, bukan `10`):
+
+```sql
+UPDATE user
+SET password_hash = 'HASH_BCRYPT',
+    status = 'ACTIVE'
+WHERE username = 'admin';
+```
+
+Ganti `HASH_BCRYPT` dengan hasil langkah 1 (termasuk tanda kutip tunggal di sekelilingnya).
+
+#### Opsi B — Insert user Super Admin baru (`role_id = 1`)
+
+Pakai bila akun lama dianggap tidak layak dipakai lagi. `auth_key` harus acak 32 karakter dan `status` **string** `'ACTIVE'`:
+
+```sql
+INSERT INTO user (username, auth_key, password_hash, email, name, phone, status, role_id, created_at, updated_at)
+VALUES (
+  'adminbaru',
+  'GANTI_DENGAN_32_KARAKTER_ACAK_XXXX',
+  'HASH_BCRYPT',
+  'adminbaru@contoh.com',
+  'Admin Baru',
+  NULL,
+  'ACTIVE',
+  1,
+  NOW(),
+  NOW()
+);
+```
+
+`auth_key` bisa dibuat dengan:
+
+```bash
+php -r "echo substr(str_shuffle(str_repeat('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', 3)), 0, 32), PHP_EOL;"
+```
+
+Bila user baru ini juga harus terikat ke sebuah sekolah (agar tidak kena cek `expired_date` kosong), tambahkan relasinya:
+
+```sql
+INSERT INTO user_school (user_id, school_id, created_at, updated_at)
+VALUES ((SELECT id FROM user WHERE username = 'adminbaru'), 1, NOW(), NOW());
+```
+
+> Super Admin (`role_id = 1`) **tidak wajib** punya `user_school`; tanpa relasi, backend akan mengosongkan `school_id` dan tetap bisa masuk. Relasi hanya diperlukan bila akun itu perlu melihat data satu sekolah tertentu.
+
+#### Opsi C — Console command TIDAK tersedia
+
+Tidak ada seeder maupun console command untuk membuat user. [`console/controllers/`](console/controllers/.gitkeep) hanya berisi `.gitkeep` (kosong), dan [`console/migrations/m130524_201442_init.php`](console/migrations/m130524_201442_init.php) hanya melakukan `createTable`. Jadi:
+
+```text
+php yii user/create        -> TIDAK ADA (perintah tidak ditemukan)
+php yii user/reset-password -> TIDAK ADA
+```
+
+Satu-satunya jalan adalah SQL langsung (Opsi A/B) atau lewat UI backend (Opsi D).
+
+#### Opsi D — Tambah user lewat UI backend (setelah berhasil login)
+
+Setelah bisa masuk backend, tambah user normal lewat menu **User → Create** ([`backend/controllers/UserController.php`](backend/controllers/UserController.php:120)). Controller ini sudah menangani hash password (`generatePasswordHash`) dan otomatis membuat baris `user_school` bila parameter `school_id` diisi ([`backend/controllers/UserController.php`](backend/controllers/UserController.php:174)). Ini cara yang paling aman untuk user-user berikutnya.
+
+### 18.7 Tabel & kolom yang perlu dicek di phpMyAdmin
+
+**`user`** — inti autentikasi. Kolom: `id, username, auth_key, password_hash, email, name, phone, image, status, role_id, created_at, updated_at`. `status` bertipe **varchar** dengan komentar `ACTIVE, NONACTIVE` ([dump baris 19173](database/banksekolah%202024-01-05.sql:19173)) — inilah sebabnya login frontend (`status == 10`) gagal untuk data lama.
+
+**`user_school`** — relasi user ↔ sekolah: `id, user_id, school_id, created_at, updated_at` ([dump baris 19221](database/banksekolah%202024-01-05.sql:19221)). Dipakai backend untuk menentukan `school_id` di session.
+
+**`school`** — `expired_date` menentukan boleh/tidaknya login backend. Nilai lewat tanggal hari ini → ditolak.
+
+**`role`** — 1 Super Admin, 2 Admin Sekolah, 3 Staff Keuangan, 4 Kasir, 5 Guru ([dump baris 11683](database/banksekolah%202024-01-05.sql:11683)).
+
+**`role_menu`** — hak akses menu per role: `role_id, menu_id, parameter, privileges, position` ([dump baris 11691](database/banksekolah%202024-01-05.sql:11691)). Dipakai [`common/helpers/Sidebar.php`](common/helpers/Sidebar.php:17) untuk menandai menu aktif; bila role tidak punya baris untuk suatu menu, menu itu tidak muncul di sidebar.
+
+**Query cek cepat** (jalankan di phpMyAdmin):
+
+```sql
+-- 1. Akun mana yang bisa login backend?
+SELECT u.id, u.username, u.status, u.role_id, s.name AS sekolah, s.expired_date
+FROM user u
+LEFT JOIN user_school us ON us.user_id = u.id
+LEFT JOIN school s ON s.id = us.school_id
+WHERE u.status = 'ACTIVE'
+ORDER BY u.role_id, u.id;
+
+-- 2. Apakah sekolahnya masih aktif (belum jatuh tempo)?
+SELECT id, name, status, expired_date,
+       (expired_date >= CURDATE()) AS masih_berlaku
+FROM school
+ORDER BY expired_date DESC;
+
+-- 3. Berapa menu yang dimiliki sebuah role? (role 1 seharusnya paling banyak)
+SELECT role_id, COUNT(*) AS jumlah_menu
+FROM role_menu
+GROUP BY role_id
+ORDER BY role_id;
+```
+
+### 18.8 Urutan uji yang disarankan
+
+1. **`/school-register`** — buat sekolah + admin sekali jalan. Ingat jebakan 18.4: username = nama tanpa spasi, di-lowercase.
+2. **Login backend** di `/backend/web/site/login` memakai username hasil langkah 1 → pastikan dashboard terbuka dan `school_id` terisi.
+3. **Reset password `admin` lama** (Opsi A) bila perlu akun Super Admin untuk melihat menu penuh (Role, Menu, Setting, Backup).
+4. **Uji frontend member hanya bila benar-benar diperlukan** — daftar lewat `/user/register`, lalu konfirmasi manual (link email masih menunjuk domain lama):
+
+   ```text
+   https://banksekolah.noteds.com/user/confirmation?email=EMAIL_ANDA&token=md5(ID_USER)
+   ```
+
+   Ganti `md5(ID_USER)` dengan MD5 dari ID user (bisa dihitung lewat `php -r "echo md5('57');"`). Setelah `status` menjadi `10` login frontend bisa lolos, **tetapi** `/user/profile` tetap gagal karena bug `BasicAuth` (18.3). Jangan jadikan kegagalan ini indikator deployment bermasalah.
+5. **Jangan aktifkan Gii.** Modul tetap dikomentari di [`backend/config/main.php`](backend/config/main.php:15). Gii memberi kemampuan menulis file PHP dari browser — di server yang pernah kena webshell ini sama dengan membuka pintu belakang.
+
+### 18.9 Catatan keamanan
+
+- **Ganti semua password hasil reset setelah testing selesai.** Password sementara yang dipakai untuk uji coba (`GANTI_PASSWORD_INI`) tidak boleh tertinggal aktif di produksi.
+- **Jangan membagikan kredensial lewat chat/WhatsApp.** Sampaikan lewat password manager atau kanal yang bisa diaudit, dan hapus pesan setelah diterima.
+- **Rotasi kredensial pasca-insiden webshell masih pending.** Webshell yang terhapus (17.6.6) berarti penyerang sempat berpotensi membaca `common/config/main-local.php`. Daftar yang wajib dirotasi ada di tabel **17.6.7** (password MySQL `sql_banksekolah_noteds_com`, API key layanan, `cookieValidationKey` frontend & backend, password SSH/panel aaPanel). Jangan anggap pekerjaan selesai sebelum tabel itu tuntas.
+- Setelah rotasi, **verifikasi ulang login backend** (18.2) — bila `status` user atau `expired_date` sekolah tidak sengaja berubah saat pemulihan, login akan gagal dan biasanya bukan karena password.
