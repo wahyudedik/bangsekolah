@@ -2430,6 +2430,95 @@ Buka domain di browser — halaman beranda harus tampil tanpa pesan SQLSTATE.
 
 > **Kesimpulan:** `1045` = autentikasi MySQL. Selalu uji dengan `mysql -u <user_app> -p -h <host> <db> -e "SELECT 1;"` **sebelum** menyalahkan aplikasi.
 
+#### 17.4.1 Kasus nyata: user `sql_banksekolah_noteds_com` (dibuat aaPanel)
+
+Bila pesannya:
+
+```text
+SORRY, THE PAGE YOU ARE LOOKING FOR IS NOT FOUND
+SQLSTATE[HY000] [1045] Access denied for user 'sql_banksekolah_noteds_com'@'localhost' (using password: YES)
+```
+
+maka layout & PHP sudah **benar** (halaman Yii beserta header/footer tampil). Yang salah hanya password. Perhatikan nama `sql_..._noteds_com` — itu pola nama otomatis aaPanel, jadi database dibuat lewat panel, **bukan** lewat SQL manual. Jangan mengubah nama; cukup samakan password.
+
+**Langkah 1 — Ambil/atur ulang password dari aaPanel (paling aman)**
+
+1. aaPanel → **Databases** → cari database `sql_banksekolah_noteds_com`.
+2. Klik **Manage / Set** pada baris user `sql_banksekolah_noteds_com`.
+3. Gunakan **Change Password** (jangan membuat user baru — grant-nya sudah benar).
+4. Salin password yang baru.
+
+**Langkah 2 — Tulis ke `common/config/main-local.php`**
+
+`aliases` **tetap di luar** `components` (lihat 10.5.5b):
+
+```php
+<?php
+return [
+    'components' => [
+        'db' => [
+            'class'    => 'yii\db\Connection',
+            'dsn'      => 'mysql:host=localhost;dbname=sql_banksekolah_noteds_com',
+            'username' => 'sql_banksekolah_noteds_com',
+            'password' => 'PASSWORD_DARI_AAPANEL',
+            'charset'  => 'utf8mb4',
+        ],
+        'mailer' => [
+            'class'    => 'yii\swiftmailer\Mailer',
+            'viewPath' => '@common/mail',
+        ],
+    ],
+    'aliases' => [
+        '@fronturl' => 'https://banksekolah.noteds.com',
+        '@backurl'  => 'https://banksekolah.noteds.com/backend/web',
+    ],
+];
+```
+
+**Langkah 3 — Uji kredensial SEBELUM menyentuh aplikasi**
+
+```bash
+mysql -u sql_banksekolah_noteds_com -p'PASSWORD_DARI_AAPANEL' -h localhost \
+  sql_banksekolah_noteds_com -e "SELECT 1;"
+```
+
+Kalau ini gagal, perbaiki dulu di MySQL — jangan lanjut.
+
+**Langkah 4 — Cek apakah tabel sudah ada**
+
+```bash
+mysql -u sql_banksekolah_noteds_com -p'PASSWORD_DARI_AAPANEL' \
+  sql_banksekolah_noteds_com -e "SHOW TABLES;" | head -20
+```
+
+Kalau kosong, import (Section 8.3):
+
+```bash
+cd /www/wwwroot/banksekolah.noteds.com
+mysql -u sql_banksekolah_noteds_com -p'PASSWORD_DARI_AAPANEL' \
+  --default-character-set=utf8mb4 sql_banksekolah_noteds_com \
+  < banksekolah_banksekolah.sql
+```
+
+**Langkah 5 — Bersihkan cache Yii (wajib)**
+
+```bash
+cd /www/wwwroot/banksekolah.noteds.com
+rm -rf frontend/runtime/cache/* backend/runtime/cache/*
+```
+
+**Langkah 6 — Uji ulang**
+
+```bash
+curl -sI --resolve banksekolah.noteds.com:80:127.0.0.1 http://banksekolah.noteds.com/ | head -3
+```
+
+Harus `200`.
+
+> **Penting:** kalau `common/config/main-local.php` di server **tidak** memuat `'dsn'` sama sekali, berarti file itu masih kerangka kosong / belum pernah diisi — Yii lalu jatuh ke nilai default atau melempar error lain. Pastikan blok `db` benar-benar ada, lalu `php -l common/config/main-local.php`.
+
+> **Kenapa error ini muncul di *beranda*?** Di layout satu domain, beranda memuat data dinamis (menu, artikel, setting) dari database. Jadi koneksi DB diuji segera saat `GET /`.
+
 ### 17.5 Backend Tidak Bisa Diakses (`ERR_TIMED_OUT` / `banksekolah.com/backend/web`)
 
 **Gejala:** frontend sudah normal, tetapi saat membuka panel admin muncul `This site can't be reached` / `ERR_TIMED_OUT`, dengan URL seperti `https://banksekolah.com/backend/web`.
