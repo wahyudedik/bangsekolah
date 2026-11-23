@@ -12,7 +12,7 @@ return [
     'controllerNamespace' => 'backend\controllers',
     'bootstrap' => ['log'],
     'modules' => [
-        'gii' => 'yii\gii\Module'
+        // 'gii' => 'yii\gii\Module', // Dinonaktifkan di produksi
     ],
     'components' => [
         'request' => [

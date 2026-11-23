@@ -73,14 +73,14 @@ class SubscribeController extends Controller
     }
 
     public function actionMailchimp($email = 'muhammadarieffakhrudin@gmail.com') {
-        // api_key: e2a2f297ec17efd1ddeddebb6098227d-us5
+        // api_key: diambil dari params (lihat common/config/params.php)
         // audience_id: c41ea9b33f
         // server: us5
         // $mailchimp = new MailchimpMarketing();
         $mailchimp = new \MailchimpMarketing\ApiClient();
 
         $mailchimp->setConfig([
-            'apiKey' => 'e2a2f297ec17efd1ddeddebb6098227d-us5',
+            'apiKey' => Yii::$app->params['mailchimpApiKey'],
             'server' => 'us5'
         ]);
         $list_id = 'c41ea9b33f';

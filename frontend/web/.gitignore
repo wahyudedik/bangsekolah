@@ -1,4 +1,4 @@
-/index.php
+# CATATAN: /index.php SENGAJA TIDAK di-ignore (dibutuhkan di server tanpa composer install)
 /index-test.php
 /robots.txt
 /uploads

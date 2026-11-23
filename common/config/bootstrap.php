@@ -18,6 +18,6 @@ if ($_SERVER['SERVER_NAME'] == 'banksekolah.test') {
 	Yii::setAlias('@fronturl', 'http://192.168.0.4/banksekolah');
 	Yii::setAlias('@backurl', 'http://192.168.0.4/banksekolah/backend/web');
 } else {
-	Yii::setAlias('@fronturl', 'http://banksekolah.com');
-	Yii::setAlias('@backurl', 'http://banksekolah.com/backend/web');
+	Yii::setAlias('@fronturl', 'https://banksekolah.com');
+	Yii::setAlias('@backurl', 'https://banksekolah.com/backend/web');
 }

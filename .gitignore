@@ -18,7 +18,8 @@ nbproject
 Thumbs.db
 
 # composer vendor dir
-/vendor
+# CATATAN: /vendor SENGAJA TIDAK di-ignore. Folder vendor harus ikut di-commit
+# karena server produksi tidak menjalankan `composer install`.
 
 # composer itself is not needed
 composer.phar
@@ -33,3 +34,20 @@ phpunit.phar
 
 # vagrant runtime
 /.vagrant
+
+# Folder duplikat & arsip (jangan di-deploy)
+/banksekolahgit/
+/git.zip
+
+# File log & sampah
+error_log
+*.log
+desktop.ini
+
+# File konfigurasi lokal / rahasia
+/common/config/params-local.php
+/common/config/main-local.php
+/backend/config/main-local.php
+/frontend/config/main-local.php
+/console/config/main-local.php
+/.user.ini
