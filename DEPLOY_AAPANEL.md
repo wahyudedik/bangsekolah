@@ -1575,6 +1575,7 @@ git push origin --force --tags
 | **Perubahan tidak muncul setelah pull** | Kode lama masih jalan | OPcache / cache runtime | `rm -rf */runtime/cache/*`, reload PHP-FPM; cek `opcache.validate_timestamps = 1` |
 | **File `.php` muncul di folder uploads** | Ada file `.php`/`.phtml`/`.phar` di `uploads` saat dicek `find` | Kemungkinan **webshell** / upload tidak tervalidasi | **Hapus file**, blokir eksekusi di Nginx (Section 16.3), validasi upload di aplikasi (Section 16.4), scan menyeluruh (Section 16.5), dan rotasi kredensial (Section 16.7) |
 | **Akses `.php` di `/uploads/` mengembalikan 200** | File uji `test-block.php` bisa diakses / dieksekusi | Aturan `location` uploads belum ada atau tertimpa `include enable-php` | Tambahkan blok §16.3 **sebelum** `include enable-php-81.conf;`, lalu `nginx -t && nginx -s reload` |
+| **HTTP 403 Forbidden (halaman default Nginx)** | Buka domain langsung muncul `403 Forbidden` polos dari nginx | **Site directory** aaPanel menunjuk root proyek (`/www/wwwroot/<domain>`), bukan `frontend/web`. Di root tidak ada `index.php` dan directory listing dimatikan | Arahkan `root` vhost ke `<proyek>/frontend/web` lalu tambah `try_files` — ikuti **Section 17.2** |
 
 ### 17.1 Perintah Diagnosa Cepat
 
@@ -1604,6 +1605,154 @@ sudo -u www touch /www/wwwroot/banksekolah/frontend/runtime/.test_write && echo 
 ls -l common/config/main-local.php common/config/params-local.php \
       frontend/config/main-local.php backend/config/main-local.php console/config/main-local.php
 ```
+
+### 17.2 Memperbaiki `403 Forbidden` Nginx pada aaPanel (Site Directory Salah)
+
+**Gejala:** membuka `https://domain-anda.com` menampilkan halaman **`403 Forbidden`** polos bergaya Nginx (bukan halaman Yii2).
+
+**Penyebab:** aaPanel membuat situs dengan **Site directory = root proyek** (`/www/wwwroot/banksekolah.noteds.com`). Padahal entry point Yii2 ada di `frontend/web/index.php` — root proyek **tidak memiliki `index.php`**. Karena Nginx tidak menemukan file index dan `autoindex` dimatikan, Nginx mengembalikan `403 Forbidden`. Ini bukan masalah PHP, bukan masalah database, dan bukan masalah permission.
+
+> Perhatikan: aaPanel menampilkan dua kolom berbeda — **Site directory** (document root untuk Nginx) dan **Running directory** (cwd untuk proses). Yang menentukan `403` adalah **Site directory**, bukan Running directory.
+
+#### Langkah 1 — Ubah Site directory ke `frontend/web`
+
+Di aaPanel:
+
+1. **Website → domain-anda.com → Site directory** (ikon pensil / tombol *Modify*).
+2. Ubah **Site directory** dari:
+
+   ```text
+   /www/wwwroot/banksekolah.noteds.com
+   ```
+
+   menjadi:
+
+   ```text
+   /www/wwwroot/banksekolah.noteds.com/frontend/web
+   ```
+
+3. **Save**.
+
+Setara dengan mengedit Nginx manual:
+
+```nginx
+root /www/wwwroot/banksekolah.noteds.com/frontend/web;
+```
+
+> **Jangan** mengarahkan Site directory ke root proyek, dan **jangan** memindahkan `index.php` ke root — keduanya membuat source code (`common/`, `vendor/`, `.git/`, file `.sql`) terekspos publik.
+
+#### Langkah 2 — Pastikan `try_files` ada (pretty URL Yii2)
+
+Nginx **tidak membaca** `.htaccess`, jadi aturan rewrite Yii2 harus ditulis ulang. Di **Config** vhost, di dalam blok `server`, tambahkan **sebelum** `include enable-php-XX.conf;`:
+
+```nginx
+location / {
+    try_files $uri $uri/ /index.php?$args;
+}
+```
+
+Tanpa ini, beranda bisa tampil tetapi semua URL lain (`/post`, `/school-register`, dst.) akan `404`.
+
+#### Langkah 3 — Buat config lokal (WAJIB setelah clone)
+
+Karena `main-local.php` & `params-local.php` di-ignore git, file ini **tidak ada** di server. Setelah `403` teratasi, aplikasi akan langsung **fatal error** bila file ini tidak dibuat. Jalankan Section 7, minimal:
+
+```bash
+cd /www/wwwroot/banksekolah.noteds.com
+
+cp environments/prod/common/config/main-local.php   common/config/main-local.php
+cp environments/prod/common/config/params-local.php common/config/params-local.php
+cp environments/prod/backend/config/main-local.php  backend/config/main-local.php
+cp environments/prod/frontend/config/main-local.php frontend/config/main-local.php
+cp environments/prod/console/config/main-local.php  console/config/main-local.php
+cp environments/prod/yii yii && chmod 755 yii
+```
+
+Lalu isi kredensial DB dan `cookieValidationKey` (Section 7.3 & 7.5).
+
+#### Langkah 4 — Sesuaikan alias domain
+
+[`common/config/bootstrap.php`](common/config/bootstrap.php) memilih alias berdasarkan `$_SERVER['SERVER_NAME']`. Domain `banksekolah.noteds.com` tidak dikenali sehingga jatuh ke cabang `else` (`https://banksekolah.com`) — semua link & redirect akan salah domain. **Jangan edit file tracked itu**; override lewat `common/config/main-local.php`:
+
+```php
+'aliases' => [
+    '@fronturl' => 'https://banksekolah.noteds.com',
+    '@backurl'  => 'https://admin.banksekolah.noteds.com',
+],
+```
+
+#### Langkah 5 — Backend: subdomain terpisah
+
+Buat situs baru `admin.banksekolah.noteds.com` dengan **Site directory**:
+
+```text
+/www/wwwroot/banksekolah.noteds.com/backend/web
+```
+
+Jika backend diakses lewat path (bukan subdomain), `@backurl` diubah menjadi `https://banksekolah.noteds.com/backend/web` **dan** tambahkan blok Nginx §10.3 — tetapi subdomain lebih aman.
+
+#### Langkah 6 — Permission & folder writable
+
+```bash
+cd /www/wwwroot/banksekolah.noteds.com
+
+find . -maxdepth 1 -mindepth 1 ! -name '.git' -exec chown -R www:www {} +
+chown -R root:root .git
+
+mkdir -p backend/runtime frontend/runtime console/runtime \
+         backend/web/assets frontend/web/assets \
+         backend/web/uploads frontend/web/uploads
+
+chown -R www:www backend/runtime frontend/runtime console/runtime \
+                   backend/web/assets frontend/web/assets \
+                   backend/web/uploads frontend/web/uploads
+chmod -R g+w backend/runtime frontend/runtime console/runtime \
+             backend/web/assets frontend/web/assets \
+             backend/web/uploads frontend/web/uploads
+```
+
+#### Langkah 7 — Bersihkan sisa folder duplikat & blokir `.git`
+
+Kalau di server masih ada `banksekolahgit/` atau `git.zip` (sisa unggahan lama), **hapus** agar tidak ada dua salinan source:
+
+```bash
+cd /www/wwwroot/banksekolah.noteds.com
+rm -rf banksekolahgit git.zip
+```
+
+Tambahkan blokir `.git` di vhost (setelah `location /`):
+
+```nginx
+location ~ ^/\.(git|user\.ini) { deny all; return 404; }
+```
+
+#### Langkah 8 — Reload & uji
+
+```bash
+nginx -t && nginx -s reload
+/etc/init.d/php-fpm-81 reload    # sesuaikan versi PHP
+```
+
+Uji berurutan:
+
+```bash
+curl -I https://banksekolah.noteds.com/                 # harus 200
+curl -I https://banksekolah.noteds.com/post             # harus 200 (try_files jalan)
+curl -I https://banksekolah.noteds.com/.git/config      # harus 403/404
+curl -I https://banksekolah.noteds.com/database/        # harus 403/404
+```
+
+#### Diagnosis tambahan bila masih `403`
+
+| Cek | Perintah | Arti |
+| --- | --- | --- |
+| Root vhost yang dipakai Nginx | `nginx -T \| findstr /C:"server_name" /C:"root "` (Linux: `grep -n "root " /www/server/panel/vhost/nginx/<domain>.conf`) | Pastikan `root` berakhir di `/frontend/web` |
+| File index ada? | `ls -l /www/wwwroot/<domain>/frontend/web/index.php` | Bila tidak ada, clone tidak lengkap |
+| Permission folder | `namei -l /www/wwwroot/<domain>/frontend/web/index.php` | Setiap komponen path harus bisa `x` oleh `www` |
+| Log error Nginx | `tail -f /www/wwwlogs/<domain>.error.log` | Baris `directory index of ... is forbidden` = konfirmasi Site directory salah |
+| `index` directive | cari `index index.php index.html;` di vhost | Bila kosong, tambahkan |
+
+> **Kesimpulan:** `403 Forbidden` di aaPanel untuk Yii2 = **Site directory bukan `frontend/web`**. Perbaiki root vhost, tambahkan `try_files`, lengkapi config lokal, lalu reload Nginx.
 
 ---
 
