@@ -3184,18 +3184,22 @@ Baris `Location: .../backend/web/site/login` (tanpa `?r=`) adalah **bukti kode G
 | `+ 9b10136a...dae2aa62 main -> origin/main (forced update)` | Riwayat GitHub pernah ditulis ulang, jadi GitLab→GitHub tidak fast-forward | **Normal** — itulah gunanya `reset --hard` |
 | `Resolving deltas: 100% ... with 41 local objects` | Ada objek lokal (commit GitLab) yang tidak dipakai | Tidak berbahaya |
 
-**Yang masih menggantung: stash.** `git stash push -u` menyimpan `.htaccess`, `common/config/bootstrap.php`, dan `.bowerrc` versi **lama**. Jangan pernah `git stash pop` sekarang — itu akan mengembalikan berkas lama dan merusak hasil reset.
+**Soal stash — jalankan hanya bila `git stash list` menampilkan sesuatu.** Bila ada, `git stash push -u` menyimpan `.htaccess`, `common/config/bootstrap.php`, dan `.bowerrc` versi **lama**. Jangan pernah `git stash pop` sekarang — itu akan mengembalikan berkas lama dan merusak hasil reset.
 
 ```bash
 cd /www/wwwroot/banksekolah.noteds.com
 
-# lihat isinya dulu (siapa tahu ada perubahan yang masih dibutuhkan)
+# lihat isinya dulu — bila output kosong, berhenti di sini
 git stash list
+
+# HANYA bila `git stash list` menampilkan entri:
 git stash show -p stash@{0} | head -60
 
-# buang permanen setelah yakin tidak dipakai
+# HANYA bila entri di atas sudah dipastikan tidak dipakai:
 git stash drop stash@{0}
 ```
+
+> Bila output `git stash list` **kosong** (seperti pada server ini), maka `git stash show -p stash@{0}` maupun `git stash drop stash@{0}` akan gagal dengan `error: stash@{0} is not a valid reference`. Itu **normal, bukan error yang perlu diperbaiki** — tidak ada stash yang menggantung, sehingga tidak ada yang perlu di-drop dan tidak ada risiko `git stash pop`.
 
 **Soal `common/config/bootstrap.php` — jangan diubah manual.** Berkas itu memang masih punya cabang `else` yang menunjuk `https://banksekolah.com` (baris 21–22), tetapi:
 
@@ -3299,14 +3303,17 @@ cd /www/wwwroot/banksekolah.noteds.com
 # 1. Ambil commit yang menghapus cache asset dari repo
 git pull origin main          # harus sampai 3496630d
 
-# 2. Dua file .gitignore yang muncul " M" hanya beda line-ending (CRLF vs LF)
-git checkout -- frontend/runtime/.gitignore frontend/web/assets/.gitignore
+# 2. File .gitignore sisa yang biasanya kotor: backend/runtime/.gitignore
+#    (Yii menulis ulang isinya saat runtime) + frontend/web/assets/.gitignore (beda line-ending)
+git checkout -- backend/runtime/.gitignore frontend/web/assets/.gitignore
 
 # 3. Cek hasilnya
 git status -sb
 ```
 
-Hasil yang diharapkan: **bersih**, tanpa baris ` D` maupun `??` dari `assets/`.
+Hasil yang diharapkan: **bersih**, tanpa baris ` D` maupun `??` dari `assets/`, dan `git status -sb` hanya menampilkan `## main...origin/main`.
+
+> File yang biasanya masih tersisa kotor setelah `git pull` adalah `backend/runtime/.gitignore` — Yii menulis ulang isinya saat runtime (` M backend/runtime/.gitignore`). Itu bukan kode sumber dan aman dikembalikan dengan `git checkout`.
 
 **Folder `assets/` tetap ada dan tetap berfungsi**, meski `git status` bersih:
 
