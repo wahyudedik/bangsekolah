@@ -1555,7 +1555,8 @@ git push origin --force --tags
 | **Unknown database** | `[1049]` | Nama DB salah / belum dibuat | Cek `SHOW DATABASES;` dan sesuaikan `dbname` |
 | **Karakter rusak / emoji jadi `?`** | Data tampil aneh | Charset `utf8` bukan `utf8mb4` | Ubah `charset` ke `utf8mb4` di DSN dan database |
 | **404 di semua halaman kecuali beranda** | Pretty URL gagal | Rewrite Nginx tidak ada (Nginx abaikan `.htaccess`) | Tambahkan `try_files $uri $uri/ /index.php?$args;` lalu reload Nginx |
-| **Backend tidak bisa dibuka** | 404 saat akses `/site/login` | Pretty URL backend dimatikan | Akses via `/index.php?r=site/login` atau aktifkan `urlManager` backend |
+| **Backend tidak bisa dibuka** | 404 saat akses `/site/login` | Pretty URL backend dimatikan | Akses via `/index.php?r=site/login` atau aktifkan `urlManager` backend (Section 10.2) |
+| **`ERR_TIMED_OUT` saat buka `/backend/web`** | `This site can't be reached` pada URL `https://domain.com/backend/web` | Domain salah (`banksekolah.com` bukan server Anda) **dan** `backend/web` tidak punya vhost sendiri | Buat subdomain `admin.<domain>` dengan root `backend/web` — ikuti **Section 17.5** |
 | **Login gagal / logout sendiri** | Sesi hilang setelah refresh | `cookieValidationKey` kosong/sama, atau sesi tidak writable | Isi key berbeda di `frontend | backend/config/main-local.php`; pastikan`session.save_path` writable |
 | **413 Request Entity Too Large** | Upload file besar gagal | Limit Nginx kecil | Tambahkan `client_max_body_size 50m;` di blok `server`, reload Nginx |
 | **PHP tidak dieksekusi (file ter-download)** | Muncul dialog unduh | `include enable-php-81.conf;` tidak ada / versi salah | Pastikan include PHP ada dan versinya sesuai |
@@ -2057,6 +2058,171 @@ Buka domain di browser — halaman beranda harus tampil tanpa pesan SQLSTATE.
 | **2002** | `Connection refused` | MySQL mati / socket path salah | `systemctl status mysqld`, cek host DSN |
 
 > **Kesimpulan:** `1045` = autentikasi MySQL. Selalu uji dengan `mysql -u <user_app> -p -h <host> <db> -e "SELECT 1;"` **sebelum** menyalahkan aplikasi.
+
+### 17.5 Backend Tidak Bisa Diakses (`ERR_TIMED_OUT` / `banksekolah.com/backend/web`)
+
+**Gejala:** frontend sudah normal, tetapi saat membuka panel admin muncul `This site can't be reached` / `ERR_TIMED_OUT`, dengan URL seperti `https://banksekolah.com/backend/web`.
+
+**Penyebab — ada 3 kesalahan yang menumpuk:**
+
+1. **Domain salah.** `banksekolah.com` **bukan** domain server Anda. Domain Anda `banksekolah.noteds.com`. Membuka `banksekolah.com` akan timeout karena bukan server Anda (dan bisa jadi punya orang lain).
+2. **Root salah.** `backend/web` bukan alamat yang benar untuk Yii2 Advanced. Backend harus punya **document root sendiri**, yaitu folder `backend/web` — bukan sub-path `/backend/web` di bawah root frontend.
+3. **Alias `@backurl` salah.** [`common/config/bootstrap.php`](common/config/bootstrap.php:9) berisi `@backurl => 'https://banksekolah.com/backend/web'` untuk domain yang tidak dikenali. Untuk `banksekolah.noteds.com` (jatuh ke cabang `else`) alias tetap menunjuk `banksekolah.com`.
+
+> Nginx tidak mengeksekusi PHP di luar document root. Folder `backend/web` **fisik** ada, tetapi tidak ada vhost yang menunjuk ke sana — jadi request ke `/backend/web` hanya mencari folder statis di dalam root frontend, tidak menemukannya, lalu gagal.
+
+#### Solusi A — Subdomain admin (ReSTI, direkomendasikan)
+
+**1. Buat subdomain di DNS**
+
+Tambahkan record:
+
+```text
+Type  : A
+Name  : admin
+Value : 103.23.199.235      (IP server Anda)
+TTL   : 300
+```
+
+Tunggu propagasi (1–15 menit).
+
+**2. Buat situs baru di aaPanel**
+
+**Website → Add Site**:
+
+| Field | Nilai |
+| --- | --- |
+| Domain | `admin.banksekolah.noteds.com` |
+| Root directory | `/www/wwwroot/banksekolah.noteds.com/backend/web` |
+| PHP version | `8.1` (sama dengan frontend) |
+| FTP / Database | tidak perlu |
+
+**3. Tambah rewrite di vhost backend**
+
+Edit `/www/server/panel/vhost/nginx/admin.banksekolah.noteds.com.conf`, di dalam blok `server`:
+
+```nginx
+root /www/wwwroot/banksekolah.noteds.com/backend/web;
+index index.php index.html;
+
+location / {
+    try_files $uri $uri/ /index.php?$args;
+}
+
+location ~* \.(sql|log|ini|bak|md|json|lock)$ { deny all; return 404; }
+location ~ ^/\.(git|user\.ini) { deny all; return 404; }
+location ~* ^/uploads/.*\.(php|phtml|pht|phar|php[0-9]|phps|inc|cgi|pl|py|sh)$ { deny all; return 403; }
+location ^~ /uploads/ {
+    location ~ \.php$ { deny all; return 403; }
+    try_files $uri =404;
+}
+include enable-php-81.conf;
+```
+
+**4. Perbaiki `open_basedir` backend**
+
+Buat/edit `/www/wwwroot/banksekolah.noteds.com/backend/web/.user.ini`:
+
+```ini
+open_basedir=/www/wwwroot/banksekolah.noteds.com/:/tmp/
+```
+
+Sama seperti frontend — **root proyek**, bukan `backend/web`, karena backend juga butuh `../../vendor` dan `../../common`.
+
+**5. Buat `backend/config/main-local.php`**
+
+File ini gitignored, jadi belum ada di server:
+
+```php
+<?php
+return [
+    'components' => [
+        'request' => [
+            'cookieValidationKey' => 'KEY_BACKEND_BERBEDA_DARI_FRONTEND',
+        ],
+    ],
+];
+```
+
+Generate key (harus **berbeda** dari frontend):
+
+```bash
+openssl rand -base64 32
+```
+
+**6. Set `@backurl` & `@fronturl`**
+
+Edit `/www/wwwroot/banksekolah.noteds.com/common/config/main-local.php`, tambahkan:
+
+```php
+'aliases' => [
+    '@fronturl' => 'https://banksekolah.noteds.com',
+    '@backurl'  => 'https://admin.banksekolah.noteds.com',
+],
+```
+
+**7. Permission & reload**
+
+```bash
+cd /www/wwwroot/banksekolah.noteds.com
+mkdir -p backend/web/assets backend/runtime
+chown -R www:www backend/web/assets backend/runtime
+chmod -R g+w backend/web/assets backend/runtime
+
+nginx -t && nginx -s reload
+/etc/init.d/php-fpm-81 reload
+```
+
+**8. Uji**
+
+```bash
+curl -I https://admin.banksekolah.noteds.com/
+curl -I https://admin.banksekolah.noteds.com/index.php?r=site/login
+```
+
+Buka `https://admin.banksekolah.noteds.com/index.php?r=site/login` di browser.
+
+> **Penting:** `urlManager` di [`backend/config/main.php`](backend/config/main.php:42) **dikomentari**, jadi backend memakai format `index.php?r=controller/action`. Jangan akses `https://admin.banksekolah.noteds.com/site/login` — itu akan 404 sampai `urlManager` diaktifkan.
+
+#### Solusi B — Backend via sub-path (tanpa subdomain)
+
+Kalau tidak bisa menambah DNS record, backend bisa diakses di `https://banksekolah.noteds.com/backend/web/`. Tambahkan blok berikut **di dalam** vhost frontend:
+
+```nginx
+location /backend/web/ {
+    alias /www/wwwroot/banksekolah.noteds.com/backend/web/;
+    index index.php;
+
+    location ~ \.php$ {
+        include enable-php-81.conf;
+        fastcgi_param SCRIPT_FILENAME $request_filename;
+    }
+
+    try_files $uri $uri/ /backend/web/index.php?$args;
+}
+```
+
+Lalu set `@backurl`:
+
+```php
+'@backurl' => 'https://banksekolah.noteds.com/backend/web',
+```
+
+Serta jangan lupa `.user.ini` di `backend/web/` tepat seperti Langkah 4.
+
+> **Kekurangan Solusi B:** semua source backend berada di bawah domain publik, risiko kebocoran file lebih tinggi, dan `alias` + `try_files` lebih rawan salah konfigurasi. **Solusi A (subdomain) tetap direkomendasikan.**
+
+#### Bila subdomain dibuat tapi tetap `ERR_TIMED_OUT`
+
+| Cek | Perintah | Arti |
+| --- | --- | --- |
+| DNS sudah mengarah ke server? | `nslookup admin.banksekolah.noteds.com` | Harus menunjukkan IP server (mis. `103.23.199.235`) |
+| Vhost ada? | `nginx -T \| grep -A2 "admin.banksekolah"` | Kalau kosong, situs belum dibuat |
+| Port 443 terbuka? | `curl -I https://admin.banksekolah.noteds.com/` | `ERR_TIMED_OUT` = DNS/firewall, bukan Nginx |
+| SSL sudah aktif? | aaPanel → SSL → Let's Encrypt | Tanpa SSL, `https://` akan timeout/gagal |
+| Firewall aaPanel | **Security → Firewall** → izinkan 80 & 443 | Port tertutup = timeout |
+
+> **Ringkas:** backend Yii2 Advanced **wajib** punya vhost sendiri dengan `root` ke `backend/web` — tidak bisa diakses lewat path `/backend/web` dari root frontend tanpa konfigurasi `alias` khusus.
 
 ---
 
