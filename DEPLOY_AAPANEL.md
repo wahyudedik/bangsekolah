@@ -2577,7 +2577,7 @@ Lalu set `@backurl`:
 
 Serta `.user.ini` di root proyek (`open_basedir` harus mencakup **root proyek**, bukan `backend/web`).
 
-**Varian B — root = root proyek (yang Anda minta).** Jangan pakai blok di atas. Ikuti **Section 10.5** langkah demi langkah (vhost lengkap + blokir `vendor/`, `common/`, `.git`), lalu:
+**Varian B — root = root proyek (yang Anda minta).** Jangan pakai blok di atas. Ikuti **Section 10.5** langkah demi langkah (konfigurasi lengkap ditempel di kotak **URL rewrite** aaPanel + blokir `vendor/`, `common/`, `.git`), lalu:
 
 ```php
 // common/config/main-local.php
@@ -2601,7 +2601,179 @@ Serta `.user.ini` di root proyek (`open_basedir` harus mencakup **root proyek**,
 | SSL sudah aktif? | aaPanel → SSL → Let's Encrypt | Tanpa SSL, `https://` akan timeout/gagal |
 | Firewall aaPanel | **Security → Firewall** → izinkan 80 & 443 | Port tertutup = timeout |
 
-> **Ringkas:** backend Yii2 Advanced **wajib** punya vhost sendiri dengan `root` ke `backend/web` — tidak bisa diakses lewat path `/backend/web` dari root frontend tanpa konfigurasi `alias` khusus.
+> **Ringkas:** backend Yii2 Advanced bisa dipakai lewat **dua cara**. Cara 1 — vhost/domain sendiri dengan `root` ke `backend/web`. Cara 2 — satu domain dengan root proyek, memakai **Section 10.5** (blok Varian A di kotak URL rewrite). Yang **tidak bisa** hanya `alias` setengah-setengah seperti Varian A di atas kalau root sudah berupa root proyek.
+
+---
+
+### 17.6 Semua URL Balas `404` dengan `server: cloudflare`
+
+Gejalanya: **semua** URL (beranda, `/site/login`, `/backend/web/`, aset) membalas `HTTP/2 404`, dan header responsnya berbunyi:
+
+```text
+HTTP/2 404
+server: cloudflare
+cf-cache-status: DYNAMIC
+cf-ray: a5ede0216e92fdfc-SIN
+alt-svc: h3=":443"
+```
+
+Kalau `server:` berisi **cloudflare**, maka 404 itu **belum tentu** dari Nginx Anda. Bisa jadi:
+
+| Kemungkinan | Ciri | Perbaikan |
+| --- | --- | --- |
+| Request tidak sampai ke origin (DNS/SSL Cloudflare salah) | `curl --resolve` ke IP server **berhasil** | Perbaiki DNS/SSL Cloudflare |
+| Request sampai tapi ditangkap vhost **default** aaPanel | `curl --resolve` juga 404, `nginx -T` tak memuat konfigurasi situs | Reload Nginx / cek `server_name` |
+| Nginx belum di-reload setelah URL rewrite disimpan | `nginx -T` **tidak** memuat blok rewrite | `nginx -t && nginx -s reload` |
+| Situs di-pause di aaPanel | Website list menunjukkan status non-aktif | Aktifkan kembali |
+| SSL Cloudflare mode **Flexible** | Origin menerima `http://` ke port 80 yang tak punya vhost | Ubah ke **Full (strict)** |
+
+#### Langkah 1 — Tentukan siapa yang menjawab
+
+```bash
+cd /www/wwwroot/banksekolah.noteds.com
+
+# Lewat Cloudflare (seperti browser)
+curl -sI https://banksekolah.noteds.com/ | head -5
+
+# Tembak langsung ke Nginx di server ini (bypass Cloudflare)
+curl -sI --resolve banksekolah.noteds.com:443:127.0.0.1 https://banksekolah.noteds.com/ | head -5
+curl -sI --resolve banksekolah.noteds.com:80:127.0.0.1 http://banksekolah.noteds.com/ | head -5
+```
+
+Cara membaca:
+
+| Hasil `--resolve` | Hasil via Cloudflare | Artinya |
+| --- | --- | --- |
+| `200`/`302` | `404` | Masalah di **Cloudflare** (DNS/SSL/Page Rule) → Langkah 6 |
+| `404` | `404` | Masalah di **Nginx origin** → Langkah 2 dst. |
+| `000` (gagal konek) | `404` | Nginx mati / port tertutup, Cloudflare yang menjawab |
+
+#### Langkah 2 — Pastikan konfigurasi situs benar-benar termuat
+
+```bash
+# Uji sintaks semua konfigurasi
+nginx -t
+
+# Apakah vhost situs ini ada dan memuat file rewrite?
+nginx -T 2>/dev/null | grep -n -A25 "server_name banksekolah.noteds.com"
+
+# File konfigurasi & file rewrite yang dipakai aaPanel
+ls -l /www/server/panel/vhost/nginx/banksekolah.noteds.com.conf
+ls -l /www/server/panel/vhost/rewrite/banksekolah.noteds.com.conf
+```
+
+Yang harus terlihat di keluaran `nginx -T`:
+
+1. `server_name banksekolah.noteds.com ...;`
+2. `root /www/wwwroot/banksekolah.noteds.com;` ← **root proyek**, bukan `frontend/web`
+3. `include /www/server/panel/vhost/rewrite/banksekolah.noteds.com.conf;` ← isi kotak URL rewrite
+4. `include enable-php-81.conf;` **sesudah** baris nomor 3
+
+Kalau baris nomor 3 **tidak ada**, berarti tombol **Save** di kotak URL rewrite belum tersimpan / situs menunjuk file rewrite lain. Kalau ada tapi isinya kosong:
+
+```bash
+cat /www/server/panel/vhost/rewrite/banksekolah.noteds.com.conf
+```
+
+Bila kosong, tempel ulang blok **Varian A** di Section 10.5.3 lalu **Save**.
+
+#### Langkah 3 — Reload Nginx (wajib setelah Save)
+
+```bash
+nginx -t && nginx -s reload
+/etc/init.d/php-fpm-81 reload
+```
+
+Banyak kasus "sudah di-Save tapi tetap 404" ternyata hanya karena Nginx belum reload. aaPanel biasanya auto-reload, tapi tidak selalu saat konfigurasi diubah dari tab **URL rewrite**.
+
+#### Langkah 4 — Cek status situs di aaPanel
+
+**Website → daftar situs** → kolom status `banksekolah.noteds.com` harus **berjalan/aktif**. Bila ada tanda pause/stop, klik **Start**. Situs yang di-pause akan dilepas dari konfigurasi Nginx, sehingga request jatuh ke `default_server` → `404`.
+
+Dari terminal, situs non-aktif bisa dilihat dari konfigurasinya:
+
+```bash
+ls -l /www/server/panel/vhost/nginx/ | grep banksekolah
+# tidak ada file .conf = situs tidak aktif
+```
+
+#### Langkah 5 — Pastikan `default_server` tidak mencuri request
+
+```bash
+nginx -T 2>/dev/null | grep -n "listen.*default_server"
+```
+
+Kalau ada `listen 80 default_server;` **sebelum** blok situs Anda, dan blok situs Anda tidak punya IPv6 / `listen [::]:80`, request bisa mendarat di situs default. Cek `server_name` sudah memuat domain yang benar (termasuk `www.`):
+
+```bash
+nginx -T 2>/dev/null | grep -n "server_name"
+```
+
+#### Langkah 6 — Periksa Cloudflare
+
+1. **DNS → Records**: record `banksekolah.noteds.com` (dan `www`) harus bertipe `A`/`AAAA` ke IP origin `103.23.199.235`, status **Proxied** (ikon awan oranye).
+2. **SSL/TLS → Overview**: mode harus **Full (strict)**, **bukan** *Flexible*. Mode *Flexible* membuat Cloudflare menghubungi origin lewat HTTP port 80 — bila vhost hanya menangani 443, hasilnya 404/redirect loop.
+3. **Rules → Page Rules / Redirect Rules**: pastikan tidak ada aturan yang mengarahkan `/` ke URL mati.
+4. **Caching → Configuration**: sementara set **Development Mode** ON, agar perubahan langsung terlihat.
+5. **DNS → record → Proxy status**: bila ragu, ubah sementara ke **DNS Only** (awan abu-abu). Kalau dengan DNS Only situs normal, masalahnya murni di sisi Cloudflare (SSL mode / rule).
+
+#### Langkah 7 — Dua `.user.ini` dan flag immutable
+
+Di layout root-proyek muncul **dua** file ini:
+
+```bash
+ls -l /www/wwwroot/banksekolah.noteds.com/.user.ini \
+      /www/wwwroot/banksekolah.noteds.com/frontend/web/.user.ini
+```
+
+Yang di `frontend/web/` dibuat otomatis oleh aaPanel untuk situs lama / percobaan sebelumnya, dan bersifat **immutable** — itulah sebab `chown: changing ownership of 'frontend/web/.user.ini': Operation not permitted`. Perbaikannya:
+
+```bash
+cd /www/wwwroot/banksekolah.noteds.com
+
+# Lepas kunci lalu hapus file .user.ini yang bersarang
+chattr -i frontend/web/.user.ini 2>/dev/null
+rm -f frontend/web/.user.ini
+
+# Pastikan .user.ini root berisi open_basedir root proyek
+chattr -i .user.ini 2>/dev/null
+printf 'open_basedir=/www/wwwroot/banksekolah.noteds.com/:/tmp/\n' > .user.ini
+cat .user.ini
+lsattr .user.ini          # harus ada huruf "i" di kolom atribut
+chattr +i .user.ini
+/etc/init.d/php-fpm-81 reload
+```
+
+Catatan penting: kalau `lsattr` **tidak** menampilkan huruf `i` (mis. hanya `--------------e-------`), berarti `chattr +i` belum berhasil dan aaPanel bisa menimpa isi file kapan saja. Bisa juga matikan **Anti-XSS attack (Base directory limit)** di tab **Directory** agar aaPanel tidak menulis ulang `.user.ini`.
+
+#### Langkah 8 — Baca log sebelum menebak lagi
+
+```bash
+tail -n 60 /www/wwwroot/banksekolah.noteds.com/frontend/runtime/logs/app.log
+tail -n 60 /www/wwwroot/banksekolah.noteds.com/backend/runtime/logs/app.log
+tail -n 60 /www/wwwlogs/banksekolah.noteds.com.log
+tail -n 60 /www/wwwlogs/banksekolah.noteds.com.error.log
+```
+
+| Isi log | Arti |
+| --- | --- |
+| `open_basedir restriction in effect` | `.user.ini` belum benar → Langkah 7 |
+| `Failed opening required '.../vendor/autoload.php'` | `Site directory` bukan root proyek → Section 10.5.2 |
+| `404` berulang di access log | Request sampai Nginx tapi location salah → cek `try_files` di Langkah 2 |
+| Access log **kosong** | Request tidak sampai origin → Cloudflare / firewall → Langkah 6 |
+
+#### Ringkasan urutan perbaikan
+
+| # | Aksi | Perintah / Lokasi |
+| --- | --- | --- |
+| 1 | Hapus `.user.ini` bersarang | `chattr -i frontend/web/.user.ini && rm -f frontend/web/.user.ini` |
+| 2 | Pastikan `.user.ini` root benar | `printf ... > .user.ini && lsattr .user.ini` |
+| 3 | Uji bypass Cloudflare | `curl -I --resolve banksekolah.noteds.com:443:127.0.0.1 https://banksekolah.noteds.com/` |
+| 4 | Verifikasi konfigurasi termuat | `nginx -T \| grep -A25 "server_name banksekolah.noteds.com"` |
+| 5 | Reload Nginx | `nginx -t && nginx -s reload` |
+| 6 | Cek status situs | aaPanel → Website → status aktif |
+| 7 | Cek Cloudflare | DNS proxied, SSL **Full (strict)** |
+| 8 | Baca log | `frontend/runtime/logs/app.log`, `/www/wwwlogs/*.log` |
 
 ---
 
