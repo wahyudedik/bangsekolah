@@ -2944,6 +2944,79 @@ Yang **wajib** ada di dalamnya:
 
 Bila tidak cocok, hapus seluruh isi kotak URL rewrite lalu tempel ulang blok **Varian A** dari Section 10.5.3 → Save → `nginx -t && nginx -s reload`.
 
+#### 17.6.3 `git pull` gagal: `detected dubious ownership in repository`
+
+Gejala:
+
+```text
+fatal: detected dubious ownership in repository at '/www/wwwroot/banksekolah.noteds.com'
+To add an exception for this directory, call:
+
+        git config --global --add safe.directory /www/wwwroot/banksekolah.noteds.com
+```
+
+**Penyebab:** Git 2.35+ menolak repo yang pemiliknya berbeda dengan user yang menjalankan `git`. Di aaPanel, folder `/www/wwwroot/...` sering dimiliki `www` (UID 1000-an) sementara Anda login sebagai `root`. Ini **pengamanan**, bukan kerusakan repo.
+
+**Perbaikan (sekali saja, permanen):**
+
+```bash
+git config --global --add safe.directory /www/wwwroot/banksekolah.noteds.com
+```
+
+Verifikasi:
+
+```bash
+cd /www/wwwroot/banksekolah.noteds.com
+git status -sb
+git log --oneline -1
+```
+
+> Tanpa `cd` dulu, `git status` akan gagal dengan pesan repo tidak ditemukan. Selalu masuk ke direktori proyek sebelum perintah Git.
+
+Bila muncul lagi untuk direktori lain (mis. `frontend`), ulangi dengan path tersebut, atau longgarkan untuk semua path sekali jalan:
+
+```bash
+git config --global --add safe.directory '*'
+```
+
+**Setelah `git pull` berhasil,** pastikan versi kode di server sudah memuat perbaikan domain. Tanda server **masih** memakai kode lama: tautan admin masih berbentuk `?r=site%2Flogin`:
+
+```bash
+curl -sI --resolve banksekolah.noteds.com:80:127.0.0.1 \
+  http://banksekolah.noteds.com/backend/web/ | grep -i location
+```
+
+| Hasil `Location:` | Arti |
+| --- | --- |
+| `...?r=site%2Flogin` | **Kode lama** — `urlManager` backend belum aktif di server → `git pull` |
+| `.../backend/web/site/login` | **Kode baru** — `urlManager` aktif, benar |
+
+#### 17.6.4 `Set-Cookie` ganda & `Location: http://` pada HTTPS — bukan penyebab error
+
+Saat menguji lewat port 80 dengan `--resolve`, dua hal ini **normal** dan sering disalahartikan sebagai bug:
+
+| Gejala | Sebab | Perlu diperbaiki? |
+| --- | --- | --- |
+| Dua header `Set-Cookie` (`vistaeducation-frontend=...` dan `_csrf=...`) | Satu untuk sesi PHP, satu untuk proteksi CSRF Yii | **Tidak** — memang begitu desainnya |
+| `Location: http://banksekolah.noteds.com/backend/web/index.php?r=...` | Diuji lewat `http://` (port 80), jadi Yii membangun URL `http://` | **Tidak** — lewat HTTPS akan menjadi `https://` |
+
+Yang **tetap** patut diperiksa bila muncul di produksi:
+
+```bash
+nginx -T 2>/dev/null | grep -n "X-Forwarded-Proto\|fastcgi_param HTTPS"
+```
+
+Karena Cloudflare berada di depan origin, Yii bisa salah mendeteksi skema. Bila tautan `http://` muncul di browser meski diakses via `https://`, tambahkan di `backend/config/main-local.php` **dan** `common/config/main-local.php`:
+
+```php
+'request' => [
+    'baseUrl' => '',
+    'secureHeaders' => ['X-Forwarded-Proto'],
+],
+```
+
+atau di `components.request` set `'isSecureConnection'` lewat bootstrap. Jangan lakukan ini sebelum terbukti perlu — saat ini belum.
+
 #### Ringkasan urutan perbaikan
 
 | # | Aksi | Perintah / Lokasi |
