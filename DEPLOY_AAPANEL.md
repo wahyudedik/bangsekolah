@@ -3017,6 +3017,150 @@ Karena Cloudflare berada di depan origin, Yii bisa salah mendeteksi skema. Bila 
 
 atau di `components.request` set `'isSecureConnection'` lewat bootstrap. Jangan lakukan ini sebelum terbukti perlu — saat ini belum.
 
+#### 17.6.5 `git pull` mengambil dari **GitLab**, bukan GitHub
+
+**Gejala di server:**
+
+```text
+Username for 'https://gitlab.com': wahyudedik
+Password for 'https://wahyudedik@gitlab.com':
+remote: HTTP Basic: Access denied. ...
+fatal: Authentication failed for 'https://gitlab.com/javatekno-grafika/banksekolah.git/'
+
+# dan HEAD server masih jauh di belakang:
+9b10136 (HEAD -> main, origin/main, origin/HEAD) menghilangkan kolom checkout atas request
+```
+
+**Sebabnya dua hal sekaligus:**
+
+| # | Sebab | Penjelasan |
+| --- | --- | --- |
+| 1 | `origin` server menunjuk repo **GitLab lama** | `git pull` **tidak pernah** menyentuh GitHub, jadi perbaikan `@backurl` / `urlManager` di repo GitHub tidak pernah masuk |
+| 2 | GitLab menolak password akun | GitLab sekarang mensyaratkan **Personal Access Token** (atau SSH key) untuk HTTPS, bukan password login |
+
+Nomor 2 otomatis selesai kalau nomor 1 diperbaiki: repo GitHub `wahyudedik/bangsekolah` bersifat **publik**, jadi `git fetch` tidak butuh kredensial sama sekali.
+
+**Diagnosa dulu (wajib, jangan asal timpa):**
+
+```bash
+cd /www/wwwroot/banksekolah.noteds.com
+git remote -v
+```
+
+Contoh keluaran yang menjadi biang masalah:
+
+```text
+origin  https://gitlab.com/javatekno-grafika/banksekolah.git (fetch)
+origin  https://gitlab.com/javatekno-grafika/banksekolah.git (push)
+```
+
+**Perbaikan — arahkan `origin` ke GitHub:**
+
+```bash
+cd /www/wwwroot/banksekolah.noteds.com
+
+# 1. Amankan dulu 3 perubahan lokal yang memang disengaja di server
+#    (D .bowerrc, M .htaccess, M common/config/bootstrap.php)
+git stash push -u -m "perubahan-lokal-server-sebelum-pindah-remote"
+
+# 2. Pindahkan remote ke GitHub
+git remote set-url origin https://github.com/wahyudedik/bangsekolah.git
+git remote -v
+
+# 3. Ambil kode GitHub dan samakan working tree
+git fetch origin
+git reset --hard origin/main
+
+# 4. Pastikan sudah memakai commit terbaru
+git log --oneline -3
+```
+
+`git reset --hard` **aman** untuk kasus ini karena:
+
+| File | Status di server | Akibat setelah reset |
+| --- | --- | --- |
+| `common/config/main-local.php` | **untracked** (di-`.gitignore`) | Tidak tersentuh — kredensial DB tetap |
+| `backend/config/main-local.php` | **untracked** | Tidak tersentuh |
+| `.user.ini` | **untracked** | Tidak tersentuh |
+| `backend/web/uploads/*` | **untracked** (di-`.gitignore`) | Tidak tersentuh |
+| `.htaccess`, `common/config/bootstrap.php`, `.bowerrc` | **tracked** | Kembali ke versi GitHub → **inilah yang kita mau** |
+
+> Bila setelah `reset` ternyata ada perubahan lokal server yang masih dibutuhkan, lihat lagi dengan `git stash list` lalu `git stash show -p stash@{0}` sebelum `git stash drop`.
+
+**Verifikasi bahwa kode baru benar-benar aktif:**
+
+```bash
+curl -sI --resolve banksekolah.noteds.com:80:127.0.0.1 \
+  http://banksekolah.noteds.com/backend/web/ | grep -i location
+```
+
+| Hasil | Arti |
+| --- | --- |
+| `Location: .../backend/web/index.php?r=site%2Flogin` | Masih kode lama (`9b10136`) — `reset` belum berhasil |
+| `Location: .../backend/web/site/login` | Kode GitHub aktif, `urlManager` bekerja ✔ |
+
+**Alternatif lebih aman (tanpa menimpa `origin`):** tambahkan remote kedua agar GitLab tetap ada sebagai arsip.
+
+```bash
+cd /www/wwwroot/banksekolah.noteds.com
+git remote add github https://github.com/wahyudedik/bangsekolah.git
+git fetch github
+git reset --hard github/main
+# selanjutnya: git pull github main
+```
+
+> Catat di catatan deploy: mulai sekarang **sumber kebenaran kode = GitHub**, bukan GitLab. GitLab hanya arsip.
+
+#### 17.6.6 Webshell masih ada di server (hasil `git status`)
+
+Walaupun repo GitHub sudah bersih, **file webshell tetap hidup di disk server** karena folder `uploads/` masuk `.gitignore` sehingga tidak pernah "dihapus oleh Git".
+
+Gejala pada `git status -sb`:
+
+```text
+?? backend/web/uploads/school/-z_Rn9OrwG9tq2GwLp_cUvIuPvvBDUHA.php
+?? backend/web/uploads/school/3RF2gqc_WwnJ3eJq1-U3j-xZAoySdVWy.PhTMl
+?? backend/web/uploads/school/AiTVIsP-ZoEbhuMIcv0UPMYOuD0ZKL_S.php8
+?? backend/web/uploads/school/....phps / .pHp / .phar / .phtm / .phpt / .php7 / .php6 / .phtml / .blob
+?? backend/web/uploads/import/RJd-RsX9pNfoTQHSwaVQCZuy63Rc_JcV.php
+```
+
+Itu **backdoor aktif**. Ekstensi dibuat bervariasi (`.PhTMl`, `.php8`, `.blob`) supaya lolos dari filter naif yang hanya memblokir `.php`. Blok `^~` di Section 10.5.3 sudah menolak eksekusinya, tapi file tetap harus **dihapus**.
+
+**Bersihkan (lihat daftar dulu, baru hapus):**
+
+```bash
+cd /www/wwwroot/banksekolah.noteds.com
+
+# 1a. Daftar dulu — pastikan isinya memang sampah, bukan file upload sah
+find backend/web/uploads -type f \( -iname '*.php*' -o -iname '*.pht*' -o -iname '*.phar' \
+  -o -iname '*.blob' -o -iname '*.inc' \) -print
+
+# 1b. Baru hapus
+find backend/web/uploads -type f \( -iname '*.php*' -o -iname '*.pht*' -o -iname '*.phar' \
+  -o -iname '*.blob' -o -iname '*.inc' \) -delete
+
+# 2. Sisa file aneh di luar uploads
+find . -name '*.PhTMl' -o -name '*.pHp' -o -name '*.php8' -o -name '*.phps' | xargs -r ls -l
+
+# 3. Bersihkan sampah lain yang muncul di git status
+find . -name 'error_log' -type f -delete
+rm -rf backend/web/assets/*/ frontend/web/assets/*/
+
+# 4. Pastikan tetap tidak bisa dieksekusi
+curl -sI --resolve banksekolah.noteds.com:80:127.0.0.1 \
+  http://banksekolah.noteds.com/vendor/autoload.php | head -1
+```
+
+> **Wajib setelah pembersihan:** ganti **semua** kredensial yang pernah ada di server (password DB, API key Mailchimp/Midtrans, `cookieValidationKey`, password SSH & panel aaPanel). Webshell berarti penyerang punya akses baca ke `common/config/main-local.php` — semua rahasia di sana harus dianggap bocor.
+
+**Cek ulang repo tidak lagi menerima file seperti ini** (`.gitignore` di root sudah benar, lihat baris 55–61):
+
+```bash
+git check-ignore -v backend/web/uploads/school/coba.php
+# harus menjawab: .gitignore:56:/backend/web/uploads/*  backend/web/uploads/school/coba.php
+```
+
 #### Ringkasan urutan perbaikan
 
 | # | Aksi | Perintah / Lokasi |
