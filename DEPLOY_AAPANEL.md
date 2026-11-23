@@ -4046,3 +4046,302 @@ ORDER BY role_id;
 - **Jangan membagikan kredensial lewat chat/WhatsApp.** Sampaikan lewat password manager atau kanal yang bisa diaudit, dan hapus pesan setelah diterima.
 - **Rotasi kredensial pasca-insiden webshell masih pending.** Webshell yang terhapus (17.6.6) berarti penyerang sempat berpotensi membaca `common/config/main-local.php`. Daftar yang wajib dirotasi ada di tabel **17.6.7** (password MySQL `sql_banksekolah_noteds_com`, API key layanan, `cookieValidationKey` frontend & backend, password SSH/panel aaPanel). Jangan anggap pekerjaan selesai sebelum tabel itu tuntas.
 - Setelah rotasi, **verifikasi ulang login backend** (18.2) — bila `status` user atau `expired_date` sekolah tidak sengaja berubah saat pemulihan, login akan gagal dan biasanya bukan karena password.
+
+---
+
+## 19. Perbaikan Bug: Registrasi Sekolah Gagal (Error 1364)
+
+> **Status saat section ini ditulis:** kasus nyata di `https://banksekolah.noteds.com/school-register` dengan database produksi `sql_banksekolah_noteds_com`. Perbaikan **kode** sudah masuk repo pada commit `dc6eeada`; perbaikan **skema database** harus dijalankan manual di server karena file dump tidak ikut ter-_deploy_ otomatis.
+
+### 19.1 Gejala
+
+Menekan **Simpan** pada formulir `/school-register` tidak membuat sekolah, melainkan menampilkan halaman:
+
+```text
+SORRY, THE PAGE YOU ARE LOOKING FOR IS NOT FOUND
+SQLSTATE[HY000]: General error: 1364 Field 'id' doesn't have a default value
+The SQL being executed was: INSERT INTO `school` (`name`, `number`, `address`, `city`, `phone`, `expired_date`, `invoice_number`, `transaction_number`, `status`, `created_at`, `updated_at`) VALUES (...)
+```
+
+> ⚠️ Judul **"SORRY, THE PAGE YOU ARE LOOKING FOR IS NOT FOUND"** di sini **bukan** 404 routing. Judul itu teks statis di template error frontend — [`frontend/views/site/error.php`](frontend/views/site/error.php:16) — sedangkan baris di bawahnya adalah `$exception->getMessage()` yang dicetak mentah ([baris 19](frontend/views/site/error.php:19)). Artinya request **sampai ke aplikasi** dan gagal saat eksekusi query, bukan salah URL atau rewrite Nginx.
+
+Perhatikan detail yang menentukan arah diagnosis: daftar kolom pada `INSERT INTO school (...)` **tidak memuat `id`**. Itu perilaku normal Yii untuk primary key auto-increment — aplikasi tidak pernah mengirim `id`, karena `id` seharusnya diisi MySQL sendiri.
+
+### 19.2 Akar masalah
+
+Dump [`banksekolah_banksekolah.sql`](banksekolah_banksekolah.sql) mendefinisikan kolom `id` sebagai `int NOT NULL` **tanpa** `AUTO_INCREMENT` di setiap blok `CREATE TABLE`. Atribut `AUTO_INCREMENT` baru ditambahkan oleh blok terpisah `ALTER TABLE ... MODIFY id ... AUTO_INCREMENT` yang diletakkan di **akhir file** (mulai baris 98852).
+
+MySQL 8 menjalankan DDL secara _atomic_ per _statement* tetapi **tidak bisa di-rollback** seperti transaksi DML. Jadi bila proses import berhenti di tengah jalan (timeout phpMyAdmin, `max_execution_time`, koneksi putus, atau `mysql` client dihentikan), semua `CREATE TABLE` di awal **tetap ada** tetapi blok `ALTER TABLE` di akhir tidak pernah dieksekusi. Hasilnya: tabel lengkap, kolom lengkap, primary key lengkap — hanya `AUTO_INCREMENT` yang hilang. Kerusakan ini "tak terlihat" saat inspeksi struktur tabel secara sekilas.
+
+Dari sisi aplikasi, model `School` tidak pernah mengisi `id` — `id` tidak terdaftar di `rules()` ([`common/models/School.php`](common/models/School.php:51)), sehingga tidak dianggap _safe attribute_ dan tidak ikut di-`INSERT`. Kombinasi keduanya: kolom `id` tidak dikirim aplikasi **dan** tidak punya nilai default di MySQL → strict mode menolak dengan error **1364**.
+
+Bukti pendukung:
+
+| Bukti | Lokasi |
+| --- | --- |
+| `CREATE TABLE school` mendefinisikan `id int NOT NULL` tanpa AUTO_INCREMENT | [`banksekolah_banksekolah.sql`](banksekolah_banksekolah.sql:54894) |
+| Blok `ALTER TABLE school MODIFY id int NOT NULL AUTO_INCREMENT` ada di akhir file | [`banksekolah_banksekolah.sql`](banksekolah_banksekolah.sql:98959) |
+| `CREATE TABLE user` juga tanpa AUTO_INCREMENT | [`banksekolah_banksekolah.sql`](banksekolah_banksekolah.sql:85167) |
+| `CREATE TABLE user_school` juga tanpa AUTO_INCREMENT | [`banksekolah_banksekolah.sql`](banksekolah_banksekolah.sql:91913) |
+| Dump lama di folder `database/` justru **BENAR** (`id int NOT NULL AUTO_INCREMENT` inline) | [`database/banksekolah 2024-01-05.sql`](database/banksekolah%202024-01-05.sql:11787) |
+
+Perbandingan baris terakhir itu penting: dump 2024-01-05 memakai gaya lama MySQL 5.7 (`AUTO_INCREMENT` inline di `CREATE TABLE`), sehingga **kebal** terhadap import yang terpotong. Dump baru memakai gaya MySQL 8 (tanpa `AUTO_INCREMENT` inline, ditambahkan lewat `ALTER` di akhir) — justru rentan.
+
+**29 tabel terdampak** — 27 tabel dengan `id int NOT NULL` + `menu` dan `role_menu` dengan `id int UNSIGNED NOT NULL`:
+
+```text
+activity, backup, day, finger_log, holiday, invoice, lesson, lesson_schedule,
+lesson_schedule_attendance, lesson_schedule_template, menu, payment_type, post,
+post_category, post_image, presence, role, role_menu, school, school_class,
+school_month, school_payment, setting, student, teacher, transaction, user,
+user_school, year
+```
+
+> 📌 **Angka 28 vs 29 — penting.** Blok `-- AUTO_INCREMENT for dumped tables` pada dump hanya berisi **28** pernyataan `ALTER TABLE`. Tabel **`post_image`** ([`banksekolah_banksekolah.sql`](banksekolah_banksekolah.sql:48566)) **tidak punya** blok `AUTO_INCREMENT` sama sekali di dump — ia hanya mendapat `ADD PRIMARY KEY` ([baris 98744](banksekolah_banksekolah.sql:98744)) dan _foreign key_ ([baris 99093](banksekolah_banksekolah.sql:99093)). Konsekuensi praktisnya: **slice `sed` pada Langkah 3 tidak akan memperbaiki `post_image`.** Untuk tabel itu (dan sebagai jaring pengaman menyeluruh) gunakan blok SQL manual 29 baris di Langkah 3 atau migration idempoten di 19.6.
+
+### 19.3 Perbaikan di server (WAJIB, urut)
+
+> Semua perintah dijalankan sebagai user yang punya akses ke `/www/wwwroot/banksekolah.noteds.com` dan ke MySQL. Ganti password prompt sesuai kredensial di `common/config/main-local.php`.
+
+#### Langkah 0 — backup dulu
+
+```bash
+cd /www/wwwroot/banksekolah.noteds.com
+mysqldump -u root -p --single-transaction --routines --triggers \
+  --default-character-set=utf8mb4 sql_banksekolah_noteds_com \
+  > backup_db_$(date +%F_%H%M%S).sql
+ls -lh backup_db_*.sql
+```
+
+Jangan lanjut bila file backup berukuran 0 byte atau jauh lebih kecil dari biasanya.
+
+#### Langkah 1 — konfirmasi diagnosis
+
+```sql
+SHOW CREATE TABLE `school`;
+```
+
+Sebelum perbaikan, kolom `id` akan tampil sebagai `int NOT NULL` **tanpa** `AUTO_INCREMENT`. Bila ternyata sudah `AUTO_INCREMENT`, **berhenti** — masalahnya bukan di sini (lihat 19.7 untuk kemungkinan lain).
+
+#### Langkah 2 — cek semua tabel yang rusak
+
+```sql
+SELECT TABLE_NAME, COLUMN_NAME, COLUMN_TYPE, EXTRA
+FROM information_schema.COLUMNS
+WHERE TABLE_SCHEMA = DATABASE()
+  AND COLUMN_NAME = 'id'
+  AND EXTRA NOT LIKE '%auto_increment%'
+ORDER BY TABLE_NAME;
+```
+
+- **Sebelum perbaikan:** 29 baris (28 bila `post_image` sudah tidak ada di database).
+- **Sesudah perbaikan:** hasil kosong.
+
+Catat daftar yang muncul — itulah daftar tabel yang harus diperbaiki di Langkah 3.
+
+#### Langkah 3 — perbaiki semua sekaligus
+
+Cara cepat (menyalin blok `ALTER` dari dump):
+
+```bash
+cd /www/wwwroot/banksekolah.noteds.com
+grep -n "AUTO_INCREMENT for dumped tables" banksekolah_banksekolah.sql
+grep -n "Constraints for dumped tables" banksekolah_banksekolah.sql
+# sesuaikan nomor baris bila berbeda, lalu:
+sed -n '98852,99023p' banksekolah_banksekolah.sql > /tmp/fix_auto_increment.sql
+head -20 /tmp/fix_auto_increment.sql
+mysql -u sql_banksekolah_noteds_com -p sql_banksekolah_noteds_com \
+  --default-character-set=utf8mb4 < /tmp/fix_auto_increment.sql
+```
+
+Rentang `98852,99023` adalah blok `AUTO_INCREMENT` penuh: dibuka oleh komentar `--` di baris 98852, diakhiri baris kosong 99023, tepat sebelum `Constraints for dumped tables` (99025). **Periksa `head -20`**: baris pertama harus `--`, disusul `-- AUTO_INCREMENT for dumped tables`, lalu `ALTER TABLE \`activity\``. Bila tidak, nomor baris bergeser — jangan dijalankan.
+
+> ⚠️ Cara cepat ini **tidak** menyertakan `post_image` (lihat catatan 19.2). Setelah menjalankan `sed`, verifikasi ulang dengan query Langkah 2; bila `post_image` masih muncul, jalankan minimal baris `post_image` dari blok manual di bawah.
+
+Alternatif manual (bila `sed` tidak tersedia, nomor baris bergeser, atau ingin memastikan **semua 29 tabel** tercover). Jalankan lewat phpMyAdmin atau `mysql`:
+
+```sql
+ALTER TABLE `activity`                   MODIFY `id` int NOT NULL AUTO_INCREMENT;
+ALTER TABLE `backup`                     MODIFY `id` int NOT NULL AUTO_INCREMENT;
+ALTER TABLE `day`                        MODIFY `id` int NOT NULL AUTO_INCREMENT;
+ALTER TABLE `finger_log`                 MODIFY `id` int NOT NULL AUTO_INCREMENT;
+ALTER TABLE `holiday`                    MODIFY `id` int NOT NULL AUTO_INCREMENT;
+ALTER TABLE `invoice`                    MODIFY `id` int NOT NULL AUTO_INCREMENT;
+ALTER TABLE `lesson`                     MODIFY `id` int NOT NULL AUTO_INCREMENT;
+ALTER TABLE `lesson_schedule`            MODIFY `id` int NOT NULL AUTO_INCREMENT;
+ALTER TABLE `lesson_schedule_attendance` MODIFY `id` int NOT NULL AUTO_INCREMENT;
+ALTER TABLE `lesson_schedule_template`   MODIFY `id` int NOT NULL AUTO_INCREMENT;
+ALTER TABLE `menu`                       MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+ALTER TABLE `payment_type`               MODIFY `id` int NOT NULL AUTO_INCREMENT;
+ALTER TABLE `post`                       MODIFY `id` int NOT NULL AUTO_INCREMENT;
+ALTER TABLE `post_category`              MODIFY `id` int NOT NULL AUTO_INCREMENT;
+ALTER TABLE `post_image`                 MODIFY `id` int NOT NULL AUTO_INCREMENT;
+ALTER TABLE `presence`                   MODIFY `id` int NOT NULL AUTO_INCREMENT;
+ALTER TABLE `role`                       MODIFY `id` int NOT NULL AUTO_INCREMENT;
+ALTER TABLE `role_menu`                  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+ALTER TABLE `school`                     MODIFY `id` int NOT NULL AUTO_INCREMENT;
+ALTER TABLE `school_class`               MODIFY `id` int NOT NULL AUTO_INCREMENT;
+ALTER TABLE `school_month`               MODIFY `id` int NOT NULL AUTO_INCREMENT;
+ALTER TABLE `school_payment`             MODIFY `id` int NOT NULL AUTO_INCREMENT;
+ALTER TABLE `setting`                    MODIFY `id` int NOT NULL AUTO_INCREMENT;
+ALTER TABLE `student`                    MODIFY `id` int NOT NULL AUTO_INCREMENT;
+ALTER TABLE `teacher`                    MODIFY `id` int NOT NULL AUTO_INCREMENT;
+ALTER TABLE `transaction`                MODIFY `id` int NOT NULL AUTO_INCREMENT;
+ALTER TABLE `user`                       MODIFY `id` int NOT NULL AUTO_INCREMENT;
+ALTER TABLE `user_school`                MODIFY `id` int NOT NULL AUTO_INCREMENT;
+ALTER TABLE `year`                       MODIFY `id` int NOT NULL AUTO_INCREMENT;
+```
+
+Perhatikan: `menu` dan `role_menu` memakai `int UNSIGNED`. Menjalankannya sebagai `int` (signed) akan mengubah tipe kolom dan berpotensi memicu error foreign key. Jangan mengubah tipe selain yang tertulis.
+
+Bila ada tabel yang tidak ada di database, `ALTER` untuk tabel itu akan error `1146 Table ... doesn't exist` — lewati saja, `ALTER` lain tetap berjalan bila dieksekusi satu per satu.
+
+#### Langkah 4 — bersihkan schema cache (WAJIB)
+
+Bila `enableSchemaCache` bernilai `true` di `common/config/main-local.php` (contoh konfigurasi ada di [`DEPLOY_AAPANEL.md`](DEPLOY_AAPANEL.md:505) — `schemaCacheDuration` = 3600 detik), Yii **menyimpan struktur tabel di cache**. Setelah `ALTER TABLE`, aplikasi bisa **masih memakai definisi kolom lama**:
+
+```bash
+cd /www/wwwroot/banksekolah.noteds.com
+rm -rf frontend/runtime/cache/* backend/runtime/cache/* console/runtime/cache/*
+./yii cache/flush-all --interactive=0 || true
+# lalu reload PHP-FPM dari aaPanel
+```
+
+Tanpa langkah ini, gejala bisa **tetap muncul sampai 3600 detik** walaupun DDL sudah benar — dan itu sangat menyesatkan saat troubleshooting. Bila perlu reload PHP-FPM dari terminal:
+
+```bash
+/etc/init.d/php-fpm-81 reload   # sesuaikan versi PHP yang dipakai situs
+```
+
+#### Langkah 5 — verifikasi
+
+```sql
+SHOW CREATE TABLE `school`;
+-- kolom `id` harus tampil `int NOT NULL AUTO_INCREMENT`
+
+SELECT TABLE_NAME, AUTO_INCREMENT FROM information_schema.TABLES
+WHERE TABLE_SCHEMA = DATABASE() AND AUTO_INCREMENT IS NOT NULL ORDER BY TABLE_NAME;
+```
+
+Query kedua harus menampilkan 29 tabel (atau sebanyak tabel yang ada). Lalu ulangi registrasi di:
+
+```text
+https://banksekolah.noteds.com/school-register
+```
+
+Bila berhasil, halaman akan redirect ke login backend (`@backurl`). Bila masih gagal, cek `frontend/runtime/logs/app.log` untuk pesan SQL terbaru — jangan mengandalkan tampilan halaman error saja.
+
+### 19.4 Perbaikan di repo (sudah di-commit `dc6eeada`)
+
+Bug 1364 bukan satu-satunya masalah yang muncul saat registrasi diuji. Commit `dc6eeada` memperbaiki empat hal sekaligus:
+
+| File | Perubahan |
+| --- | --- |
+| [`frontend/controllers/SchoolRegisterController.php`](frontend/controllers/SchoolRegisterController.php:109) | Transaksi DB membungkus School → User → UserSchool; setiap `save()` dicek dan kegagalannya memunculkan flash error; validasi unik `username` / `email` / `school.number`; **`username` dari form tidak lagi ditimpa** dari `name` |
+| [`frontend/controllers/UserController.php`](frontend/controllers/UserController.php:590) | Helper `currentUser()` berbasis session menggantikan seluruh pemakaian `BasicAuth::user()` (yang membaca header `Authorization: Basic` dan mencari user berdasarkan `username`) |
+| [`frontend/controllers/UserController.php`](frontend/controllers/UserController.php:91) | Link konfirmasi email tidak lagi _hardcode_ `vistaeducation.com`, sekarang memakai `Yii::getAlias('@fronturl')` |
+| [`console/migrations/m261123_120000_fix_auto_increment.php`](console/migrations/m261123_120000_fix_auto_increment.php:1) | Migration idempoten: memastikan kolom `id` pada tabel-tabel utama punya `AUTO_INCREMENT`; aman dijalankan berulang |
+
+Potongan kode penting:
+
+```php
+// SchoolRegisterController::actionCreate() — username tidak lagi ditimpa
+$admin->username = trim($admin->username);
+if ($admin->username === '') {
+    $admin->username = strtolower(str_replace(' ', '', $admin->name));
+}
+```
+
+```php
+// UserController — auth berbasis session, bukan header Authorization
+private function currentUser()
+{
+    $id = Yii::$app->session->get('id');
+    if (!$id) {
+        return null;
+    }
+    return User::findOne($id);
+}
+```
+
+```php
+// UserController — link konfirmasi pakai alias @fronturl
+$body .= Html::a('Click to confirm',
+    Yii::getAlias('@fronturl') . '/user/confirmation?email=' . urlencode($model->email)
+    . '&token=' . md5($model->id));
+```
+
+Catatan tambahan:
+
+- [`common/helpers/BasicAuth.php`](common/helpers/BasicAuth.php:11) **tidak dihapus** — kelasnya dibiarkan ada agar tidak memutus kode lain di masa depan, tetapi hasil pencarian di seluruh `frontend/`, `backend/`, `common/`, dan `console/` menunjukkan **tidak ada satu pun pemanggil** tersisa selain definisi kelasnya sendiri.
+- Validasi unik di controller mencegah error 1062 (`Duplicate entry`) yang dulu muncul belakangan sebagai halaman error yang sama membingungkannya.
+- Pembungkusan transaksi membuat kegagalan di tengah tidak lagi meninggalkan **sekolah tanpa admin** — inilah sumber data setengah jadi yang dibahas di 19.7.
+
+### 19.5 Deploy perbaikan ke server
+
+Setelah Langkah 0–5 di 19.3 selesai (atau bila skema sudah beres dan tinggal kode), terapkan kode terbaru:
+
+```bash
+cd /www/wwwroot/banksekolah.noteds.com
+git pull origin main
+git log --oneline -1        # harus dc6eeada atau lebih baru
+rm -rf frontend/runtime/cache/* backend/runtime/cache/*
+# reload PHP-FPM dari aaPanel
+```
+
+Lalu uji registrasi sekali lagi di `/school-register`.
+
+> Bila `git pull` gagal karena `.git` dimiliki `www`, lihat **Section 18.3**. Bila ada perubahan dependency, lihat **18.4**.
+
+### 19.6 Opsional: jalankan migration sebagai jaring pengaman
+
+```bash
+cd /www/wwwroot/banksekolah.noteds.com
+./yii migrate --interactive=0
+```
+
+Migration ini idempoten, jadi **aman** dijalankan walau Langkah 3 sudah dieksekusi manual. Outputnya membedakan dua keadaan:
+
+- `= ok: \`tabel\`.\`id\` sudah AUTO_INCREMENT` — tabel sudah benar, tidak diubah.
+- `+ diperbaiki: \`tabel\`.\`id\` -> AUTO_INCREMENT` — tabel diperbaiki saat itu.
+
+Karena migration membaca skema langsung dari database (bukan dari dump), ia akan menangani `post_image` juga — inilah alasan migration lebih disarankan dibanding `sed` slice pada dump. Migration ini juga otomatis terlewati (`- lewati: tabel ... tidak ada`) untuk tabel yang tidak ada, sehingga tidak berhenti di tengah.
+
+Setelah migration, **selalu** bersihkan cache lagi (Langkah 4) — `ALTER TABLE` yang dijalankan migration juga mengubah skema yang mungkin sudah ter-cache.
+
+### 19.7 Cek data setengah jadi dari percobaan gagal
+
+Percobaan registrasi yang gagal bisa meninggalkan baris `school` tanpa admin (terutama bila percobaan dilakukan **sebelum** commit `dc6eeada`, yang belum memakai transaksi):
+
+```sql
+-- sekolah tanpa admin
+SELECT s.id, s.number, s.name, s.created_at,
+       (SELECT COUNT(*) FROM user_school us WHERE us.school_id = s.id) AS jumlah_user
+FROM school s
+WHERE NOT EXISTS (SELECT 1 FROM user_school us WHERE us.school_id = s.id)
+ORDER BY s.created_at DESC;
+
+-- jejak percobaan yang gagal (cocokkan dengan log error)
+SELECT id, number, name, address, city, phone, created_at
+FROM school
+WHERE number = '337' OR name = 'Warren Camacho' OR phone = '+1 (642) 914-8308';
+```
+
+> ⚠️ **Jangan langsung `DELETE`.** Simpan dulu hasil query sebagai bukti (screenshot atau export CSV), lalu bersihkan **manual per baris** setelah yakin baris itu bukan data pelanggan nyata. Sebagian isian di formulir uji bisa berupa data acak dari _form filler_ browser, tetapi sekolah sungguhan juga bisa masuk lewat jalur yang sama. Hapus relasi dulu, baru sekolahnya:
+
+```sql
+-- contoh pola, JANGAN dijalankan sebelum id diverifikasi satu per satu
+-- DELETE FROM user_school WHERE school_id = <id_terverifikasi>;
+-- DELETE FROM user WHERE id IN (SELECT user_id FROM user_school WHERE school_id = <id_terverifikasi>);
+-- DELETE FROM school WHERE id = <id_terverifikasi>;
+```
+
+### 19.8 Kenapa `id` tidak boleh ditambahkan ke `rules()`
+
+Terlihat menggoda: bila MySQL menolak `INSERT` karena `id` kosong, tambahkan saja `id` ke `rules()` di [`common/models/School.php`](common/models/School.php:51) agar Yii mengirim nilai. **Itu justru memperburuk keadaan.**
+
+- Menambahkan `id` ke `rules()` hanya membuat atribut itu boleh di-`mass assign`. Ia **tidak mengisi nilai apa pun** secara otomatis — kalau tidak ada input, nilainya tetap `null`, dan error 1364 tetap muncul.
+- Bila dipaksa berisi (`$school->id = 1`), aplikasi jadi mengirim `id` eksplisit. Itu **merusak** mekanisme auto-increment: `id` manual bisa bertabrakan dengan baris yang sudah ada (error 1062) atau meninggalkan "lubang" pada urutan `AUTO_INCREMENT`.
+- Kolom `id` adalah primary key yang **dimiliki database**, bukan atribut bisnis. Menjadikannya _safe attribute_ juga membuka celah mass-assignment: form bisa dipakai menimpa `id` record lain.
+
+Perbaikan yang benar adalah **di skema database** (Langkah 3 / 19.6), bukan di `rules()`. Aturan model tetap: `id` tidak masuk `rules()`, aplikasi tidak pernah mengirim `id`, dan MySQL mengisinya lewat `AUTO_INCREMENT`.
