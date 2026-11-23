@@ -1062,12 +1062,25 @@ open_basedir=/www/wwwroot/banksekolah.noteds.com/:/tmp/
 
 ```bash
 cd /www/wwwroot/banksekolah.noteds.com
+
+# 1) Lepas atribut immutable dulu (kalau .user.ini sudah dikunci aaPanel)
+chattr -i .user.ini
+
+# 2) BARU tulis isinya
 printf 'open_basedir=/www/wwwroot/banksekolah.noteds.com/:/tmp/\n' > .user.ini
-chattr +i .user.ini          # cegah ditimpa aaPanel
+
+# 3) Kunci kembali + reload
+chattr +i .user.ini
 /etc/init.d/php-fpm-81 reload
+
+# 4) Verifikasi
+cat .user.ini
+lsattr .user.ini
 ```
 
-> Jika `chattr` gagal (filesystem tidak mendukung), cukup matikan toggle **Anti-XSS attack** di aaPanel. Detail di Section 17.3.
+> **`chattr: Operation not permitted` artinya file SUDAH immutable** (dikunci aaPanel saat Anti-XSS dinyalakan). Itu bukan kegagalan — isi file juga belum berubah. Jalankan `chattr -i .user.ini` **sebelum** `printf`, seperti urutan di atas. Kalau `chattr -i` juga gagal, cek apakah file berada di filesystem yang tidak mendukung `chattr` (`df -T .`), atau matikan toggle **Anti-XSS attack** di aaPanel, timpa file, lalu nyalakan lagi.
+>
+> **Cara paling mudah lewat panel:** File Manager → centang `.user.ini` → **More → Permission/Attribute** → matikan centang *Immutable/i*, klik OK, lalu edit isinya lewat editor bawaan. Detail tambahan ada di Section 17.3.
 
 #### 10.5.5 Langkah 4 — Penyesuaian config aplikasi
 
@@ -1084,14 +1097,37 @@ chattr +i .user.ini          # cegah ditimpa aaPanel
 
 Tidak perlu menulis `baseUrl` manual: Yii menghitung dari `SCRIPT_NAME` = `/backend/web/index.php` → `baseUrl` = `/backend/web`. Konfigurasi ini **juga tetap benar** bila nanti Anda pindah ke layout subdomain (di sana `baseUrl` = kosong, dan hasilnya sama-sama valid).
 
-**b) Alias domain.** [`common/config/bootstrap.php`](common/config/bootstrap.php) memaksa `@backurl` ke `https://banksekolah.com` untuk semua domain selain `banksekolah.test`. Jangan edit file itu (tracked). Tambahkan override di `common/config/main-local.php`:
+**b) Alias domain.** [`common/config/bootstrap.php`](common/config/bootstrap.php) memaksa `@backurl` ke `https://banksekolah.com` untuk semua domain selain `banksekolah.test`. Jangan edit file itu (tracked). Tambahkan override di `common/config/main-local.php`.
+
+> **PENTING — `aliases` harus sejajar dengan `components`, BUKAN di dalamnya.** `aliases` adalah kunci tingkat atas array yang dikembalikan. Kalau diletakkan di dalam `components`, Yii menganggapnya sebagai komponen bernama "aliases" → alias `@fronturl`/`@backurl` **tidak pernah diset**, dan tautan admin tetap menunjuk `banksekolah.com`. Tidak ada error yang muncul, jadi kesalahan ini tidak terlihat dari layar.
+
+Isi lengkap `common/config/main-local.php` yang benar:
 
 ```php
-'aliases' => [
-    '@fronturl' => 'https://banksekolah.noteds.com',
-    '@backurl'  => 'https://banksekolah.noteds.com/backend/web',
-],
+<?php
+return [
+    'components' => [
+        'db' => [
+            'class' => 'yii\db\Connection',
+            'dsn' => 'mysql:host=localhost;dbname=sql_banksekolah_noteds_com',
+            'username' => 'sql_banksekolah_noteds_com',
+            'password' => 'PASSWORD_DB_ANDA',
+            'charset' => 'utf8mb4',
+        ],
+        'mailer' => [
+            'class' => 'yii\swiftmailer\Mailer',
+            'viewPath' => '@common/mail',
+        ],
+    ],
+    // ↓↓↓ di LUAR 'components'
+    'aliases' => [
+        '@fronturl' => 'https://banksekolah.noteds.com',
+        '@backurl'  => 'https://banksekolah.noteds.com/backend/web',
+    ],
+];
 ```
+
+Perhatikan penutup `],` milik `components` **sebelum** `'aliases'`. Kalau Anda menempel blok `aliases` tepat setelah `'mailer' => [...]` tanpa menutup `components` lebih dulu, posisinya menjadi salah.
 
 **c) `cookieValidationKey`.** Pastikan `backend/config/main-local.php` ada dan key-nya **berbeda** dari frontend (Section 7.5).
 
