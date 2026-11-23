@@ -39,14 +39,18 @@ return [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
-        /*
+        // Aktifkan pretty URL agar tautan admin tidak menunjuk ke
+        // /index.php?r=site/login (yang pada layout satu domain
+        // akan jatuh ke root domain, bukan ke /backend/web).
+        // Yii menghitung baseUrl dari SCRIPT_NAME, sehingga:
+        //   - layout root proyek : baseUrl = /backend/web
+        //   - layout subdomain   : baseUrl = '' (tetap benar)
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
             ],
         ],
-        */
     ],
     'params' => $params,
 ];
