@@ -35,7 +35,8 @@ class UserController extends \yii\web\Controller
                 break;
         }
         if ($requireCheck) {
-            if (!BasicAuth::user()->id) {
+            if (!$this->currentUser()) {
+                Yii::$app->session->setFlash('danger', 'Silakan login terlebih dahulu.');
                 $this->redirect(['user/login']);
                 return false;
             }
@@ -45,8 +46,7 @@ class UserController extends \yii\web\Controller
 
     public function actionIndex()
     {
-        $id = BasicAuth::user()->id;
-        $model = User::findOne($id);
+        $model = $this->currentUser();
         if (!$model) {
             return $this->redirect(['user/login']);
         }
@@ -88,7 +88,7 @@ class UserController extends \yii\web\Controller
                 $subject = 'Vista Education';
                 $textBody = 'Email Confirmation';
                 $body = 'Dear '.$model->name.', this email is registered to Vista Education. If you feel use this email, please confirm with the link below:<br>';
-                $body .= Html::a('Click to confirm', 'https://vistaeducation.com/user/confirmation?email='.$model->email.'&token='.md5($model->id));
+                $body .= Html::a('Click to confirm', Yii::getAlias('@fronturl') . '/user/confirmation?email=' . urlencode($model->email) . '&token=' . md5($model->id));
                 $body .= '<br><br><br>Thank you,<br>';
                 $body .= 'Vista Education';
                 $params = ['body' => $body];
@@ -184,10 +184,9 @@ class UserController extends \yii\web\Controller
 
     public function actionProfile($tab = null)
     {
-        $id = BasicAuth::user()->id;
-        $model = User::findOne($id);
-        if (!$model) {
-            // throw new \yii\web\NotFoundHttpException();
+        $model = $this->currentUser();
+        if ($model === null) {
+            Yii::$app->session->setFlash('danger', 'Silakan login terlebih dahulu.');
             return $this->redirect(['user/login']);
         }
 
@@ -210,9 +209,9 @@ class UserController extends \yii\web\Controller
     
     public function actionUpdateProfile()
     {
-        $id = BasicAuth::user()->id;
-        $user = User::findOne($id);
-        if (!$user) {
+        $user = $this->currentUser();
+        if ($user === null) {
+            Yii::$app->session->setFlash('danger', 'Silakan login terlebih dahulu.');
             return $this->redirect(['user/login']);
         }
 
@@ -289,9 +288,9 @@ class UserController extends \yii\web\Controller
 
     public function actionAddExperience()
     {
-        $id = BasicAuth::user()->id;
-        $user = User::findOne($id);
-        if (!$user) {
+        $user = $this->currentUser();
+        if ($user === null) {
+            Yii::$app->session->setFlash('danger', 'Silakan login terlebih dahulu.');
             return $this->redirect(['user/login']);
         }
         $model = new UserExperience();
@@ -315,8 +314,9 @@ class UserController extends \yii\web\Controller
 
     public function actionDeleteExperience($id)
     {
-        $user = User::findOne(BasicAuth::user()->id);
-        if (!$user) {
+        $user = $this->currentUser();
+        if ($user === null) {
+            Yii::$app->session->setFlash('danger', 'Silakan login terlebih dahulu.');
             return $this->redirect(['user/login']);
         }
         $model = UserExperience::findOne($id);
@@ -331,9 +331,9 @@ class UserController extends \yii\web\Controller
 
     public function actionAddTraining()
     {
-        $id = BasicAuth::user()->id;
-        $user = User::findOne($id);
-        if (!$user) {
+        $user = $this->currentUser();
+        if ($user === null) {
+            Yii::$app->session->setFlash('danger', 'Silakan login terlebih dahulu.');
             return $this->redirect(['user/login']);
         }
         $model = new UserTraining();
@@ -357,8 +357,9 @@ class UserController extends \yii\web\Controller
 
     public function actionDeleteTraining($id)
     {
-        $user = User::findOne(BasicAuth::user()->id);
-        if (!$user) {
+        $user = $this->currentUser();
+        if ($user === null) {
+            Yii::$app->session->setFlash('danger', 'Silakan login terlebih dahulu.');
             return $this->redirect(['user/login']);
         }
         $model = UserTraining::findOne($id);
@@ -382,7 +383,7 @@ class UserController extends \yii\web\Controller
 
     public function actionForgotPassword()
     {
-        if (BasicAuth::user()->id) {
+        if ($this->currentUser()) {
             return Yii::$app->response->redirect(['user/profile']);
         } else {
             return $this->render('forgot-password');
@@ -497,7 +498,7 @@ class UserController extends \yii\web\Controller
 
     public function actionEmailActivation()
     {
-        if (BasicAuth::user()->id) {
+        if ($this->currentUser()) {
             return Yii::$app->response->redirect(['user/profile']);
         } else {
             return $this->render('email-activation');
@@ -528,7 +529,7 @@ class UserController extends \yii\web\Controller
                 $subject = 'VistaEducation';
                 $textBody = 'Konfirmasi Email';
                 $body = 'Dear '.$emailExist->nama.', email ini didaftarkan sebagai user di VistaEducation. Jika Anda merasa telah mendaftar, silakan konfirmasi email dengan klik link di bawah ini:<br>';
-                $body .= Html::a('klik untuk konfirmasi', 'https://vistaeducation.com/user/konfirmasi?email='.$emailExist->email.'&token='.md5($emailExist->id));
+                $body .= Html::a('klik untuk konfirmasi', Yii::getAlias('@fronturl') . '/user/confirmation?email=' . urlencode($emailExist->email) . '&token=' . md5($emailExist->id));
                 $body .= '<br><br><br>Terima kasih,<br>';
                 $body .= 'VistaEducation';
                 $params = ['body' => $body];
@@ -556,7 +557,11 @@ class UserController extends \yii\web\Controller
 
     public function actionChangePassword()
     {
-        $user = User::findOne(BasicAuth::user()->id);
+        $user = $this->currentUser();
+        if ($user === null) {
+            Yii::$app->session->setFlash('danger', 'Silakan login terlebih dahulu.');
+            return $this->redirect(['user/login']);
+        }
         $user->mode = 'change-password';
         if ($user->load(Yii::$app->request->post())) {
             $user->password = password_hash($user->new_password, PASSWORD_DEFAULT);
@@ -574,5 +579,20 @@ class UserController extends \yii\web\Controller
                 'user' => $user,
             ]);
         }
+    }
+
+    /**
+     * Mengambil user yang sedang login dari session.
+     * Session `id` diisi oleh actionLogin() saat autentikasi berhasil.
+     *
+     * @return \common\models\User|null
+     */
+    private function currentUser()
+    {
+        $id = Yii::$app->session->get('id');
+        if (!$id) {
+            return null;
+        }
+        return User::findOne($id);
     }
 }

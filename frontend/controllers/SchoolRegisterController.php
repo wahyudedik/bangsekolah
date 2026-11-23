@@ -118,29 +118,76 @@ class SchoolRegisterController extends Controller
             $school->invoice_number = 0;
             $school->transaction_number = 0;
             $school->status = 'ACTIVE';
-            if ($school->save()) {
-                $admin->role_id = 2;
-                $admin->username = strtolower(str_replace(' ', '', $admin->name));
-                $admin->setPassword($admin->password);
-                $admin->generateAuthKey();
-                if ($admin->save()) {
-                    $user = new UserSchool();
 
-                    $user->school_id = $school->id;
-                    $user->user_id = $admin->id;
-                    $user->save();
-                    return $this->redirect(Yii::getAlias('@backurl'));
-                } else {
-                    foreach ($admin->getErrors() as $error) {
-                        $message = $error[0];
-                        Yii::$app->session->setFlash('danger', $message);
-                    }
-                }
-            } else {
-                foreach ($school->getErrors() as $error) {
-                    $message = $error[0];
+            // gunakan username dari input form apa adanya, fallback ke nama bila kosong
+            $admin->username = trim($admin->username);
+            if ($admin->username === '') {
+                $admin->username = strtolower(str_replace(' ', '', $admin->name));
+            }
+            $admin->role_id = 2;
+
+            // validasi keunikan username, email, dan kode sekolah
+            $errors = [];
+            if (User::find()->where(['username' => $admin->username])->exists()) {
+                $errors[] = 'Username sudah terdaftar';
+            }
+            if ($admin->email !== null && $admin->email !== '' && User::find()->where(['email' => $admin->email])->exists()) {
+                $errors[] = 'Email sudah terdaftar';
+            }
+            if ($school->number !== null && $school->number !== '' && School::find()->where(['number' => $school->number])->exists()) {
+                $errors[] = 'Kode sekolah sudah terdaftar';
+            }
+            if (!empty($errors)) {
+                foreach ($errors as $message) {
                     Yii::$app->session->setFlash('danger', $message);
                 }
+                return $this->render('form', [
+                    'school' => $school,
+                    'admin' => $admin,
+                ]);
+            }
+
+            $admin->setPassword($admin->password);
+            $admin->generateAuthKey();
+
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                if (!$school->save()) {
+                    $transaction->rollBack();
+                    Yii::$app->session->setFlash('danger', current($school->getFirstErrors()) ?: 'Gagal menyimpan data sekolah');
+                    return $this->render('form', [
+                        'school' => $school,
+                        'admin' => $admin,
+                    ]);
+                }
+
+                if (!$admin->save()) {
+                    $transaction->rollBack();
+                    Yii::$app->session->setFlash('danger', current($admin->getFirstErrors()) ?: 'Gagal menyimpan data user');
+                    return $this->render('form', [
+                        'school' => $school,
+                        'admin' => $admin,
+                    ]);
+                }
+
+                $user = new UserSchool();
+
+                $user->school_id = $school->id;
+                $user->user_id = $admin->id;
+                if (!$user->save()) {
+                    $transaction->rollBack();
+                    Yii::$app->session->setFlash('danger', current($user->getFirstErrors()) ?: 'Gagal menyimpan relasi user sekolah');
+                    return $this->render('form', [
+                        'school' => $school,
+                        'admin' => $admin,
+                    ]);
+                }
+
+                $transaction->commit();
+                return $this->redirect(Yii::getAlias('@backurl'));
+            } catch (\Throwable $e) {
+                $transaction->rollBack();
+                throw $e;
             }
         }
 
