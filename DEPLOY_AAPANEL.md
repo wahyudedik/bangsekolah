@@ -3161,6 +3161,96 @@ git check-ignore -v backend/web/uploads/school/coba.php
 # harus menjawab: .gitignore:56:/backend/web/uploads/*  backend/web/uploads/school/coba.php
 ```
 
+#### 17.6.7 Pasca `reset --hard` — hasil nyata & yang masih harus dirapikan
+
+Urutan di 17.6.5 sudah dijalankan di server dan **berhasil**. Ini keluaran nyatanya, sebagai pembanding bila kelak diulang di server lain:
+
+```text
++ 9b10136a...dae2aa62 main       -> origin/main  (forced update)
+Updating files: 100% (10265/10265), done.
+HEAD is now at dae2aa62 docs: Section 17.6.5-17.6.6 ...
+
+$ curl -sI --resolve banksekolah.noteds.com:80:127.0.0.1 http://banksekolah.noteds.com/backend/web/ | grep -i location
+Location: http://banksekolah.noteds.com/backend/web/site/login
+```
+
+Baris `Location: .../backend/web/site/login` (tanpa `?r=`) adalah **bukti kode GitHub sudah aktif**.
+
+**Tiga pesan yang muncul dan artinya:**
+
+| Pesan | Arti | Tindakan |
+| --- | --- | --- |
+| `warning: failed to remove .user.ini: Operation not permitted` | `git stash -u` mencoba memindahkan `.user.ini` (untracked) tapi tertolak karena flag immutable `i` | **Abaikan** — justru bagus, `.user.ini` tetap utuh |
+| `+ 9b10136a...dae2aa62 main -> origin/main (forced update)` | Riwayat GitHub pernah ditulis ulang, jadi GitLab→GitHub tidak fast-forward | **Normal** — itulah gunanya `reset --hard` |
+| `Resolving deltas: 100% ... with 41 local objects` | Ada objek lokal (commit GitLab) yang tidak dipakai | Tidak berbahaya |
+
+**Yang masih menggantung: stash.** `git stash push -u` menyimpan `.htaccess`, `common/config/bootstrap.php`, dan `.bowerrc` versi **lama**. Jangan pernah `git stash pop` sekarang — itu akan mengembalikan berkas lama dan merusak hasil reset.
+
+```bash
+cd /www/wwwroot/banksekolah.noteds.com
+
+# lihat isinya dulu (siapa tahu ada perubahan yang masih dibutuhkan)
+git stash list
+git stash show -p stash@{0} | head -60
+
+# buang permanen setelah yakin tidak dipakai
+git stash drop stash@{0}
+```
+
+**Soal `common/config/bootstrap.php` — jangan diubah manual.** Berkas itu memang masih punya cabang `else` yang menunjuk `https://banksekolah.com` (baris 21–22), tetapi:
+
+```php
+// common/config/bootstrap.php — dijalankan lebih awal, lalu DITIMPA
+} else {
+    Yii::setAlias('@fronturl', 'https://banksekolah.com');
+    Yii::setAlias('@backurl', 'https://banksekolah.com/backend/web');
+}
+```
+
+Nilai final ditentukan oleh kunci `aliases` yang dibaca `Application::preInit()` **setelah** bootstrap, yaitu di `common/config/main-local.php`:
+
+```php
+'aliases' => [
+    '@fronturl' => 'https://banksekolah.noteds.com',
+    '@backurl'  => 'https://banksekolah.noteds.com/backend/web',
+],
+```
+
+Karena itu **cukup andalkan `main-local.php`**, dan `bootstrap.php` biarkan sama persis dengan GitHub. Kalau `bootstrap.php` diedit manual di server, setiap `git pull` berikutnya akan bentrok lagi (`M common/config/bootstrap.php`) — persoalan yang baru saja kita selesaikan.
+
+> Urutan yang benar bila kelak butuh domain berbeda: ubah `main-local.php` saja (tidak masuk repo, tidak pernah bentrok).
+
+**Verifikasi akhir setelah semua langkah:**
+
+```bash
+cd /www/wwwroot/banksekolah.noteds.com
+git status -sb          # harus bersih, tanpa baris ?? webshell
+
+# frontend
+curl -sI --resolve banksekolah.noteds.com:80:127.0.0.1 http://banksekolah.noteds.com/ | head -1
+curl -sI --resolve banksekolah.noteds.com:80:127.0.0.1 http://banksekolah.noteds.com/user/login | head -1
+
+# backend harus 302 ke /backend/web/site/login
+curl -sI --resolve banksekolah.noteds.com:80:127.0.0.1 http://banksekolah.noteds.com/backend/web/ | grep -i '^location'
+
+# blokir folder sensitif masih bekerja (harus 404)
+for u in /vendor/autoload.php /common/config/main-local.php /.user.ini /backend/web/uploads/school/x.php; do
+  printf '%-45s ' "$u"
+  curl -s -o /dev/null -w '%{http_code}\n' --resolve banksekolah.noteds.com:80:127.0.0.1 "http://banksekolah.noteds.com$u"
+done
+```
+
+Harapan: `/` = `200`, `/user/login` = `200`, `/backend/web/` = `302` + `Location: .../site/login`, dan **keempat** URL terakhir = `404`.
+
+**Yang belum boleh dianggap selesai** — rotasi kredensial. Webshell yang tadi terhapus (17.6.6) berarti penyerang sempat bisa membaca `common/config/main-local.php`. Ganti semuanya:
+
+| Kredensial | Lokasi ganti |
+| --- | --- |
+| Password user MySQL `sql_banksekolah_noteds_com` | aaPanel → Databases → Change Password, lalu sesuaikan `main-local.php` |
+| API key Mailchimp / Midtrans | Dashboard masing-masing layanan |
+| `cookieValidationKey` (frontend & backend) | `*/config/main-local.php` — nilai acak 32+ karakter |
+| Password SSH & panel aaPanel | Setelah pastikan tidak ada kunci `/root/.ssh/authorized_keys` yang tidak dikenal |
+
 #### Ringkasan urutan perbaikan
 
 | # | Aksi | Perintah / Lokasi |
