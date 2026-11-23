@@ -1550,7 +1550,8 @@ git push origin --force --tags
 | **`The directory is not writable`** | Exception Yii | Permission `runtime` / `assets` salah | `chmod -R 775` + owner `www:www` pada folder writable |
 | **Permission denied** | Error saat upload atau log | Owner bukan `www` | `chown -R www:www` folder writable |
 | **DB connection refused** | `SQLSTATE[HY000] [2002]` | MySQL mati / socket salah | `systemctl status mysqld`; cek `host` di DSN (`localhost` vs `127.0.0.1`) |
-| **Access denied for user** | `SQLSTATE[HY000] [1045]` | Kredensial DB salah | Samakan `username`/`password` di `main-local.php` dengan user MySQL |
+| **Access denied for user** | `SQLSTATE[HY000] [1045] ... (using password: YES)` | Kredensial DB salah — password dikirim tapi tidak cocok | Uji `mysql -u <user_app> -p -h <host> <db> -e "SELECT 1;"`; samakan password. Detail: **Section 17.4** |
+| **Access denied — using password: NO** | `SQLSTATE[HY000] [1045] ... (using password: NO)` | `password` kosong di `main-local.php` | Isi `password` di `common/config/main-local.php` |
 | **Unknown database** | `[1049]` | Nama DB salah / belum dibuat | Cek `SHOW DATABASES;` dan sesuaikan `dbname` |
 | **Karakter rusak / emoji jadi `?`** | Data tampil aneh | Charset `utf8` bukan `utf8mb4` | Ubah `charset` ke `utf8mb4` di DSN dan database |
 | **404 di semua halaman kecuali beranda** | Pretty URL gagal | Rewrite Nginx tidak ada (Nginx abaikan `.htaccess`) | Tambahkan `try_files $uri $uri/ /index.php?$args;` lalu reload Nginx |
@@ -1871,10 +1872,191 @@ Ini rangkaian yang normal; setiap perbaikan akan memunculkan error berikutnya:
 1. 403 Forbidden                        → Site directory salah            (Section 17.2)
 2. open_basedir restriction in effect    → .user.ini terlalu sempit        (Section 17.3)
 3. Failed opening required ...-local.php → config lokal belum dibuat      (Section 7)
-4. SQLSTATE / Access denied for user     → kredensial DB salah            (Section 7.3)
+4. SQLSTATE / Access denied for user     → kredensial DB salah            (Section 17.4)
 5. The directory is not writable         → permission runtime/assets      (Section 11.2)
 6. 404 di halaman selain beranda         → try_files belum ada            (Section 17.2 Langkah 2)
 ```
+
+### 17.4 `SQLSTATE[HY000] [1045] Access denied for user` — Kredensial Database
+
+**Gejala:** layout & halaman aplikasi sudah tampil (berarti PHP, `vendor/`, dan config lokal sudah benar), tetapi di tengah halaman muncul:
+
+```text
+Page Not Found
+SQLSTATE[HY000] [1045] Access denied for user 'banksekolah_banksekolah'@'localhost' (using password: YES)
+```
+
+**Arti pesan:**
+
+| Bagian pesan | Arti |
+| --- | --- |
+| `[1045]` | Autentikasi MySQL gagal — user/password tidak cocok |
+| `'banksekolah_banksekolah'@'localhost'` | User MySQL yang **dipakai aplikasi**, dihost `localhost` |
+| `(using password: YES)` | Aplikasi **mengirim** password, jadi password-nya ada tetapi **salah** |
+
+Penting: ini **bukan** error fatal PHP — koneksi database masih *lazy*. Karena itu halaman tetap tampil lalu error muncul saat query pertama. Ini juga bukti bahwa `common/config/main-local.php` **sudah ada** (Section 7 beres) dan `open_basedir` **sudah benar** (Section 17.3 beres).
+
+**Penyebab paling sering:** nilai `username`/`password` di `common/config/main-local.php` adalah sisa template/copy lokal yang tidak sama dengan user yang benar-benar ada di MySQL server.
+
+#### Langkah 1 — Lihat kredensial yang dipakai aplikasi
+
+```bash
+cd /www/wwwroot/banksekolah.noteds.com
+cat common/config/main-local.php
+```
+
+Catat nilai `dsn`, `username`, `password`. Contoh dari repo lokal Anda:
+
+```php
+'dsn' => 'mysql:host=localhost;dbname=banksekolah_banksekolah',
+'username' => 'banksekolah_banksekolah',
+'password' => 'BanksekolahDB1',
+```
+
+Server aaPanel Anda perlu user yang **persis sama**.
+
+#### Langkah 2 — Cek user yang benar-benar ada di MySQL
+
+```bash
+mysql -u root -p -e "SELECT user, host FROM mysql.user WHERE user LIKE 'banksekolah%';"
+mysql -u root -p -e "SHOW DATABASES LIKE 'banksekolah%';"
+```
+
+Bila user/database **belum ada**, buat (sesuaikan nama agar sama dengan `main-local.php`):
+
+```sql
+CREATE DATABASE IF NOT EXISTS banksekolah_banksekolah
+  CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+CREATE USER 'banksekolah_banksekolah'@'localhost'
+  IDENTIFIED BY 'PASSWORD_BARU_YANG_KUAT';
+
+GRANT ALL PRIVILEGES ON banksekolah_banksekolah.*
+  TO 'banksekolah_banksekolah'@'localhost';
+
+FLUSH PRIVILEGES;
+```
+
+> Di aaPanel cara paling aman: **Databases → Add Database**, isi nama & user **persis** seperti di `main-local.php`, lalu klik Submit. aaPanel otomatis membuat user + grant.
+
+#### Langkah 3 — Uji login langsung via CLI (wajib sebelum lanjut)
+
+Selalu uji pakai user aplikasi, **bukan** root:
+
+```bash
+mysql -u banksekolah_banksekolah -p'PASSWORD_BARU_YANG_KUAT' -h localhost banksekolah_banksekolah -e "SELECT 1;"
+```
+
+- Berhasil (menampilkan `1`) → kredensial benar, lanjut Langkah 5.
+- Gagal `1045` → password di `main-local.php` belum disamakan. Lanjut Langkah 4.
+
+#### Langkah 4 — Samakan password (pilih salah satu)
+
+**Opsi A — Ubah password user MySQL agar sama dengan file config** (paling simpel, tapi hati-hati password mungkin lemah):
+
+```sql
+ALTER USER 'banksekolah_banksekolah'@'localhost'
+  IDENTIFIED BY 'PASSWORD_YANG_SAMA_DENGAN_MAIN_LOCAL';
+FLUSH PRIVILEGES;
+```
+
+**Opsi B — Ubah `main-local.php` agar sama dengan password MySQL** (direkomendasikan):
+
+Edit `/www/wwwroot/banksekolah.noteds.com/common/config/main-local.php`:
+
+```php
+<?php
+return [
+    'aliases' => [
+        '@fronturl' => 'https://banksekolah.noteds.com',
+        '@backurl'  => 'https://admin.banksekolah.noteds.com',
+    ],
+    'components' => [
+        'db' => [
+            'class'    => 'yii\db\Connection',
+            'dsn'      => 'mysql:host=localhost;dbname=banksekolah_banksekolah',
+            'username' => 'banksekolah_banksekolah',
+            'password' => 'PASSWORD_DARI_AAPANEL_DATABASES',
+            'charset'  => 'utf8mb4',
+        ],
+        'mailer' => [
+            'class' => 'yii\swiftmailer\Mailer',
+            'viewPath' => '@common/mail',
+        ],
+    ],
+];
+```
+
+Lalu cek syntax dan pastikan terbaca:
+
+```bash
+php -l common/config/main-local.php
+```
+
+#### Langkah 5 — `localhost` vs `127.0.0.1`
+
+Jika user dibuat untuk host tertentu, DSN bisa gagal walau password benar:
+
+| Situasi | DSN yang benar |
+| --- | --- |
+| User dibuat `@'localhost'`, MySQL pakai socket | `mysql:host=localhost;dbname=...` |
+| User dibuat `@'127.0.0.1'` atau MySQL tidak punya socket | `mysql:host=127.0.0.1;dbname=...` |
+| User dibuat `@'%'` (remote) | hindari untuk aplikasi lokal |
+
+Cek host yang terdaftar:
+
+```bash
+mysql -u root -p -e "SELECT user, host FROM mysql.user WHERE user='banksekolah_banksekolah';"
+```
+
+Bila hasilnya `127.0.0.1`, ubah DSN ke `127.0.0.1`. Bila hasilnya `localhost`, tetap pakai `localhost`.
+
+#### Langkah 6 — Import database (bila tabel belum ada)
+
+Setelah login berhasil, pastikan tabel sudah terisi:
+
+```bash
+mysql -u banksekolah_banksekolah -p banksekolah_banksekolah -e "SHOW TABLES;" | wc -l
+```
+
+Bila hasilnya `0` atau `1`, import SQL-nya (Section 8.3):
+
+```bash
+cd /www/wwwroot/banksekolah.noteds.com
+mysql -u banksekolah_banksekolah -p banksekolah_banksekolah \
+  --default-character-set=utf8mb4 \
+  < banksekolah_banksekolah.sql
+```
+
+Verifikasi:
+
+```bash
+mysql -u banksekolah_banksekolah -p banksekolah_banksekolah -e "SHOW TABLES;" | wc -l
+mysql -u banksekolah_banksekolah -p banksekolah_banksekolah -e "SELECT COUNT(*) FROM user;"
+```
+
+> Catatan: dump `banksekolah_banksekolah.sql` di repo berisi `DEFAULT CHARSET=latin1` pada sebagian tabel (warisan data lama) meskipun header-nya `utf8mb4`. Ini normal dan tidak menyebabkan `1045`. Bila muncul karakter rusak, lihat baris **Karakter rusak / emoji jadi `?`** di tabel Section 17.
+
+#### Langkah 7 — Bersihkan cache & uji ulang
+
+```bash
+cd /www/wwwroot/banksekolah.noteds.com
+rm -rf frontend/runtime/cache/* backend/runtime/cache/*
+curl -I https://banksekolah.noteds.com/
+```
+
+Buka domain di browser — halaman beranda harus tampil tanpa pesan SQLSTATE.
+
+#### Membedakan 4 error database yang mirip
+
+| Kode | Pesan | Penyebab | Perbaikan |
+| --- | --- | --- | --- |
+| **1045** | `Access denied for user 'x'@'localhost' (using password: YES)` | Password salah | Langkah 4 — samakan password |
+| **1045** | `Access denied for user 'x'@'localhost' (using password: NO)` | Password **kosong** di `main-local.php` | Isi `password` |
+| **1049** | `Unknown database 'x'` | Nama database tidak ada | Buat DB atau perbaiki `dbname` di DSN |
+| **2002** | `Connection refused` | MySQL mati / socket path salah | `systemctl status mysqld`, cek host DSN |
+
+> **Kesimpulan:** `1045` = autentikasi MySQL. Selalu uji dengan `mysql -u <user_app> -p -h <host> <db> -e "SELECT 1;"` **sebelum** menyalahkan aplikasi.
 
 ---
 
